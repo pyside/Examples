@@ -9,7 +9,7 @@
 import sys
 import os.path
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 
 # Set a specified environment variable with a directory name.

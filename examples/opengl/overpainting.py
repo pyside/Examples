@@ -25,40 +25,43 @@
 
 import sys
 import math, random
-
-from PyQt4 import QtCore, QtGui, QtOpenGL
+from PySide.QtCore import *
+from PySide.QtGui import *
+from PySide.QtOpenGL import *
 
 try:
     from OpenGL.GL import *
 except ImportError:
-    app = QtGui.QApplication(sys.argv)
-    QtGui.QMessageBox.critical(None, "OpenGL overpainting",
-            "PyOpenGL must be installed to run this example.")
+    app = QApplication(sys.argv)
+    QMessageBox.critical(None, "OpenGL overpainting",
+                            "PyOpenGL must be installed to run this example.",
+                            QMessageBox.Ok | QMessageBox.Default,
+                            QMessageBox.NoButton)
     sys.exit(1)
 
 
-class Bubble(object):
+class Bubble:
     def __init__(self, position, radius, velocity):
         self.position = position
         self.vel = velocity
         self.radius = radius
-
         self.innerColor = self.randomColor()
         self.outerColor = self.randomColor()
         self.updateBrush()
 
     def updateBrush(self):
-        gradient = QtGui.QRadialGradient(QtCore.QPointF(self.radius, self.radius), self.radius, QtCore.QPointF(self.radius*0.5, self.radius*0.5))
+        gradient = QRadialGradient(QPointF(self.radius, self.radius), self.radius,
+                                   QPointF(self.radius*0.5, self.radius*0.5))
 
-        gradient.setColorAt(0, QtGui.QColor(255, 255, 255, 255))
+        gradient.setColorAt(0, QColor(255, 255, 255, 255))
         gradient.setColorAt(0.25, self.innerColor)
         gradient.setColorAt(1, self.outerColor)
-        self.brush = QtGui.QBrush(gradient)
+        self.brush = QBrush(gradient)
 
     def drawBubble(self, painter):
         painter.save()
         painter.translate(self.position.x() - self.radius,
-                self.position.y() - self.radius)
+                          self.position.y() - self.radius)
         painter.setBrush(self.brush)
         painter.drawEllipse(0, 0, int(2*self.radius), int(2*self.radius))
         painter.restore()
@@ -69,7 +72,7 @@ class Bubble(object):
         blue = random.randrange(205, 256)
         alpha = random.randrange(91, 192)
 
-        return QtGui.QColor(red, green, blue, alpha)
+        return QColor(red, green, blue, alpha)
 
     def move(self, bbox):
         self.position += self.vel
@@ -93,35 +96,35 @@ class Bubble(object):
             self.vel.setY(-self.vel.y())
 
     def rect(self):
-        return QtCore.QRectF(self.position.x() - self.radius,
-                self.position.y() - self.radius, 2 * self.radius,
-                2 * self.radius)
+        return QRectF(self.position.x() - self.radius,
+                      self.position.y() - self.radius,
+                      2 * self.radius, 2 * self.radius)
 
 
-class GLWidget(QtOpenGL.QGLWidget):
-    def __init__(self, parent=None):
-        super(GLWidget, self).__init__(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
+class GLWidget(QGLWidget):
+    def __init__(self, parent = None):
+        QGLWidget.__init__(self, QGLFormat(QGL.SampleBuffers), parent)
 
-        midnight = QtCore.QTime(0, 0, 0)
-        random.seed(midnight.secsTo(QtCore.QTime.currentTime()))
+        midnight = QTime(0, 0, 0)
+        random.seed(midnight.secsTo(QTime.currentTime()))
 
         self.object = 0
         self.xRot = 0
         self.yRot = 0
         self.zRot = 0
-        self.image = QtGui.QImage()
+        self.image = QImage()
         self.bubbles = []
-        self.lastPos = QtCore.QPoint()
+        self.lastPos = QPoint()
 
-        self.trolltechGreen = QtGui.QColor.fromCmykF(0.40, 0.0, 1.0, 0.0)
-        self.trolltechPurple = QtGui.QColor.fromCmykF(0.39, 0.39, 0.0, 0.0)
+        self.trolltechGreen = QColor.fromCmykF(0.40, 0.0, 1.0, 0.0)
+        self.trolltechPurple = QColor.fromCmykF(0.39, 0.39, 0.0, 0.0)
 
-        self.animationTimer = QtCore.QTimer()
+        self.animationTimer = QTimer()
         self.animationTimer.setSingleShot(False)
-        self.animationTimer.timeout.connect(self.animate)
+        self.connect(self.animationTimer, SIGNAL("timeout()"), self.animate)
         self.animationTimer.start(25)
 
-        self.setAutoFillBackground(False)
+        self.setAttribute(Qt.WA_NoSystemBackground)
         self.setMinimumSize(200, 200)
         self.setWindowTitle(self.tr("Overpainting a Scene"))
 
@@ -133,39 +136,47 @@ class GLWidget(QtOpenGL.QGLWidget):
         angle = self.normalizeAngle(angle)
         if angle != self.xRot:
             self.xRot = angle
+            self.emit(SIGNAL("xRotationChanged(int)"), angle)
 
     def setYRotation(self, angle):
         angle = self.normalizeAngle(angle)
         if angle != self.yRot:
             self.yRot = angle
+            self.emit(SIGNAL("yRotationChanged(int)"), angle)
 
     def setZRotation(self, angle):
         angle = self.normalizeAngle(angle)
         if angle != self.zRot:
             self.zRot = angle
+            self.emit(SIGNAL("zRotationChanged(int)"), angle)
 
     def initializeGL(self):
         self.object = self.makeObject()
 
     def mousePressEvent(self, event):
-        self.lastPos = event.pos()
+        self.lastPos = QPoint(event.pos())
 
     def mouseMoveEvent(self, event):
         dx = event.x() - self.lastPos.x()
         dy = event.y() - self.lastPos.y()
 
-        if event.buttons() & QtCore.Qt.LeftButton:
+        if event.buttons() & Qt.LeftButton:
             self.setXRotation(self.xRot + 8 * dy)
             self.setYRotation(self.yRot + 8 * dx)
-        elif event.buttons() & QtCore.Qt.RightButton:
+        elif event.buttons() & Qt.RightButton:
             self.setXRotation(self.xRot + 8 * dy)
             self.setZRotation(self.zRot + 8 * dx)
 
-        self.lastPos = event.pos()
+        self.lastPos = QPoint(event.pos())
 
     def paintEvent(self, event):
-        self.makeCurrent()
+        painter = QPainter()
+        painter.begin(self)
+        painter.setRenderHint(QPainter.Antialiasing)
 
+        glPushAttrib(GL_ALL_ATTRIB_BITS)
+        glMatrixMode(GL_PROJECTION)
+        glPushMatrix()
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
 
@@ -175,11 +186,10 @@ class GLWidget(QtOpenGL.QGLWidget):
         glEnable(GL_CULL_FACE)
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
-        glEnable(GL_MULTISAMPLE)
-        lightPosition = (0.5, 5.0, 7.0, 1.0)
+        lightPosition = ( 0.5, 5.0, 7.0, 1.0 )
         glLightfv(GL_LIGHT0, GL_POSITION, lightPosition)
 
-        self.setupViewport(self.width(), self.height())
+        self.resizeGL(self.width(), self.height())
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         glLoadIdentity()
@@ -189,27 +199,37 @@ class GLWidget(QtOpenGL.QGLWidget):
         glRotated(self.zRot / 16.0, 0.0, 0.0, 1.0)
         glCallList(self.object)
 
+        glPopAttrib()
         glMatrixMode(GL_MODELVIEW)
         glPopMatrix()
+        glMatrixMode(GL_PROJECTION)
+        glPopMatrix()
 
-        painter = QtGui.QPainter(self)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+        glDisable(GL_CULL_FACE) ### not required if begin() also does it
 
         for bubble in self.bubbles:
-            if bubble.rect().intersects(QtCore.QRectF(event.rect())):
+            if bubble.rect().intersects(QRectF(event.rect())):
                 bubble.drawBubble(painter)
 
-        self.drawInstructions(painter)
+        painter.drawImage((self.width() - self.image.width())/2, 0, self.image)
         painter.end()
 
     def resizeGL(self, width, height):
-        self.setupViewport(width, height)
+        side = min(width, height)
+        glViewport((width - side) / 2, (height - side) / 2, side, side)
+
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        glOrtho(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0)
+        glMatrixMode(GL_MODELVIEW)
+
+        self.formatInstructions(width, height)
 
     def showEvent(self, event):
         self.createBubbles(20 - len(self.bubbles))
 
     def sizeHint(self):
-        return QtCore.QSize(400, 400)
+        return QSize(400, 400)
 
     def makeObject(self):
         list = glGenLists(1)
@@ -299,50 +319,44 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def createBubbles(self, number):
         for i in range(number):
-            position = QtCore.QPointF(self.width()*(0.1 + 0.8*random.random()),
+            position = QPointF(self.width()*(0.1 + 0.8*random.random()),
                                self.height()*(0.1 + 0.8*random.random()))
             radius = min(self.width(), self.height())*(0.0125 + 0.0875*random.random())
-            velocity = QtCore.QPointF(self.width()*0.0125*(-0.5 + random.random()),
+            velocity = QPointF(self.width()*0.0125*(-0.5 + random.random()),
                                self.height()*0.0125*(-0.5 + random.random()))
 
             self.bubbles.append(Bubble(position, radius, velocity))
 
     def animate(self):
         for bubble in self.bubbles:
+            self.update(bubble.rect().toRect())
             bubble.move(self.rect())
+            self.update(bubble.rect().toRect())
 
-        self.update()
-
-    def setupViewport(self, width, height):
-        side = min(width, height)
-        glViewport((width - side) / 2, (height - side) / 2, side, side)
-
-        glMatrixMode(GL_PROJECTION)
-        glLoadIdentity()
-        glOrtho(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0)
-        glMatrixMode(GL_MODELVIEW)
-
-    def drawInstructions(self, painter):
+    def formatInstructions(self, width, height):
         text = self.tr("Click and drag with the left mouse button "
                        "to rotate the Qt logo.")
-        metrics = QtGui.QFontMetrics(self.font())
+        metrics = QFontMetrics(self.font())
         border = max(4, metrics.leading())
 
-        rect = metrics.boundingRect(0, 0, self.width() - 2*border,
-                int(self.height()*0.125),
-                QtCore.Qt.AlignCenter | QtCore.Qt.TextWordWrap, text)
-        painter.setRenderHint(QtGui.QPainter.TextAntialiasing)
-        painter.fillRect(QtCore.QRect(0, 0, self.width(), rect.height() + 2*border), QtGui.QColor(0, 0, 0, 127))
-        painter.setPen(QtCore.Qt.white)
-        painter.fillRect(QtCore.QRect(0, 0, self.width(), rect.height() + 2*border), QtGui.QColor(0, 0, 0, 127))
-        painter.drawText((self.width() - rect.width())/2, border, rect.width(),
-                rect.height(), QtCore.Qt.AlignCenter | QtCore.Qt.TextWordWrap,
-                text)
+        rect = metrics.boundingRect(0, 0, width - 2*border, int(height*0.125),
+                                    Qt.AlignCenter | Qt.TextWordWrap, text)
+        self.image = QImage(width, rect.height() + 2*border,
+                            QImage.Format_ARGB32_Premultiplied)
+        self.image.fill(qRgba(0, 0, 0, 127))
+
+        painter = QPainter()
+        painter.begin(self.image)
+        painter.setRenderHint(QPainter.TextAntialiasing)
+        painter.setPen(Qt.white)
+        painter.drawText((width - rect.width())/2, border,
+                         rect.width(), rect.height(),
+                         Qt.AlignCenter | Qt.TextWordWrap, text)
+        painter.end()
 
 
 if __name__ == '__main__':
-
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     window = GLWidget()
     window.show()
     sys.exit(app.exec_())

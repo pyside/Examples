@@ -23,7 +23,8 @@
 # 
 ############################################################################
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 
 DefaultCenterX = -0.647011
@@ -38,10 +39,8 @@ ScrollStep = 20
 class RenderThread(QtCore.QThread):
     ColormapSize = 512
 
-    renderedImage = QtCore.pyqtSignal(QtGui.QImage, float)
-
     def __init__(self, parent=None):
-        super(RenderThread, self).__init__(parent)
+        QtCore.QThread.__init__(self, parent)
 
         self.mutex = QtCore.QMutex()
         self.condition = QtCore.QWaitCondition()
@@ -88,8 +87,8 @@ class RenderThread(QtCore.QThread):
             centerY = self.centerY
             self.mutex.unlock()
 
-            halfWidth = resultSize.width() // 2
-            halfHeight = resultSize.height() // 2
+            halfWidth = resultSize.width() / 2
+            halfHeight = resultSize.height() / 2
             image = QtGui.QImage(resultSize, QtGui.QImage.Format_RGB32)
 
             NumPasses = 8
@@ -142,7 +141,7 @@ class RenderThread(QtCore.QThread):
                     curpass = 4
                 else:
                     if not self.restart:
-                        self.renderedImage.emit(image, scaleFactor)
+                        self.emit(QtCore.SIGNAL("renderedImage(const QImage &, double)"), image, scaleFactor)
                     curpass += 1
 
             self.mutex.lock()
@@ -189,7 +188,7 @@ class RenderThread(QtCore.QThread):
 
 class MandelbrotWidget(QtGui.QWidget):
     def __init__(self, parent=None):
-        super(MandelbrotWidget, self).__init__(parent)
+        QtGui.QWidget.__init__(self, parent)
 
         self.thread = RenderThread()
         self.pixmap = QtGui.QPixmap()
@@ -201,7 +200,9 @@ class MandelbrotWidget(QtGui.QWidget):
         self.pixmapScale = DefaultScale
         self.curScale = DefaultScale
 
-        self.thread.renderedImage.connect(self.updatePixmap)
+        self.connect(self.thread, 
+                     QtCore.SIGNAL("renderedImage(const QImage &, double)"),
+                     self.updatePixmap)
 
         self.setWindowTitle(self.tr("Mandelbrot"))
         self.setCursor(QtCore.Qt.CrossCursor)
@@ -214,7 +215,7 @@ class MandelbrotWidget(QtGui.QWidget):
         if self.pixmap.isNull():
             painter.setPen(QtCore.Qt.white)
             painter.drawText(self.rect(), QtCore.Qt.AlignCenter,
-                    self.tr("Rendering initial image, please wait..."))
+                             self.tr("Rendering initial image, please wait..."))
             return
 
         if self.curScale == self.pixmapScale:
@@ -229,12 +230,10 @@ class MandelbrotWidget(QtGui.QWidget):
             painter.save()
             painter.translate(newX, newY)
             painter.scale(scaleFactor, scaleFactor)
-            exposed, _ = painter.matrix().inverted()
-            exposed = exposed.mapRect(self.rect()).adjusted(-1, -1, 1, 1)
-            painter.drawPixmap(exposed, self.pixmap, exposed)
+            painter.drawPixmap(0, 0, self.pixmap)
             painter.restore()
 
-        text = self.tr("Use mouse wheel or the '+' and '-' keys to zoom. "
+        text = self.tr("Use mouse wheel to zoom. "
                        "Press and hold left mouse button to scroll.")
         metrics = painter.fontMetrics()
         textWidth = metrics.width(text)
@@ -242,14 +241,13 @@ class MandelbrotWidget(QtGui.QWidget):
         painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(QtGui.QColor(0, 0, 0, 127))
         painter.drawRect((self.width() - textWidth) / 2 - 5, 0, textWidth + 10,
-                metrics.lineSpacing() + 5)
+                         metrics.lineSpacing() + 5)
         painter.setPen(QtCore.Qt.white)
         painter.drawText((self.width() - textWidth) / 2,
-                metrics.leading() + metrics.ascent(), text)
+                         metrics.leading() + metrics.ascent(), text)
 
     def resizeEvent(self, event):
-        self.thread.render(self.centerX, self.centerY, self.curScale,
-                self.size())
+        self.thread.render(self.centerX, self.centerY, self.curScale, self.size())
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Plus:
@@ -265,7 +263,7 @@ class MandelbrotWidget(QtGui.QWidget):
         elif event.key() == QtCore.Qt.Key_Up:
             self.scroll(0, +ScrollStep)
         else:
-            super(MandelbrotWidget, self).keyPressEvent(event)
+            QtGui.QWidget.keyPressEvent(self, event)
 
     def wheelEvent(self, event):
         numDegrees = event.delta() / 8
@@ -304,21 +302,16 @@ class MandelbrotWidget(QtGui.QWidget):
     def zoom(self, zoomFactor):
         self.curScale *= zoomFactor
         self.update()
-        self.thread.render(self.centerX, self.centerY, self.curScale,
-                self.size())
+        self.thread.render(self.centerX, self.centerY, self.curScale, self.size())
 
     def scroll(self, deltaX, deltaY):
         self.centerX += deltaX * self.curScale
         self.centerY += deltaY * self.curScale
         self.update()
-        self.thread.render(self.centerX, self.centerY, self.curScale,
-                self.size())
+        self.thread.render(self.centerX, self.centerY, self.curScale, self.size())
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     widget = MandelbrotWidget()
     widget.show()

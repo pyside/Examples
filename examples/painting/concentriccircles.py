@@ -1,34 +1,35 @@
 #!/usr/bin/env python
 
-############################################################################
-##
-## Copyright (C) 2005-2005 Trolltech AS. All rights reserved.
-##
-## This file is part of the example classes of the Qt Toolkit.
-##
-## This file may be used under the terms of the GNU General Public
-## License version 2.0 as published by the Free Software Foundation
-## and appearing in the file LICENSE.GPL included in the packaging of
-## this file.  Please review the following information to ensure GNU
-## General Public Licensing requirements will be met:
-## http://www.trolltech.com/products/qt/opensource.html
-##
-## If you are unsure which license is appropriate for your use, please
-## review the following information:
-## http://www.trolltech.com/products/qt/licensing.html or contact the
-## sales department at sales@trolltech.com.
-##
-## This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-## WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-##
-############################################################################
+"""***************************************************************************
+**
+** Copyright (C) 2005-2005 Trolltech AS. All rights reserved.
+**
+** This file is part of the example classes of the Qt Toolkit.
+**
+** This file may be used under the terms of the GNU General Public
+** License version 2.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of
+** this file.  Please review the following information to ensure GNU
+** General Public Licensing requirements will be met:
+** http://www.trolltech.com/products/qt/opensource.html
+**
+** If you are unsure which license is appropriate for your use, please
+** review the following information:
+** http://www.trolltech.com/products/qt/licensing.html or contact the
+** sales department at sales@trolltech.com.
+**
+** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+**
+***************************************************************************"""
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 
 class CircleWidget(QtGui.QWidget):
-    def __init__(self, parent=None):
-        super(CircleWidget, self).__init__(parent)
+    def __init__(self, parent = None):
+        QtGui.QWidget.__init__(self, parent)
 
         self.floatBased = False
         self.antialiased = False
@@ -36,7 +37,7 @@ class CircleWidget(QtGui.QWidget):
 
         self.setBackgroundRole(QtGui.QPalette.Base)
         self.setSizePolicy(QtGui.QSizePolicy.Expanding,
-                QtGui.QSizePolicy.Expanding)
+                           QtGui.QSizePolicy.Expanding)
 
     def setFloatBased(self, floatBased):
         self.floatBased = floatBased
@@ -57,7 +58,8 @@ class CircleWidget(QtGui.QWidget):
         self.update()
 
     def paintEvent(self, event):
-        painter = QtGui.QPainter(self)
+        painter = QtGui.QPainter()
+        painter.begin(self)
         painter.setRenderHint(QtGui.QPainter.Antialiasing, self.antialiased)
         painter.translate(self.width() / 2, self.height() / 2)
 
@@ -65,31 +67,32 @@ class CircleWidget(QtGui.QWidget):
             delta = abs((self.frameNo % 128) - diameter / 2)
             alpha = 255 - (delta * delta) / 4 - diameter
             if alpha > 0:
-                painter.setPen(QtGui.QPen(QtGui.QColor(0, diameter / 2, 127,
-                        alpha), 3))
+                painter.setPen(QtGui.QPen(QtGui.QColor(0, diameter / 2, 127, alpha), 3))
 
                 if self.floatBased:
-                    painter.drawEllipse(QtCore.QRectF(-diameter / 2.0,
-                            -diameter / 2.0, diameter, diameter))
+                    painter.drawEllipse(QtCore.QRectF(-diameter / 2.0, -diameter / 2.0,
+                                                      diameter, diameter))
                 else:
-                    painter.drawEllipse(QtCore.QRect(-diameter / 2,
-                            -diameter / 2, diameter, diameter))
+                    painter.drawEllipse(QtCore.QRect(-diameter / 2, -diameter / 2,
+                                                     diameter, diameter))
+
+        painter.end()
 
 
 class Window(QtGui.QWidget):
-    def __init__(self):
-        super(Window, self).__init__()
+    def __init__(self, parent = None):
+        QtGui.QWidget.__init__(self, parent)
 
-        aliasedLabel = self.createLabel(self.tr("Aliased"))
-        antialiasedLabel = self.createLabel(self.tr("Antialiased"))
-        intLabel = self.createLabel(self.tr("Int"))
-        floatLabel = self.createLabel(self.tr("Float"))
+        self.aliasedLabel = self.createLabel(self.tr("Aliased"))
+        self.antialiasedLabel = self.createLabel(self.tr("Antialiased"))
+        self.intLabel = self.createLabel(self.tr("Int"))
+        self.floatLabel = self.createLabel(self.tr("Float"))
 
         layout = QtGui.QGridLayout()
-        layout.addWidget(aliasedLabel, 0, 1)
-        layout.addWidget(antialiasedLabel, 0, 2)
-        layout.addWidget(intLabel, 1, 0)
-        layout.addWidget(floatLabel, 2, 0)
+        layout.addWidget(self.aliasedLabel, 0, 1)
+        layout.addWidget(self.antialiasedLabel, 0, 2)
+        layout.addWidget(self.intLabel, 1, 0)
+        layout.addWidget(self.floatLabel, 2, 0)
 
         timer = QtCore.QTimer(self)
 
@@ -101,7 +104,8 @@ class Window(QtGui.QWidget):
                 self.circleWidgets[i][j].setAntialiased(j != 0)
                 self.circleWidgets[i][j].setFloatBased(i != 0)
 
-                timer.timeout.connect(self.circleWidgets[i][j].nextAnimationFrame)
+                self.connect(timer, QtCore.SIGNAL("timeout()"),
+                             self.circleWidgets[i][j].nextAnimationFrame)
 
                 layout.addWidget(self.circleWidgets[i][j], i + 1, j + 1)
 
@@ -118,10 +122,7 @@ class Window(QtGui.QWidget):
         return label
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     window = Window()
     window.show()

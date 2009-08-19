@@ -23,7 +23,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 
 class PythonConsoleWidget(QtGui.QLineEdit):
@@ -34,16 +34,19 @@ class PythonConsoleWidget(QtGui.QLineEdit):
     to other components via a custom signal.
     """
     
-    pythonOutput = QtCore.pyqtSignal(str)
+    # There is only one custom signal, but it needs to be defined as an
+    # item in a sequence.
+    __pyqtSignals__ = ("pythonOutput(const QString &)",)
     
-    def __init__(self, parent=None):
+    def __init__(self, parent = None):
     
-        super(PythonConsoleWidget, self).__init__(parent)
+        QtGui.QLineEdit.__init__(self, parent)
         
         self.history = []
         self.current = -1
         
-        self.returnPressed.connect(self.execute)
+        self.connect(self, QtCore.SIGNAL("returnPressed()"),
+                     self.execute)
     
     def keyReleaseEvent(self, event):
     
@@ -74,14 +77,16 @@ class PythonConsoleWidget(QtGui.QLineEdit):
         
         self.expression = self.text()
         try:
-            result = str(eval(str(self.expression)))
+            result = str(eval(unicode(self.expression)))
             
             # Emit the result of the evaluated expression.
-            self.pythonOutput.emit(result)
-
+            self.emit(QtCore.SIGNAL("pythonOutput(const QString &)"),
+                      QtCore.QString(result))
+            
             # Clear the line edit, append the successful expression to the
             # history, and update the current command index.
             self.clear()
+            #self.history = self.history[:self.current + 1] + [self.expression]
             self.history.append(self.expression)
             self.current = len(self.history)
         except:

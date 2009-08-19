@@ -23,7 +23,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from PyQt4 import QtGui, QtDesigner
+from PySide import QtGui, QtDesigner
 from helloglwidget import HelloGLWidget
 
 
@@ -37,9 +37,9 @@ class HelloGLWidgetPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
 
     # The __init__() method is only used to set up the plugin and define its
     # initialized variable.
-    def __init__(self, parent=None):
+    def __init__(self, parent = None):
     
-        super(HelloGLWidgetPlugin, self).__init__(parent)
+        QtDesigner.QPyDesignerCustomWidgetPlugin.__init__(self)
 
         self.initialized = False
 

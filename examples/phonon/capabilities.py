@@ -22,10 +22,10 @@
 #############################################################################
 
 import sys
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 try:
-    from PyQt4.phonon import Phonon
+    from PySide.phonon import Phonon
 except ImportError:
     app = QtGui.QApplication(sys.argv)
     QtGui.QMessageBox.critical(None, "Phonon Capabilities",
@@ -37,19 +37,21 @@ except ImportError:
 
 class Window(QtGui.QWidget):
     def __init__(self):
-        super(QtGui.QWidget, self).__init__()
+        QtGui.QWidget.__init__(self)
 
         self.setupUi()
         self.updateWidgets()
 
-        notifier = Phonon.BackendCapabilities.notifier()
-        notifier.capabilitiesChanged.connect(self.updateWidgets)
-        notifier.availableAudioOutputDevicesChanged.connect(self.updateWidgets)
+        self.connect(Phonon.BackendCapabilities.notifier(),
+                QtCore.SIGNAL('capabilitiesChanged()'), self.updateWidgets)
+        self.connect(Phonon.BackendCapabilities.notifier(),
+                QtCore.SIGNAL('availableAudioOutputDevicesChanged()'),
+                self.updateWidgets)
 
     def updateWidgets(self):
         # Output devices.
         devices = Phonon.BackendCapabilities.availableAudioOutputDevices()
-        model = Phonon.AudioOutputDeviceModel(devices)
+        model = Phonon.AudioOutputDeviceModel(devices, self)
         self.devicesListView.setModel(model)
 
         # MIME types.

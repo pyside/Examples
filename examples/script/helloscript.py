@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-"""PyQt4 port of the script/helloscript example from Qt v4.x"""
+"""PySide port of the script/helloscript example from Qt v4.x"""
 
 import sys
-from PyQt4 import QtGui, QtScript
+from PySide import QtGui, QtScript
 
 
 app = QtGui.QApplication(sys.argv)

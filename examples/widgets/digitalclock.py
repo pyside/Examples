@@ -23,17 +23,18 @@
 ##
 #############################################################################
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 
 class DigitalClock(QtGui.QLCDNumber):
-    def __init__(self, parent=None):
-        super(DigitalClock, self).__init__(parent)
+    def __init__(self, parent = None):
+        QtGui.QLCDNumber.__init__(self, parent)
 
         self.setSegmentStyle(QtGui.QLCDNumber.Filled)
 
         timer = QtCore.QTimer(self)
-        timer.timeout.connect(self.showTime)
+        self.connect(timer, QtCore.SIGNAL("timeout()"), self.showTime)
         timer.start(1000)
 
         self.showTime()
@@ -51,9 +52,6 @@ class DigitalClock(QtGui.QLCDNumber):
 
 
 if __name__ == "__main__":
-
-    import sys
-
     app = QtGui.QApplication(sys.argv)
     clock = DigitalClock()
     clock.show()

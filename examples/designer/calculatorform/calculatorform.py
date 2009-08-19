@@ -23,31 +23,30 @@
 ##
 #############################################################################
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 from ui_calculatorform import Ui_CalculatorForm
 
 
 class CalculatorForm(QtGui.QWidget):
     def __init__(self, parent=None):
-        super(CalculatorForm, self).__init__(parent)
+        QtGui.QWidget.__init__(self, parent)
 
         self.ui = Ui_CalculatorForm()
 
         self.ui.setupUi(self)
 
-    @QtCore.pyqtSlot(int)
+    @QtCore.pyqtSignature("int")
     def on_inputSpinBox1_valueChanged(self, value):
         self.ui.outputWidget.setText(QtCore.QString.number(value + self.ui.inputSpinBox2.value()))
 
-    @QtCore.pyqtSlot(int)
+    @QtCore.pyqtSignature("int")
     def on_inputSpinBox2_valueChanged(self, value):
         self.ui.outputWidget.setText(QtCore.QString.number(value + self.ui.inputSpinBox1.value()))
 
 
 if __name__ == "__main__":
-    import sys
-
     app = QtGui.QApplication(sys.argv)
     calculator = CalculatorForm()
     calculator.show()

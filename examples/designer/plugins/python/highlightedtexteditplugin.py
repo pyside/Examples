@@ -23,7 +23,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from PyQt4 import QtCore, QtGui, QtDesigner
+from PySide import QtCore, QtGui, QtDesigner
 from highlightedtextedit import HighlightedTextEdit
 
 
@@ -35,16 +35,16 @@ def Q_TYPEID(class_name):
 class HighlightedTextEditPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
 
     """HighlightedTextEditPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin)
-
+    
     Provides a Python custom plugin for Qt Designer by implementing the
     QDesignerCustomWidgetPlugin via a PyQt-specific custom plugin class.
     """
 
     # The __init__() method is only used to set up the plugin and define its
     # initialized variable.
-    def __init__(self, parent=None):
-
-        super(HighlightedTextEditPlugin, self).__init__(parent)
+    def __init__(self, parent = None):
+    
+        QtDesigner.QPyDesignerCustomWidgetPlugin.__init__(self)
 
         self.initialized = False
 
@@ -55,7 +55,7 @@ class HighlightedTextEditPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
 
         if self.initialized:
             return
-
+        
         # We register an extension factory to add a extension to each form's
         # task menu.
         manager = formEditor.extensionManager()
@@ -64,7 +64,7 @@ class HighlightedTextEditPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
             manager.registerExtensions(
                 self.factory, Q_TYPEID("QPyDesignerTaskMenuExtension")
                 )
-
+        
         self.initialized = True
 
     def isInitialized(self):
@@ -75,23 +75,23 @@ class HighlightedTextEditPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
     # appropriate parent.
     def createWidget(self, parent):
         widget = HighlightedTextEdit(parent)
-
+        
         # We install an event filter on the text editor to prevent the
         # contents from being modified outside the custom editor dialog.
         widget.installEventFilter(self)
         return widget
 
     def eventFilter(self, obj, event):
-
+    
         if isinstance(obj, QtGui.QTextEdit):
-
+        
             if isinstance(event, QtGui.QKeyEvent):
                 return True
             elif isinstance(event, QtGui.QFocusEvent):
                 return True
-
+        
         return False
-
+    
     # This method returns the name of the custom widget class that is provided
     # by this plugin.
     def name(self):
@@ -138,108 +138,111 @@ class HighlightedTextEditPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
 class HighlightedTextEditTaskMenuFactory(QtDesigner.QExtensionFactory):
 
     """HighlightedTextEditTaskMenuFactory(QtDesigner.QExtensionFactory)
-
+    
     Provides 
     """
     def __init__(self, parent = None):
-
+    
         QtDesigner.QExtensionFactory.__init__(self, parent)
-
+    
     # This standard factory function returns an object to represent a task
     # menu entry.
     def createExtension(self, obj, iid, parent):
-
+    
         if iid != Q_TYPEID("QPyDesignerTaskMenuExtension"):
             return None
-
+        
         # We pass the instance of the custom widget to the object representing
         # the task menu entry so that the contents of the custom widget can be
         # modified.
         if isinstance(obj, HighlightedTextEdit):
             return HighlightedTextEditTaskMenu(obj, parent)
-
+        
         return None
 
 
 class HighlightedTextEditTaskMenu(QtDesigner.QPyDesignerTaskMenuExtension):
 
     """HighlightedTextEditTaskMenu(QtDesigner.QPyDesignerTaskMenuExtension)
-
+    
     Provides a task menu entry to enable text in the highlighted text
     editor to be edited via a dialog.
     """
-
+    
     def __init__(self, textEdit, parent):
-
-        super(HighlightedTextEditTaskMenu, self).__init__(parent)
-
+    
+        QtDesigner.QPyDesignerTaskMenuExtension.__init__(self, parent)
+        
         self.textEdit = textEdit
-
+        
         # Create the action to be added to the form's existing task menu
         # and connect it to a slot in this class.
         self.editStateAction = QtGui.QAction("Edit Text...", self)
-        self.editStateAction.triggered.connect(self.editText)
-
+        self.connect(self.editStateAction, QtCore.SIGNAL("triggered()"),
+                     self.editText)
+    
     def preferredEditAction(self):
-
+    
         return self.editStateAction
-
+    
     def taskActions(self):
-
+    
         return [self.editStateAction]
-
+    
     # The editText() slot is called when the action that represents our task
     # menu entry is triggered. We open a dialog, passing the custom widget as
     # an argument.
-    @QtCore.pyqtSlot()
+    @QtCore.pyqtSignature("editText()")
     def editText(self):
-
-        HighlightedTextEditDialog(self.textEdit).exec_()
+    
+        dialog = HighlightedTextEditDialog(self.textEdit)
+        dialog.exec_()
 
 
 class HighlightedTextEditDialog(QtGui.QDialog):
 
     """HighlightedTextEditDialog(QtGui.QDialog)
-
+    
     Provides a dialog that is used to edit the contents of the custom widget.
     """
-
-    def __init__(self, editor, parent=None):
-
-        super(HighlightedTextEditDialog, self).__init__(parent)
-
+    
+    def __init__(self, editor, parent = None):
+    
+        QtGui.QDialog.__init__(self, parent)
+        
         self.editor = editor
         self.textEdit = HighlightedTextEdit()
         self.textEdit.setCode(editor.getCode())
-
+        
         self.textEdit.installEventFilter(self)
-
+        
         okButton = QtGui.QPushButton("&OK")
-        okButton.clicked.connect(self.updateText)
-
         cancelButton = QtGui.QPushButton("&Cancel")
-        cancelButton.clicked.connect(self.reject)
-
+        
+        self.connect(okButton, QtCore.SIGNAL("clicked()"), self.updateText)
+        self.connect(cancelButton, QtCore.SIGNAL("clicked()"),
+                     self, QtCore.SLOT("reject()"))
+        
         buttonLayout = QtGui.QHBoxLayout()
         buttonLayout.addStretch(1)
         buttonLayout.addWidget(okButton)
         buttonLayout.addWidget(cancelButton)
-
+        
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self.textEdit)
         layout.addLayout(buttonLayout)
         self.setLayout(layout)
-
+    
     def eventFilter(self, obj, event):
-
+    
         if obj == self.textEdit:
-
+        
             if isinstance(event, QtGui.QKeyEvent):
                 if event.key() == QtCore.Qt.Key_Return and \
                     int(event.modifiers() & QtCore.Qt.ControlModifier) == QtCore.Qt.ControlModifier:
-
+                
                     if event.type() == QtGui.QEvent.KeyPress:
-
+                    
                         cursor = self.textEdit.textCursor()
                         char_format = cursor.charFormat()
                         char_format.setFontPointSize(self.textEdit.font.pointSizeF()/2.0)
@@ -247,18 +250,18 @@ class HighlightedTextEditDialog(QtGui.QDialog):
                         cursor.insertBlock(block_format, char_format)
                         self.textEdit.setTextCursor(cursor)
                         return True
-
+        
         return False
-
+    
     # When we update the contents of the custom widget, we access its
     # properties via the QDesignerFormWindowInterface API so that Qt Designer
     # can integrate the changes we make into its undo-redo management.
     def updateText(self):
-
+    
         formWindow = QtDesigner.QDesignerFormWindowInterface.findFormWindow(self.editor)
         if formWindow:
             formWindow.cursor().setProperty("code", QtCore.QVariant(self.textEdit.getCode()))
-
+        
         self.accept()
 
 

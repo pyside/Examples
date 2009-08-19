@@ -3,12 +3,12 @@
 # Form implementation generated from reading ui file 'calculatorform.ui'
 #
 # Created: Mon Jan 23 13:21:45 2006
-#      by: PyQt4 UI code generator vsnapshot-20060120
+#      by: PySide UI code generator vsnapshot-20060120
 #
 # WARNING! All changes made in this file will be lost!
 
 import sys
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 class Ui_CalculatorForm(object):
     def setupUi(self, CalculatorForm):

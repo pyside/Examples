@@ -3,7 +3,7 @@
 # Copyright (c) 2007 Phil Thompson
 
 
-from PyQt4 import QtGui, QtDesigner
+from PySide import QtGui, QtDesigner
 
 from pydemo import PyDemo
 
@@ -15,7 +15,7 @@ class PyDemoPlugin(QtDesigner.QPyDesignerCustomWidgetPlugin):
 
     # Initialise the instance.
     def __init__(self, parent=None):
-        super(PyDemoPlugin, self).__init__(parent)
+        QtDesigner.QPyDesignerCustomWidgetPlugin.__init__(self)
 
         self._initialized = False
 

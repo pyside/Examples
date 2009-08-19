@@ -23,38 +23,38 @@
 ##
 #############################################################################
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 
 class PyAnalogClock(QtGui.QWidget):
 
     """PyAnalogClock(QtGui.QWidget)
-
+    
     Provides an analog clock custom widget with signals, slots and properties.
     The implementation is based on the Analog Clock example provided with both
     Qt and PyQt.
     """
-
-    # Emitted when the clock's time changes.
-    timeChanged = QtCore.pyqtSignal(QtCore.QTime)
-
-    # Emitted when the clock's time zone changes.
-    timeZoneChanged = QtCore.pyqtSignal(int)
-
-    def __init__(self, parent=None):
-
-        super(PyAnalogClock, self).__init__(parent)
-
+    
+    # We use this special class variable to define two signals that are used
+    # to inform other components of changes to the clock's time and time zone.
+    # Signals that are declared in this way are emitted in the same way as any
+    # other signal.
+    
+    __pyqtSignals__ = ("timeChanged(QTime)", "timeZoneChanged(int)")
+    
+    def __init__(self, parent = None):
+    
+        QtGui.QWidget.__init__(self, parent)
         self.timeZoneOffset = 0
-
+        
         timer = QtCore.QTimer(self)
-        timer.timeout.connect(self.update)
-        timer.timeout.connect(self.updateTime)
+        self.connect(timer, QtCore.SIGNAL("timeout()"), self, QtCore.SLOT("update()"))
+        self.connect(timer, QtCore.SIGNAL("timeout()"), self.updateTime)
         timer.start(1000)
 
         self.setWindowTitle(QtCore.QObject.tr(self, "Analog Clock"))
         self.resize(200, 200)
-
+        
         self.hourHand = QtGui.QPolygon([
             QtCore.QPoint(7, 8),
             QtCore.QPoint(-7, 8),
@@ -111,51 +111,51 @@ class PyAnalogClock(QtGui.QWidget):
             painter.rotate(6.0)
 
         painter.end()
-
+    
     def minimumSizeHint(self):
-
+    
         return QtCore.QSize(50, 50)
-
+    
     def sizeHint(self):
-
+    
         return QtCore.QSize(100, 100)
-
+    
     def updateTime(self):
-
-        self.timeChanged.emit(QtCore.QTime.currentTime())
-
+    
+        self.emit(QtCore.SIGNAL("timeChanged(QTime)"), QtCore.QTime.currentTime())
+    
     # The timeZone property is implemented using the getTimeZone() getter
     # method, the setTimeZone() setter method, and the resetTimeZone() method.
-
+    
     # The getter just returns the internal time zone value.
     def getTimeZone(self):
-
+    
         return self.timeZoneOffset
-
-    # The setTimeZone() method is also defined to be a slot. The @pyqtSlot
+    
+    # The setTimeZone() method is also defined to be a slot. The @pyqtSignature
     # decorator is used to tell PyQt which argument type the method expects,
     # and is especially useful when you want to define slots with the same
     # name that accept different argument types.
-
-    @QtCore.pyqtSlot(int)
+    
+    @QtCore.pyqtSignature("setTimeZone(int)")
     def setTimeZone(self, value):
-
+    
         self.timeZoneOffset = value
-        self.timeZoneChanged.emit(value)
+        self.emit(QtCore.SIGNAL("timeZoneChanged(int)"), value)
         self.update()
-
+    
     # Qt's property system supports properties that can be reset to their
     # original values. This method enables the timeZone property to be reset.
     def resetTimeZone(self):
-
+    
         self.timeZoneOffset = 0
-        self.timeZoneChanged.emit(0)
+        self.emit(QtCore.SIGNAL("timeZoneChanged(int)"), 0)
         self.update()
-
+    
     # Qt-style properties are defined differently to Python's properties.
     # To declare a property, we call pyqtProperty() to specify the type and,
     # in this case, getter, setter and resetter methods.
-    timeZone = QtCore.pyqtProperty(int, getTimeZone, setTimeZone, resetTimeZone)
+    timeZone = QtCore.pyqtProperty("int", getTimeZone, setTimeZone, resetTimeZone)
 
 
 if __name__ == "__main__":

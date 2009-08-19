@@ -1,36 +1,36 @@
 #!/usr/bin/env python
 
-############################################################################
-##
-## Copyright (C) 2005-2005 Trolltech AS. All rights reserved.
-##
-## This file is part of the example classes of the Qt Toolkit.
-##
-## This file may be used under the terms of the GNU General Public
-## License version 2.0 as published by the Free Software Foundation
-## and appearing in the file LICENSE.GPL included in the packaging of
-## this file.  Please review the following information to ensure GNU
-## General Public Licensing requirements will be met:
-## http://www.trolltech.com/products/qt/opensource.html
-##
-## If you are unsure which license is appropriate for your use, please
-## review the following information:
-## http://www.trolltech.com/products/qt/licensing.html or contact the
-## sales department at sales@trolltech.com.
-##
-## This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-## WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-##
-############################################################################
+"""***************************************************************************
+**
+** Copyright (C) 2005-2005 Trolltech AS. All rights reserved.
+**
+** This file is part of the example classes of the Qt Toolkit.
+**
+** This file may be used under the terms of the GNU General Public
+** License version 2.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of
+** this file.  Please review the following information to ensure GNU
+** General Public Licensing requirements will be met:
+** http://www.trolltech.com/products/qt/opensource.html
+**
+** If you are unsure which license is appropriate for your use, please
+** review the following information:
+** http://www.trolltech.com/products/qt/licensing.html or contact the
+** sales department at sales@trolltech.com.
+**
+** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+**
+***************************************************************************"""
 
+import sys
 from math import cos, pi, sin
-
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 
 class RenderArea(QtGui.QWidget):
-    def __init__(self, path, parent=None):
-        super(RenderArea, self).__init__(parent)
+    def __init__(self, path, parent = None):
+        QtGui.QWidget.__init__(self, parent)
 
         self.path = path
 
@@ -66,7 +66,8 @@ class RenderArea(QtGui.QWidget):
         self.update()
 
     def paintEvent(self, event):
-        painter = QtGui.QPainter(self)
+        painter = QtGui.QPainter()
+        painter.begin(self)
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
         painter.scale(self.width() / 100.0, self.height() / 100.0)
         painter.translate(50.0, 50.0)
@@ -74,19 +75,21 @@ class RenderArea(QtGui.QWidget):
         painter.translate(-50.0, -50.0)
 
         painter.setPen(QtGui.QPen(self.penColor, self.penWidth,
-                QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+                                  QtCore.Qt.SolidLine, QtCore.Qt.RoundCap,
+                                  QtCore.Qt.RoundJoin))
         gradient = QtGui.QLinearGradient(0, 0, 0, 100)
         gradient.setColorAt(0.0, self.fillColor1)
         gradient.setColorAt(1.0, self.fillColor2)
         painter.setBrush(QtGui.QBrush(gradient))
         painter.drawPath(self.path)
+        painter.end()
 
 
 class Window(QtGui.QWidget):
     NumRenderAreas = 9
 
-    def __init__(self):
-        super(Window, self).__init__()
+    def __init__(self, parent = None):
+        QtGui.QWidget.__init__(self, parent)
 
         rectPath = QtGui.QPainterPath()
         rectPath.moveTo(20.0, 30.0)
@@ -145,24 +148,28 @@ class Window(QtGui.QWidget):
         starPath.moveTo(90, 50)
         for i in range(1, 5):
             starPath.lineTo(50 + 40 * cos(0.8 * i * pi),
-                    50 + 40 * sin(0.8 * i * pi))
+                            50 + 40 * sin(0.8 * i * pi))
         starPath.closeSubpath()
 
-        self.renderAreas = [RenderArea(rectPath), RenderArea(roundRectPath),
-                RenderArea(ellipsePath), RenderArea(piePath),
-                RenderArea(polygonPath), RenderArea(groupPath),
-                RenderArea(textPath), RenderArea(bezierPath),
-                RenderArea(starPath)]
-        assert len(self.renderAreas) == 9
+        self.renderAreas = range(9)
+        self.renderAreas[0] = RenderArea(rectPath)
+        self.renderAreas[1] = RenderArea(roundRectPath)
+        self.renderAreas[2] = RenderArea(ellipsePath)
+        self.renderAreas[3] = RenderArea(piePath)
+        self.renderAreas[4] = RenderArea(polygonPath)
+        self.renderAreas[5] = RenderArea(groupPath)
+        self.renderAreas[6] = RenderArea(textPath)
+        self.renderAreas[7] = RenderArea(bezierPath)
+        self.renderAreas[8] = RenderArea(starPath)
 
         self.fillRuleComboBox = QtGui.QComboBox()
         self.fillRuleComboBox.addItem(self.tr("Odd Even"),
-                QtCore.QVariant(QtCore.Qt.OddEvenFill))
+            QtCore.QVariant(QtCore.Qt.OddEvenFill))
         self.fillRuleComboBox.addItem(self.tr("Winding"),
-                QtCore.QVariant(QtCore.Qt.WindingFill))
+            QtCore.QVariant(QtCore.Qt.WindingFill))
 
-        fillRuleLabel = QtGui.QLabel(self.tr("Fill &Rule:"))
-        fillRuleLabel.setBuddy(self.fillRuleComboBox)
+        self.fillRuleLabel = QtGui.QLabel(self.tr("Fill &Rule:"))
+        self.fillRuleLabel.setBuddy(self.fillRuleComboBox)
 
         self.fillColor1ComboBox = QtGui.QComboBox()
         self.populateWithColors(self.fillColor1ComboBox)
@@ -174,43 +181,45 @@ class Window(QtGui.QWidget):
         self.fillColor2ComboBox.setCurrentIndex(
                 self.fillColor2ComboBox.findText("cornsilk"))
 
-        fillGradientLabel = QtGui.QLabel(self.tr("&Fill Gradient:"))
-        fillGradientLabel.setBuddy(self.fillColor1ComboBox)
+        self.fillGradientLabel = QtGui.QLabel(self.tr("&Fill Gradient:"))
+        self.fillGradientLabel.setBuddy(self.fillColor1ComboBox)
 
-        fillToLabel = QtGui.QLabel(self.tr("to"))
-        fillToLabel.setSizePolicy(QtGui.QSizePolicy.Fixed,
-                QtGui.QSizePolicy.Fixed)
+        self.fillToLabel = QtGui.QLabel(self.tr("to"))
+        self.fillToLabel.setSizePolicy(QtGui.QSizePolicy.Fixed,
+                                       QtGui.QSizePolicy.Fixed)
 
         self.penWidthSpinBox = QtGui.QSpinBox()
         self.penWidthSpinBox.setRange(0, 20)
 
-        penWidthLabel = QtGui.QLabel(self.tr("&Pen Width:"))
-        penWidthLabel.setBuddy(self.penWidthSpinBox)
+        self.penWidthLabel = QtGui.QLabel(self.tr("&Pen Width:"))
+        self.penWidthLabel.setBuddy(self.penWidthSpinBox)
 
         self.penColorComboBox = QtGui.QComboBox()
         self.populateWithColors(self.penColorComboBox)
         self.penColorComboBox.setCurrentIndex(
                 self.penColorComboBox.findText("darkslateblue"))
 
-        penColorLabel = QtGui.QLabel(self.tr("Pen &Color:"))
-        penColorLabel.setBuddy(self.penColorComboBox)
+        self.penColorLabel = QtGui.QLabel(self.tr("Pen &Color:"))
+        self.penColorLabel.setBuddy(self.penColorComboBox)
 
         self.rotationAngleSpinBox = QtGui.QSpinBox()
         self.rotationAngleSpinBox.setRange(0, 359)
         self.rotationAngleSpinBox.setWrapping(True)
         self.rotationAngleSpinBox.setSuffix("\xB0")
 
-        rotationAngleLabel = QtGui.QLabel(self.tr("&Rotation Angle:"))
-        rotationAngleLabel.setBuddy(self.rotationAngleSpinBox)
+        self.rotationAngleLabel = QtGui.QLabel(self.tr("&Rotation Angle:"))
+        self.rotationAngleLabel.setBuddy(self.rotationAngleSpinBox)
 
-        self.fillRuleComboBox.activated.connect(self.fillRuleChanged)
-        self.fillColor1ComboBox.activated.connect(self.fillGradientChanged)
-        self.fillColor2ComboBox.activated.connect(self.fillGradientChanged)
-        self.penColorComboBox.activated.connect(self.penColorChanged)
+        self.connect(self.fillRuleComboBox, QtCore.SIGNAL("activated(int)"), self.fillRuleChanged)
+        self.connect(self.fillColor1ComboBox, QtCore.SIGNAL("activated(int)"), self.fillGradientChanged)
+        self.connect(self.fillColor2ComboBox, QtCore.SIGNAL("activated(int)"), self.fillGradientChanged)
+        self.connect(self.penColorComboBox, QtCore.SIGNAL("activated(int)"), self.penColorChanged)
 
         for i in range(Window.NumRenderAreas):
-            self.penWidthSpinBox.valueChanged.connect(self.renderAreas[i].setPenWidth)
-            self.rotationAngleSpinBox.valueChanged.connect(self.renderAreas[i].setRotationAngle)
+            self.connect(self.penWidthSpinBox, QtCore.SIGNAL("valueChanged(int)"),
+                    self.renderAreas[i].setPenWidth)
+            self.connect(self.rotationAngleSpinBox, QtCore.SIGNAL("valueChanged(int)"),
+                    self.renderAreas[i].setRotationAngle)
 
         topLayout = QtGui.QGridLayout()
         for i in range(Window.NumRenderAreas):
@@ -218,17 +227,17 @@ class Window(QtGui.QWidget):
 
         mainLayout = QtGui.QGridLayout()
         mainLayout.addLayout(topLayout, 0, 0, 1, 4)
-        mainLayout.addWidget(fillRuleLabel, 1, 0)
+        mainLayout.addWidget(self.fillRuleLabel, 1, 0)
         mainLayout.addWidget(self.fillRuleComboBox, 1, 1, 1, 3)
-        mainLayout.addWidget(fillGradientLabel, 2, 0)
+        mainLayout.addWidget(self.fillGradientLabel, 2, 0)
         mainLayout.addWidget(self.fillColor1ComboBox, 2, 1)
-        mainLayout.addWidget(fillToLabel, 2, 2)
+        mainLayout.addWidget(self.fillToLabel, 2, 2)
         mainLayout.addWidget(self.fillColor2ComboBox, 2, 3)
-        mainLayout.addWidget(penWidthLabel, 3, 0)
+        mainLayout.addWidget(self.penWidthLabel, 3, 0)
         mainLayout.addWidget(self.penWidthSpinBox, 3, 1, 1, 3)
-        mainLayout.addWidget(penColorLabel, 4, 0)
+        mainLayout.addWidget(self.penColorLabel, 4, 0)
         mainLayout.addWidget(self.penColorComboBox, 4, 1, 1, 3)
-        mainLayout.addWidget(rotationAngleLabel, 5, 0)
+        mainLayout.addWidget(self.rotationAngleLabel, 5, 0)
         mainLayout.addWidget(self.rotationAngleSpinBox, 5, 1, 1, 3)
         self.setLayout(mainLayout)
 
@@ -267,10 +276,7 @@ class Window(QtGui.QWidget):
         return comboBox.itemData(comboBox.currentIndex())
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     window = Window()
     window.show()

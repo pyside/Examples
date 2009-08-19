@@ -1,47 +1,32 @@
 #!/usr/bin/env python
 
-"""PyQt4 port of the painting/svgviewer example from Qt v4.x"""
+"""PySide port of the painting/svgviewer example from Qt v4.x"""
 
-from PyQt4 import QtCore, QtGui, QtOpenGL, QtSvg
+import sys
+from PySide import QtCore, QtGui, QtOpenGL, QtSvg
 
 import svgviewer_rc
 
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
-        super(MainWindow, self).__init__()
+        QtGui.QMainWindow.__init__(self)
 
         self.currentPath = QtCore.QString()
 
-        self.view = SvgView()
+        self.area = SvgWindow()
 
         fileMenu = QtGui.QMenu(self.tr("&File"), self)
-        openAction = fileMenu.addAction(self.tr("&Open..."))
-        openAction.setShortcut(QtGui.QKeySequence(self.tr("Ctrl+O")))
-        quitAction = fileMenu.addAction(self.tr("E&xit"))
-        quitAction.setShortcut(QtGui.QKeySequence(self.tr("Ctrl+Q")))
+        self.openAction = fileMenu.addAction(self.tr("&Open..."))
+        self.openAction.setShortcut(QtGui.QKeySequence(self.tr("Ctrl+O")))
+        self.quitAction = fileMenu.addAction(self.tr("E&xit"))
+        self.quitAction.setShortcut(QtGui.QKeySequence(self.tr("Ctrl+Q")))
 
         self.menuBar().addMenu(fileMenu)
-
-        viewMenu = QtGui.QMenu(self.tr("&View"), self)
-        self.backgroundAction = viewMenu.addAction(self.tr("&Background"))
-        self.backgroundAction.setEnabled(False)
-        self.backgroundAction.setCheckable(True)
-        self.backgroundAction.setChecked(False)
-        self.backgroundAction.toggled.connect(self.view.setViewBackground)
-
-        self.outlineAction = viewMenu.addAction(self.tr("&Outline"))
-        self.outlineAction.setEnabled(False)
-        self.outlineAction.setCheckable(True)
-        self.outlineAction.setChecked(True)
-        self.outlineAction.toggled.connect(self.view.setViewOutline)
-
-        self.menuBar().addMenu(viewMenu)
 
         rendererMenu = QtGui.QMenu(self.tr("&Renderer"), self)
         self.nativeAction = rendererMenu.addAction(self.tr("&Native"))
         self.nativeAction.setCheckable(True)
-        self.nativeAction.setChecked(True)
 
         if QtOpenGL.QGLFormat.hasOpenGL():
             self.glAction = rendererMenu.addAction(self.tr("&OpenGL"))
@@ -49,14 +34,7 @@ class MainWindow(QtGui.QMainWindow):
 
         self.imageAction = rendererMenu.addAction(self.tr("&Image"))
         self.imageAction.setCheckable(True)
-
-        if QtOpenGL.QGLFormat.hasOpenGL():
-            rendererMenu.addSeparator()
-            self.highQualityAntialiasingAction = rendererMenu.addAction(self.tr("&High Quality Antialiasing"))
-            self.highQualityAntialiasingAction.setEnabled(False)
-            self.highQualityAntialiasingAction.setCheckable(True)
-            self.highQualityAntialiasingAction.setChecked(False)
-            self.highQualityAntialiasingAction.toggled.connect(self.view.setHighQualityAntialiasing)
+        self.imageAction.setChecked(True)
 
         rendererGroup = QtGui.QActionGroup(self)
         rendererGroup.addAction(self.nativeAction)
@@ -68,185 +46,210 @@ class MainWindow(QtGui.QMainWindow):
 
         self.menuBar().addMenu(rendererMenu)
 
-        openAction.triggered.connect(self.openFile)
-        quitAction.triggered.connect(QtGui.qApp.quit)
-        rendererGroup.triggered.connect(self.setRenderer)
+        self.connect(self.openAction, QtCore.SIGNAL("triggered()"), self.openFile)
+        self.connect(self.quitAction, QtCore.SIGNAL("triggered()"), QtGui.qApp, QtCore.SLOT("quit()"))
+        self.connect(rendererGroup, QtCore.SIGNAL("triggered(QAction *)"), self.setRenderer)
 
-        self.setCentralWidget(self.view)
+        self.setCentralWidget(self.area)
         self.setWindowTitle(self.tr("SVG Viewer"))
 
-    def openFile(self, path=''):
+    def openFile(self, path=""):
         path = QtCore.QString(path)
         if path.isEmpty():
-            fileName = QtGui.QFileDialog.getOpenFileName(self,
-                    self.tr("Open SVG File"), self.currentPath,
-                    "SVG files (*.svg *.svgz *.svg.gz)")
+            fileName = QtGui.QFileDialog.getOpenFileName(self, self.tr("Open SVG File"),
+                                                         self.currentPath, "*.svg")
         else:
             fileName = path
 
         if not fileName.isEmpty():
-            svg_file = QtCore.QFile(fileName)
-            if not svg_file.exists():
-                QtGui.QMessageBox.critical(self, self.tr("Open SVG File"),
-                        QtCore.QString("Could not open file '%1'.").arg(fileName))
-
-                self.outlineAction.setEnabled(False)
-                self.backgroundAction.setEnabled(False)
-                return
-
-            self.view.openFile(svg_file)
-
+            self.area.openFile(fileName)
             if not fileName.startsWith(":/"):
                 self.currentPath = fileName
                 self.setWindowTitle(self.tr("%1 - SVGViewer").arg(self.currentPath))
 
-            self.outlineAction.setEnabled(True)
-            self.backgroundAction.setEnabled(True)
-
-            self.resize(self.view.sizeHint() + QtCore.QSize(80, 80 + self.menuBar().height()))
-
     def setRenderer(self, action):
         if action == self.nativeAction:
-            self.view.setRenderer(SvgView.Native)
+            self.area.setRenderer(SvgWindow.Native)
         elif action == self.glAction:
             if QtOpenGL.QGLFormat.hasOpenGL():
-                self.highQualityAntialiasingAction.setEnabled(True)
-                self.view.setRenderer(SvgView.OpenGL)
+                self.area.setRenderer(SvgWindow.OpenGL)
         elif action == self.imageAction:
-            self.view.setRenderer(SvgView.Image)
+            self.area.setRenderer(SvgWindow.Image)
 
 
-class SvgView(QtGui.QGraphicsView):
+class SvgWindow(QtGui.QScrollArea):
     Native, OpenGL, Image = range(3)
 
-    def __init__(self, parent=None):
-        super(SvgView, self).__init__(parent)
+    def __init__(self):
+        QtGui.QScrollArea.__init__(self)
 
-        self.renderer = SvgView.Native
-        self.svgItem = None
-        self.backgroundItem = None
-        self.outlineItem = None
-        self.image = QtGui.QImage()
+        self.mousePressPos = QtCore.QPoint()
+        self.scrollBarValuesOnMousePress = QtCore.QPoint()
+        self.currentPath = QtCore.QString()
 
-        self.setScene(QtGui.QGraphicsScene(self))
-        self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
-        self.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
+        self.view = QtGui.QWidget(self)
+        self.renderer = SvgWindow.Image
+        self.setWidget(self.view)
 
-        # Prepare background check-board pattern.
-        tilePixmap = QtGui.QPixmap(64, 64)
-        tilePixmap.fill(QtCore.Qt.white)
-        tilePainter = QtGui.QPainter(tilePixmap)
-        color = QtGui.QColor(220, 220, 220)
-        tilePainter.fillRect(0, 0, 32, 32, color)
-        tilePainter.fillRect(32, 32, 32, 32, color)
-        tilePainter.end()
-
-        self.setBackgroundBrush(QtGui.QBrush(tilePixmap))
-
-    def drawBackground(self, p, rect):
-        p.save()
-        p.resetTransform()
-        p.drawTiledPixmap(self.viewport().rect(),
-                self.backgroundBrush().texture())
-        p.restore()
-
-    def openFile(self, svg_file):
-        if not svg_file.exists():
-            return
-
-        s = self.scene()
-
-        if self.backgroundItem:
-            drawBackground = self.backgroundItem.isVisible()
-        else:
-            drawBackground = False
-
-        if self.outlineItem:
-            drawOutline = self.outlineItem.isVisible()
-        else:
-            drawOutline = True
-
-        s.clear()
-        self.resetTransform()
-
-        self.svgItem = QtSvg.QGraphicsSvgItem(svg_file.fileName())
-        self.svgItem.setFlags(QtGui.QGraphicsItem.ItemClipsToShape)
-        self.svgItem.setCacheMode(QtGui.QGraphicsItem.NoCache)
-        self.svgItem.setZValue(0)
-
-        self.backgroundItem = QtGui.QGraphicsRectItem(self.svgItem.boundingRect())
-        self.backgroundItem.setBrush(QtCore.Qt.white)
-        self.backgroundItem.setPen(QtGui.QPen(QtCore.Qt.NoPen))
-        self.backgroundItem.setVisible(drawBackground)
-        self.backgroundItem.setZValue(-1)
-
-        self.outlineItem = QtGui.QGraphicsRectItem(self.svgItem.boundingRect())
-        outline = QtGui.QPen(QtCore.Qt.black, 2, QtCore.Qt.DashLine)
-        outline.setCosmetic(True)
-        self.outlineItem.setPen(outline)
-        self.outlineItem.setBrush(QtGui.QBrush(QtCore.Qt.NoBrush))
-        self.outlineItem.setVisible(drawOutline)
-        self.outlineItem.setZValue(1)
-
-        s.addItem(self.backgroundItem)
-        s.addItem(self.svgItem)
-        s.addItem(self.outlineItem)
-
-        s.setSceneRect(self.outlineItem.boundingRect().adjusted(-10, -10, 10, 10))
+    def openFile(self, path):
+        self.currentPath = path
+        self.setRenderer(self.renderer)
 
     def setRenderer(self, renderer):
         self.renderer = renderer
 
-        if self.renderer == SvgView.OpenGL:
+        if self.renderer == SvgWindow.OpenGL:
             if QtOpenGL.QGLFormat.hasOpenGL():
-                self.setViewport(QtOpenGL.QGLWidget(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers)))
+                view = SvgGLView(self.currentPath, self)
+            else:
+                view = QtGui.QWidget()
+        elif self.renderer == SvgWindow.Image:
+            view = SvgRasterView(self.currentPath, self)
         else:
-            self.setViewport(QtGui.QWidget())
+            view = SvgNativeView(self.currentPath, self)
 
-    def setHighQualityAntialiasing(self, highQualityAntialiasing):
-        if QtOpenGL.QGLFormat.hasOpenGL():
-            self.setRenderHint(QtGui.QPainter.HighQualityAntialiasing,
-                    highQualityAntialiasing)
+        self.setWidget(view)
+        view.show()
 
-    def setViewBackground(self, enable):
-        if self.backgroundItem:
-            self.backgroundItem.setVisible(enable)
+    def mousePressEvent(self, event):
+        self.mousePressPos = QtCore.QPoint(event.pos())
+        self.scrollBarValuesOnMousePress.setX(self.horizontalScrollBar().value())
+        self.scrollBarValuesOnMousePress.setY(self.verticalScrollBar().value())
+        event.accept()
 
-    def setViewOutline(self, enable):
-        if self.outlineItem:
-            self.outlineItem.setVisible(enable)
+    def mouseMoveEvent(self, event):
+        if self.mousePressPos.isNull():
+            event.ignore()
+            return
 
-    def paintEvent(self, event):
-        if self.renderer == SvgView.Image:
-            if self.image.size() != self.viewport().size():
-                self.image = QtGui.QImage(self.viewport().size(),
-                        QtGui.QImage.Format_ARGB32_Premultiplied)
+        self.horizontalScrollBar().setValue(self.scrollBarValuesOnMousePress.x() - event.pos().x() + self.mousePressPos.x())
+        self.verticalScrollBar().setValue(self.scrollBarValuesOnMousePress.y() - event.pos().y() + self.mousePressPos.y())
+        self.horizontalScrollBar().update()
+        self.verticalScrollBar().update()
+        event.accept()
 
-            imagePainter = QtGui.QPainter(self.image)
-            QtGui.QGraphicsView.render(imagePainter)
-            imagePainter.end()
-
-            p = QtGui.QPainter(self.viewport())
-            p.drawImage(0, 0, self.image)
-        else:
-            super(SvgView, self).paintEvent(event)
-
-    def wheelEvent(self, event):
-        factor = QtCore.qPow(1.2, event.delta() / 240.0)
-        self.scale(factor, factor)
+    def mouseReleaseEvent(self, event):
+        self.mousePressPos = QtCore.QPoint()
         event.accept()
 
 
+class SvgGLView(QtOpenGL.QGLWidget):
+    def __init__(self, path, parent):
+        QtOpenGL.QGLWidget.__init__(self, QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers))
+
+        self.doc = QtSvg.QSvgRenderer(path, self)
+        self.connect(self.doc, QtCore.SIGNAL("repaintNeeded()"),
+                     self, QtCore.SLOT("update()"))
+
+    def paintEvent(self, e):
+        p = QtGui.QPainter(self)
+        self.doc.render(p)
+
+    def sizeHint(self):
+        if self.doc:
+            return self.doc.defaultSize()
+        return QtOpenGL.QGLWidget.sizeHint(self)
+
+    def wheelEvent(self, e):
+        diff = 0.1
+        size = QtCore.QSize(self.doc.defaultSize())
+        width = size.width()
+        height = size.height()
+        if e.delta() > 0:
+            width = int(self.width() + self.width() * diff)
+            height = int(self.height() + self.height() * diff)
+        else:
+            width = int(self.width() - self.width() * diff)
+            height = int(self.height() - self.height() * diff)
+
+        self.resize(width, height)
+
+
+class SvgRasterView(QtGui.QWidget):
+    def __init__(self, path, parent):
+        QtGui.QWidget.__init__(self, parent)
+
+        self.buffer = QtGui.QImage()
+        self.m_dirty = False
+
+        self.doc = QtSvg.QSvgRenderer(path, self)
+        self.connect(self.doc, QtCore.SIGNAL("repaintNeeded()"), self.poluteImage)
+
+    def paintEvent(self, e):
+        if self.buffer.size() != self.size() or self.m_dirty:
+            self.buffer = QtGui.QImage(self.size(), QtGui.QImage.Format_ARGB32_Premultiplied)
+            p = QtGui.QPainter(self.buffer)
+            p.setViewport(0, 0, self.width(), self.height())
+            p.eraseRect(0, 0, self.width(), self.height())
+            self.doc.render(p)
+
+        pt = QtGui.QPainter(self)
+        pt.drawImage(0, 0, self.buffer)
+
+    def sizeHint(self):
+        if self.doc:
+            return self.doc.defaultSize()
+        return QtGui.QWidget.sizeHint(self)
+
+    def poluteImage(self):
+        self.m_dirty = True
+        self.update()
+
+    def wheelEvent(self, e):
+        diff = 0.1
+        size = QtCore.QSize(self.doc.defaultSize())
+        width = size.width()
+        height = size.height()
+        if e.delta() > 0:
+            width = int(self.width() + self.width() * diff)
+            height = int(self.height() + self.height() * diff)
+        else:
+            width = int(self.width() - self.width() * diff)
+            height = int(self.height() - self.height() * diff)
+
+        self.resize(width, height)
+
+
+class SvgNativeView(QtGui.QWidget):
+    def __init__(self, path, parent):
+        QtGui.QWidget.__init__(self, parent)
+
+        self.doc = QtSvg.QSvgRenderer(path, self)
+        self.connect(self.doc, QtCore.SIGNAL("repaintNeeded()"),
+                     self, QtCore.SLOT("update()"))
+
+    def paintEvent(self, e):
+        p = QtGui.QPainter(self)
+        p.setViewport(0, 0, self.width(), self.height())
+        self.doc.render(p)
+
+    def sizeHint(self):
+        if self.doc:
+            return self.doc.defaultSize()
+        return QtGui.QWidget.sizeHint(self)
+
+    def wheelEvent(self, e):
+        diff = 0.1
+        size = QtCore.QSize(self.doc.defaultSize())
+        width = size.width()
+        height = size.height()
+        if e.delta() > 0:
+            width = int(self.width() + self.width() * diff)
+            height = int(self.height() + self.height() * diff)
+        else:
+            width = int(self.width() - self.width() * diff)
+            height = int(self.height() - self.height() * diff)
+
+        self.resize(width, height)
+
+
 if __name__ == '__main__':
-
-    import sys
-
     app = QtGui.QApplication(sys.argv)
 
     window = MainWindow()
     if len(sys.argv) == 2:
         window.openFile(sys.argv[1])
     else:
-        window.openFile(':/files/bubbles.svg')
+        window.openFile(":/files/cubic.svg")
     window.show()
     sys.exit(app.exec_())

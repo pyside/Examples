@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
 import math
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 
 class PolygonWidget(QtGui.QWidget):
@@ -35,9 +35,9 @@ class PolygonWidget(QtGui.QWidget):
     that can be used to customize its appearance.
     """
     
-    def __init__(self, parent=None):
+    def __init__(self, parent = None):
     
-        super(PolygonWidget, self).__init__(parent)
+        QtGui.QWidget.__init__(self, parent)
         
         self._sides = 5
         self._innerRadius = 20
@@ -99,12 +99,12 @@ class PolygonWidget(QtGui.QWidget):
         return self._angle
     
     # The setAngle() setter method is also a slot.
-    @QtCore.pyqtSlot(int)
+    @QtCore.pyqtSignature("setAngle(int)")
     def setAngle(self, angle):
         self._angle = min(max(0, angle), 360)
         self.update()
     
-    angle = QtCore.pyqtProperty(int, getAngle, setAngle)
+    angle = QtCore.pyqtProperty("int", getAngle, setAngle)
     
     # The innerRadius property is implemented using the getInnerRadius() and
     # setInnerRadius() methods.
@@ -113,14 +113,14 @@ class PolygonWidget(QtGui.QWidget):
         return self._innerRadius
     
     # The setInnerRadius() setter method is also a slot.
-    @QtCore.pyqtSlot(int)
+    @QtCore.pyqtSignature("setInnerRadius(int)")
     def setInnerRadius(self, radius):
         self._innerRadius = radius
         self.createPath()
         self.createGradient()
         self.update()
     
-    innerRadius = QtCore.pyqtProperty(int, getInnerRadius, setInnerRadius)
+    innerRadius = QtCore.pyqtProperty("int", getInnerRadius, setInnerRadius)
     
     # The outerRadius property is implemented using the getOuterRadius() and
     # setOuterRadius() methods.
@@ -129,14 +129,14 @@ class PolygonWidget(QtGui.QWidget):
         return self._outerRadius
     
     # The setOuterRadius() setter method is also a slot.
-    @QtCore.pyqtSlot(int)
+    @QtCore.pyqtSignature("setOuterRadius(int)")
     def setOuterRadius(self, radius):
         self._outerRadius = radius
         self.createPath()
         self.createGradient()
         self.update()
     
-    outerRadius = QtCore.pyqtProperty(int, getOuterRadius, setOuterRadius)
+    outerRadius = QtCore.pyqtProperty("int", getOuterRadius, setOuterRadius)
     
     # The numberOfSides property is implemented using the getNumberOfSides()
     # and setNumberOfSides() methods.
@@ -145,13 +145,13 @@ class PolygonWidget(QtGui.QWidget):
         return self._sides
     
     # The setNumberOfSides() setter method is also a slot.
-    @QtCore.pyqtSlot(int)
+    @QtCore.pyqtSignature("setNumberOfSides(int)")
     def setNumberOfSides(self, sides):
         self._sides = max(3, sides)
         self.createPath()
         self.update()
     
-    numberOfSides = QtCore.pyqtProperty(int, getNumberOfSides, setNumberOfSides)
+    numberOfSides = QtCore.pyqtProperty("int", getNumberOfSides, setNumberOfSides)
     
     # The innerColor property is implemented using the getInnerColor() and
     # setInnerColor() methods.
@@ -164,7 +164,7 @@ class PolygonWidget(QtGui.QWidget):
         self.createGradient()
         self.update()
     
-    innerColor = QtCore.pyqtProperty(QtGui.QColor, getInnerColor, setInnerColor)
+    innerColor = QtCore.pyqtProperty("QColor", getInnerColor, setInnerColor)
     
     # The outerColor property is implemented using the getOuterColor() and
     # setOuterColor() methods.
@@ -177,7 +177,7 @@ class PolygonWidget(QtGui.QWidget):
         self.createGradient()
         self.update()
     
-    outerColor = QtCore.pyqtProperty(QtGui.QColor, getOuterColor, setOuterColor)
+    outerColor = QtCore.pyqtProperty("QColor", getOuterColor, setOuterColor)
 
 
 if __name__ == "__main__":

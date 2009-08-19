@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 
-"""PyQt4 port of the opengl/samplebuffers example from Qt v4.x"""
+"""PySide port of the opengl/samplebuffers example from Qt v4.x"""
 
 import sys
 import math
-
-from PyQt4 import QtCore, QtGui, QtOpenGL
+from PySide import QtCore, QtGui, QtOpenGL
 
 try:
     from OpenGL import GL
 except ImportError:
     app = QtGui.QApplication(sys.argv)
     QtGui.QMessageBox.critical(None, "OpenGL samplebuffers",
-            "PyOpenGL must be installed to run this example.")
+                            "PyOpenGL must be installed to run this example.",
+                            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
+                            QtGui.QMessageBox.NoButton)
     sys.exit(1)
 
 
@@ -20,8 +21,8 @@ class GLWidget(QtOpenGL.QGLWidget):
     GL_MULTISAMPLE = 0x809D
     rot = 0.0
 
-    def __init__(self, parent):
-        super(GLWidget, self).__init__(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
+    def __init__(self, parent=None):
+        QtOpenGL.QGLWidget.__init__(self, QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
 
         self.list_ = []
 
@@ -42,7 +43,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         GL.glViewport(0, 0, w, h)
 
     def paintGL(self):
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
 
         GL.glMatrixMode(GL.GL_MODELVIEW)
         GL.glPushMatrix()
@@ -72,6 +73,7 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def makeObject(self):
         trolltechGreen = QtGui.QColor.fromCmykF(0.40, 0.0, 1.0, 0.0)
+        Pi = 3.14159265358979323846
         NumSectors = 15
         x1 = +0.06
         y1 = -0.14
@@ -86,13 +88,13 @@ class GLWidget(QtOpenGL.QGLWidget):
         GL.glNewList(self.list_, GL.GL_COMPILE)
 
         for i in range(NumSectors):
-            angle1 = float((i * 2 * math.pi) / NumSectors)
+            angle1 = float((i * 2 * Pi) / NumSectors)
             x5 = 0.30 * math.sin(angle1)
             y5 = 0.30 * math.cos(angle1)
             x6 = 0.20 * math.sin(angle1)
             y6 = 0.20 * math.cos(angle1)
 
-            angle2 = float(((i + 1) * 2 * math.pi) / NumSectors)
+            angle2 = float(((i + 1) * 2 * Pi) / NumSectors)
             x7 = 0.20 * math.sin(angle2)
             y7 = 0.20 * math.cos(angle2)
             x8 = 0.30 * math.sin(angle2)
@@ -125,25 +127,19 @@ class GLWidget(QtOpenGL.QGLWidget):
 
 
 if __name__ == '__main__':
-
     app = QtGui.QApplication(sys.argv)
+
+    if not QtOpenGL.QGLFormat.hasOpenGL():
+        QMessageBox.information(0, "OpenGL pbuffers",
+                                "This system does not support OpenGL.",
+                                QMessageBox.Ok)
+        sys.exit(1)
 
     f = QtOpenGL.QGLFormat.defaultFormat()
     f.setSampleBuffers(True)
     QtOpenGL.QGLFormat.setDefaultFormat(f)
 
-    if not QtOpenGL.QGLFormat.hasOpenGL():
-        QMessageBox.information(None, "OpenGL samplebuffers",
-                "This system does not support OpenGL.")
-        sys.exit(0)
-
-    widget = GLWidget(None)
-
-    if not widget.format().sampleBuffers():
-        QMessageBox.information(None, "OpenGL samplebuffers",
-                "This system does not have sample buffer support.")
-        sys.exit(0)
-
+    widget = GLWidget()
     widget.resize(640, 480)
     widget.show()
 

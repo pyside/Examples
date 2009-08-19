@@ -24,28 +24,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
 import math
-from PyQt4 import QtCore, QtGui, QtOpenGL
+from PySide import QtCore, QtGui, QtOpenGL
 from OpenGL import GL
 
 
 class HelloGLWidget(QtOpenGL.QGLWidget):
 
     """HelloGLWidget(QtOpenGL.QGLWidget)
-
+    
     Provides a custom widget to display an OpenGL-rendered Qt logo.
     Various properties and slots are defined so that the user can rotate
     the logo, and signals are defined to enable other components to
     react to changes to its orientation.
     """
-
-    # We define three signals that are used to indicate changes to the
+    
+    # We define two signals that are used to indicate changes to the
     # rotation of the logo.
-    xRotationChanged = QtCore.pyqtSignal(int)
-    yRotationChanged = QtCore.pyqtSignal(int)
-    zRotationChanged = QtCore.pyqtSignal(int)
-
+    __pyqtSignals__ = ("xRotationChanged(int)", "yRotationChanged(int)",
+                       "zRotationChanged(int)")
+    
     def __init__(self, parent=None):
-        super(HelloGLWidget, self).__init__(parent)
+        QtOpenGL.QGLWidget.__init__(self, parent)
 
         self.object = 0
         self.xRot = 0
@@ -62,56 +61,56 @@ class HelloGLWidget(QtOpenGL.QGLWidget):
     # The rotation of the logo about the x-axis can be controlled using the
     # xRotation property, defined using the following getter and setter
     # methods.
-
+    
     def getXRotation(self):
         return self.xRot
 
     # The setXRotation() setter method is also a slot.
-    @QtCore.pyqtSlot(int)
+    @QtCore.pyqtSignature("setXRotation(int)")
     def setXRotation(self, angle):
         angle = self.normalizeAngle(angle)
         if angle != self.xRot:
             self.xRot = angle
-            self.xRotationChanged.emit(angle)
+            self.emit(QtCore.SIGNAL("xRotationChanged(int)"), angle)
             self.updateGL()
 
-    xRotation = QtCore.pyqtProperty(int, getXRotation, setXRotation)
+    xRotation = QtCore.pyqtProperty("int", getXRotation, setXRotation)
 
     # The rotation of the logo about the y-axis can be controlled using the
     # yRotation property, defined using the following getter and setter
     # methods.
-
+    
     def getYRotation(self):
         return self.yRot
 
     # The setYRotation() setter method is also a slot.
-    @QtCore.pyqtSlot(int)
+    @QtCore.pyqtSignature("setYRotation(int)")
     def setYRotation(self, angle):
         angle = self.normalizeAngle(angle)
         if angle != self.yRot:
             self.yRot = angle
-            self.yRotationChanged.emit(angle)
+            self.emit(QtCore.SIGNAL("yRotationChanged(int)"), angle)
             self.updateGL()
 
-    yRotation = QtCore.pyqtProperty(int, getYRotation, setYRotation)
-
+    yRotation = QtCore.pyqtProperty("int", getYRotation, setYRotation)
+        
     # The rotation of the logo about the z-axis can be controlled using the
     # zRotation property, defined using the following getter and setter
     # methods.
-
+    
     def getZRotation(self):
         return self.zRot
 
     # The setZRotation() setter method is also a slot.
-    @QtCore.pyqtSlot(int)
+    @QtCore.pyqtSignature("setZRotation(int)")
     def setZRotation(self, angle):
         angle = self.normalizeAngle(angle)
         if angle != self.zRot:
             self.zRot = angle
-            self.zRotationChanged.emit(angle)
+            self.emit(QtCore.SIGNAL("zRotationChanged(int)"), angle)
             self.updateGL()
 
-    zRotation = QtCore.pyqtProperty(int, getZRotation, setZRotation)
+    zRotation = QtCore.pyqtProperty("int", getZRotation, setZRotation)
 
     def minimumSizeHint(self):
         return QtCore.QSize(50, 50)

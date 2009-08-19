@@ -19,8 +19,18 @@
 #############################################################################
 
 import sys
+from PySide import QtCore, QtGui
 
-from PyQt4 import QtCore, QtGui, QAxContainer
+try:
+    from PySide import QAxContainer
+except ImportError:
+    app = QtGui.QApplication(sys.argv)
+    QtGui.QMessageBox.critical(None, "Web browser",
+            "The Windows commercial version of PyQt is required to run this "
+                    "example.",
+            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
+            QtGui.QMessageBox.NoButton)
+    sys.exit(1)
 
 from ui_mainwindow import Ui_MainWindow
 
@@ -31,7 +41,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
     _window_list = []
 
     def __init__(self):
-        super(MainWindow, self).__init__()
+        QtGui.QMainWindow.__init__(self)
 
         MainWindow._window_list.append(self)
 
@@ -45,26 +55,27 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.addressEdit = QtGui.QLineEdit(self.tbAddress)
         self.tbAddress.insertWidget(self.actionGo, self.addressEdit)
 
-        self.addressEdit.returnPressed.connect(self.actionGo.trigger)
-        QtCore.QObject.connect(self.actionBack, QtCore.SIGNAL('triggered()'),
-                self.WebBrowser, QtCore.SLOT('GoBack()'))
-        QtCore.QObject.connect(self.actionForward, QtCore.SIGNAL('triggered()'),
-                self.WebBrowser, QtCore.SLOT('GoForward()'))
-        QtCore.QObject.connect(self.actionStop, QtCore.SIGNAL('triggered()'),
-                self.WebBrowser, QtCore.SLOT('Stop()'))
-        QtCore.QObject.connect(self.actionRefresh, QtCore.SIGNAL('triggered()'),
-                self.WebBrowser, QtCore.SLOT('Refresh()'))
-        QtCore.QObject.connect(self.actionHome, QtCore.SIGNAL('triggered()'),
-                self.WebBrowser, QtCore.SLOT('GoHome()'))
-        QtCore.QObject.connect(self.actionSearch, QtCore.SIGNAL('triggered()'),
-                self.WebBrowser, QtCore.SLOT('GoSearch()'))
+        self.connect(self.addressEdit, QtCore.SIGNAL("returnPressed()"),
+                     self.actionGo, QtCore.SLOT("trigger()"))
+        self.connect(self.actionBack, QtCore.SIGNAL("triggered()"),
+                     self.WebBrowser, QtCore.SLOT("GoBack()"))
+        self.connect(self.actionForward, QtCore.SIGNAL("triggered()"),
+                     self.WebBrowser, QtCore.SLOT("GoForward()"))
+        self.connect(self.actionStop, QtCore.SIGNAL("triggered()"),
+                     self.WebBrowser, QtCore.SLOT("Stop()"))
+        self.connect(self.actionRefresh, QtCore.SIGNAL("triggered()"),
+                     self.WebBrowser, QtCore.SLOT("Refresh()"))
+        self.connect(self.actionHome, QtCore.SIGNAL("triggered()"),
+                     self.WebBrowser, QtCore.SLOT("GoHome()"))
+        self.connect(self.actionSearch, QtCore.SIGNAL("triggered()"),
+                     self.WebBrowser, QtCore.SLOT("GoSearch()"))
 
         self.pb = QtGui.QProgressBar(self.statusBar())
         self.pb.setTextVisible(False)
         self.pb.hide()
         self.statusBar().addPermanentWidget(self.pb)
 
-        self.WebBrowser.dynamicCall('GoHome()')
+        self.WebBrowser.dynamicCall("GoHome()")
 
     def closeEvent(self, e):
         MainWindow._window_list.remove(self)
@@ -94,12 +105,11 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
     def on_WebBrowser_NavigateComplete(self, _):
         self.actionStop.setEnabled(False)
 
-    @QtCore.pyqtSlot()
+    @QtCore.pyqtSignature("")
     def on_actionGo_triggered(self):
-        self.WebBrowser.dynamicCall('Navigate(const QString&)',
-                QtCore.QVariant(self.addressEdit.text()))
+        self.WebBrowser.dynamicCall("Navigate(const QString&)", QtCore.QVariant(self.addressEdit.text()))
 
-    @QtCore.pyqtSlot()
+    @QtCore.pyqtSignature("")
     def on_actionNewWindow_triggered(self):
         window = MainWindow()
         window.show()
@@ -110,14 +120,14 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         window.actionStop.setEnabled(True)
         window.on_actionGo_triggered()
 
-    @QtCore.pyqtSlot()
+    @QtCore.pyqtSignature("")
     def on_actionAbout_triggered(self):
         QtGui.QMessageBox.about(self, self.tr("About WebBrowser"),
                 self.tr("This Example has been created using the ActiveQt integration into Qt Designer.\n"
                         "It demonstrates the use of QAxWidget to embed the Internet Explorer ActiveX\n"
                         "control into a Qt application."))
 
-    @QtCore.pyqtSlot()
+    @QtCore.pyqtSignature("")
     def on_actionAboutQt_triggered(self):
         QtGui.QMessageBox.aboutQt(self, self.tr("About Qt"))
 

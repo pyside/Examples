@@ -1,38 +1,38 @@
 #!/usr/bin/env python
 
-############################################################################
-##
-## Copyright (C) 2004-2005 Trolltech AS. All rights reserved.
-##
-## This file is part of the example classes of the Qt Toolkit.
-##
-## This file may be used under the terms of the GNU General Public
-## License version 2.0 as published by the Free Software Foundation
-## and appearing in the file LICENSE.GPL included in the packaging of
-## this file.  Please review the following information to ensure GNU
-## General Public Licensing requirements will be met:
-## http://www.trolltech.com/products/qt/opensource.html
-##
-## If you are unsure which license is appropriate for your use, please
-## review the following information:
-## http://www.trolltech.com/products/qt/licensing.html or contact the
-## sales department at sales@trolltech.com.
-##
-## This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-## WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-##
-############################################################################
+"""***************************************************************************
+**
+** Copyright (C) 2004-2005 Trolltech AS. All rights reserved.
+**
+** This file is part of the example classes of the Qt Toolkit.
+**
+** This file may be used under the terms of the GNU General Public
+** License version 2.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of
+** this file.  Please review the following information to ensure GNU
+** General Public Licensing requirements will be met:
+** http://www.trolltech.com/products/qt/opensource.html
+**
+** If you are unsure which license is appropriate for your use, please
+** review the following information:
+** http://www.trolltech.com/products/qt/licensing.html or contact the
+** sales department at sales@trolltech.com.
+**
+** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+**
+***************************************************************************"""
 
+import sys
 import math
-
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 import chart_rc
 
 
 class PieView(QtGui.QAbstractItemView):
-    def __init__(self, parent=None):
-        super(PieView, self).__init__(parent)
+    def __init__(self, parent = None):
+        QtGui.QAbstractItemView.__init__(self, parent)
 
         self.horizontalScrollBar().setRange(0, 0)
         self.verticalScrollBar().setRange(0, 0)
@@ -42,11 +42,10 @@ class PieView(QtGui.QAbstractItemView):
         self.pieSize = self.totalSize - 2*self.margin
         self.validItems = 0
         self.totalValue = 0.0
-        self.origin = QtCore.QPoint()
-        self.rubberBand = None
+        self.selectionRect = None
 
     def dataChanged(self, topLeft, bottomRight):
-        super(PieView, self).dataChanged(topLeft, bottomRight)
+        QtGui.QAbstractItemView.dataChanged(self, topLeft, bottomRight)
 
         self.validItems = 0
         self.totalValue = 0.0
@@ -54,7 +53,7 @@ class PieView(QtGui.QAbstractItemView):
         for row in range(self.model().rowCount(self.rootIndex())):
 
             index = self.model().index(row, 1, self.rootIndex())
-            value, _ = self.model().data(index).toDouble()
+            value, ok = self.model().data(index).toDouble()
 
             if value > 0.0:
                 self.totalValue += value
@@ -64,11 +63,13 @@ class PieView(QtGui.QAbstractItemView):
 
     def edit(self, index, trigger, event):
         if index.column() == 0:
-            return super(PieView, self).edit(index, trigger, event)
+            return QtGui.QAbstractItemView.edit(self, index, trigger, event)
         else:
             return False
 
     def indexAt(self, point):
+        """Returns the item that covers the coordinate given in the view.
+        """
         if self.validItems == 0:
             return QtCore.QModelIndex()
 
@@ -97,7 +98,7 @@ class PieView(QtGui.QAbstractItemView):
             for row in range(self.model().rowCount(self.rootIndex())):
 
                 index = self.model().index(row, 1, self.rootIndex())
-                value, _ = self.model().data(index).toDouble()
+                value, ok = self.model().data(index).toDouble()
 
                 if value > 0.0:
                     sliceAngle = 360*value/self.totalValue
@@ -108,6 +109,7 @@ class PieView(QtGui.QAbstractItemView):
                     startAngle += sliceAngle
 
         else:
+
             itemHeight = QtGui.QFontMetrics(self.viewOptions().font).height()
             listItem = int((wy - self.margin) / itemHeight)
             validRow = 0
@@ -120,8 +122,7 @@ class PieView(QtGui.QAbstractItemView):
                     if listItem == validRow:
                         return self.model().index(row, 0, self.rootIndex())
 
-                    # Update the list index that corresponds to the next valid
-                    # row.
+                    # Update the list index that corresponds to the next valid row.
                     validRow += 1
 
         return QtCore.QModelIndex()
@@ -130,6 +131,9 @@ class PieView(QtGui.QAbstractItemView):
         return False
 
     def itemRect(self, index):
+        """Returns the rectangle of the item at position \a index in the
+           model. The rectangle is in contents coordinates.
+        """
         if not index.isValid():
             return QtCore.QRect()
 
@@ -173,7 +177,7 @@ class PieView(QtGui.QAbstractItemView):
         for row in range(self.model().rowCount(self.rootIndex())):
 
             sliceIndex = self.model().index(row, 1, self.rootIndex())
-            value, _ = self.model().data(sliceIndex).toDouble()
+            value, ok = self.model().data(sliceIndex).toDouble()
 
             if value > 0.0:
                 angle = 360*value/self.totalValue
@@ -181,9 +185,8 @@ class PieView(QtGui.QAbstractItemView):
                 if sliceIndex == index:
                     slicePath = QtGui.QPainterPath()
                     slicePath.moveTo(self.totalSize/2, self.totalSize/2)
-                    slicePath.arcTo(self.margin, self.margin,
-                            self.margin+self.pieSize, self.margin+self.pieSize,
-                            startAngle, angle)
+                    slicePath.arcTo(self.margin, self.margin, self.margin+self.pieSize, self.margin+self.pieSize,
+                                    startAngle, angle)
                     slicePath.closeSubpath()
 
                     return QtGui.QRegion(slicePath.toFillPolygon().toPolygon())
@@ -195,28 +198,9 @@ class PieView(QtGui.QAbstractItemView):
     def horizontalOffset(self):
         return self.horizontalScrollBar().value()
 
-    def mousePressEvent(self, event):
-        super(PieView, self).mousePressEvent(event)
-
-        self.origin = event.pos()
-        if not self.rubberBand:
-            self.rubberBand = QtGui.QRubberBand(QtGui.QRubberBand.Rectangle,
-                    self)
-        self.rubberBand.setGeometry(QtCore.QRect(self.origin, QtCore.QSize()))
-        self.rubberBand.show()
-
-    def mouseMoveEvent(self, event):
-        if self.rubberBand:
-            self.rubberBand.setGeometry(QtCore.QRect(self.origin, event.pos()).normalized())
-
-        super(PieView, self).mouseMoveEvent(event)
-
     def mouseReleaseEvent(self, event):
-        super(PieView, self).mouseReleaseEvent(event)
-
-        if self.rubberBand:
-            self.rubberBand.hide()
-
+        QtGui.QAbstractItemView.mouseReleaseEvent(self, event)
+        self.selectionRect = None
         self.viewport().update()
 
     def moveCursor(self, cursorAction, modifiers):
@@ -226,21 +210,20 @@ class PieView(QtGui.QAbstractItemView):
            cursorAction == QtGui.QAbstractItemView.MoveUp:
 
             if current.row() > 0:
-                current = self.model().index(current.row() - 1,
-                        current.column(), self.rootIndex())
+                current = self.model().index(current.row() - 1, current.column(),
+                                         self.rootIndex())
             else:
-                current = self.model().index(0, current.column(),
-                        self.rootIndex())
+                current = self.model().index(0, current.column(), self.rootIndex())
 
         elif cursorAction == QtGui.QAbstractItemView.MoveRight or \
              cursorAction == QtGui.QAbstractItemView.MoveDown:
 
             if current.row() < rows(current) - 1:
-                current = self.model().index(current.row() + 1,
-                        current.column(), self.rootIndex())
+                current = self.model().index(current.row() + 1, current.column(),
+                                             self.rootIndex())
             else:
-                current = self.model().index(rows(current) - 1,
-                        current.column(), self.rootIndex())
+                current = self.model().index(rows(current) - 1, current.column(),
+                                             self.rootIndex())
 
         self.viewport().update()
         return current
@@ -251,33 +234,33 @@ class PieView(QtGui.QAbstractItemView):
         state = option.state
 
         background = option.palette.base()
-        foreground = QtGui.QPen(option.palette.color(QtGui.QPalette.WindowText))
+        foreground = QtGui.QPen(option.palette.color(QtGui.QPalette.Foreground))
         textPen = QtGui.QPen(option.palette.color(QtGui.QPalette.Text))
         highlightedPen = QtGui.QPen(option.palette.color(QtGui.QPalette.HighlightedText))
 
-        painter = QtGui.QPainter(self.viewport())
+        painter = QtGui.QPainter()
+        painter.begin(self.viewport())
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
 
         painter.fillRect(event.rect(), background)
         painter.setPen(foreground)
 
         # Viewport rectangles
-        pieRect = QtCore.QRect(self.margin, self.margin, self.pieSize,
-                self.pieSize)
+        pieRect = QtCore.QRect(self.margin, self.margin, self.pieSize, self.pieSize)
         keyPoint = QtCore.QPoint(self.totalSize - self.horizontalScrollBar().value(),
-                self.margin - self.verticalScrollBar().value())
+                          self.margin - self.verticalScrollBar().value())
 
         if self.validItems > 0:
             painter.save()
             painter.translate(pieRect.x() - self.horizontalScrollBar().value(),
-                    pieRect.y() - self.verticalScrollBar().value())
+                              pieRect.y() - self.verticalScrollBar().value())
             painter.drawEllipse(0, 0, self.pieSize, self.pieSize)
             startAngle = 0.0
 
             for row in range(self.model().rowCount(self.rootIndex())):
 
                 index = self.model().index(row, 1, self.rootIndex())
-                value, _ = self.model().data(index).toDouble()
+                value, ok = self.model().data(index).toDouble()
 
                 if value > 0.0:
                     angle = 360*value/self.totalValue
@@ -287,16 +270,14 @@ class PieView(QtGui.QAbstractItemView):
                                    QtCore.Qt.DecorationRole).toString())
 
                     if self.currentIndex() == index:
-                        painter.setBrush(QtGui.QBrush(color,
-                                QtCore.Qt.Dense4Pattern))
+                        painter.setBrush(QtGui.QBrush(color, QtCore.Qt.Dense4Pattern))
                     elif selections.isSelected(index):
-                        painter.setBrush(QtGui.QBrush(color,
-                                QtCore.Qt.Dense3Pattern))
+                        painter.setBrush(QtGui.QBrush(color, QtCore.Qt.Dense3Pattern))
                     else:
                         painter.setBrush(QtGui.QBrush(color))
 
-                    painter.drawPie(0, 0, self.pieSize, self.pieSize,
-                            int(startAngle*16), int(angle*16))
+                    painter.drawPie(0, 0, self.pieSize, self.pieSize, int(startAngle*16),
+                                    int(angle*16))
 
                     startAngle += angle
 
@@ -306,7 +287,7 @@ class PieView(QtGui.QAbstractItemView):
 
             for row in range(self.model().rowCount(self.rootIndex())):
                 index = self.model().index(row, 1, self.rootIndex())
-                value, _ = self.model().data(index).toDouble()
+                value, ok = self.model().data(index).toDouble()
 
                 if value > 0.0:
                     labelIndex = self.model().index(row, 0, self.rootIndex())
@@ -321,6 +302,16 @@ class PieView(QtGui.QAbstractItemView):
 
                     keyNumber += 1
 
+        if self.selectionRect:
+            band = QtGui.QStyleOptionRubberBand()
+            band.shape = QtGui.QRubberBand.Rectangle
+            band.rect = self.selectionRect
+            painter.save()
+            self.style().drawControl(QtGui.QStyle.CE_RubberBand, band, painter)
+            painter.restore()
+
+        painter.end()
+
     def resizeEvent(self, event):
         self.updateGeometries()
 
@@ -330,23 +321,23 @@ class PieView(QtGui.QAbstractItemView):
     def rowsInserted(self, parent, start, end):
         for row in range(start, end + 1):
             index = self.model().index(row, 1, self.rootIndex())
-            value, _ = self.model().data(index).toDouble()
+            value, ok = self.model().data(index).toDouble()
 
             if value > 0.0:
                 self.totalValue += value
                 self.validItems += 1
 
-        super(PieView, self).rowsInserted(parent, start, end)
+        QtGui.QAbstractItemView.rowsInserted(self, parent, start, end)
 
     def rowsAboutToBeRemoved(self, parent, start, end):
         for row in range(start, end + 1):
             index = self.model().index(row, 1, self.rootIndex())
-            value, _ = self.model().data(index).toDouble()
+            value, ok = self.model().data(index).toDouble()
             if value > 0.0:
                 self.totalValue -= value
                 self.validItems -= 1
 
-        super(PieView, self).rowsAboutToBeRemoved(parent, start, end)
+        QtGui.QAbstractItemView.rowsAboutToBeRemoved(self, parent, start, end)
 
     def scrollContentsBy(self, dx, dy):
         self.viewport().scroll(dx, dy)
@@ -372,11 +363,13 @@ class PieView(QtGui.QAbstractItemView):
                     rect.bottom() - area.bottom(), rect.top() - area.top()))
 
     def setSelection(self, rect, command):
+        """Find the indices corresponding to the extent of the selection.
+        """
         # Use content widget coordinates because we will use the itemRegion()
         # function to check for intersections.
 
         contentsRect = rect.translated(self.horizontalScrollBar().value(),
-                self.verticalScrollBar().value()).normalized()
+                                       self.verticalScrollBar().value())
 
         rows = self.model().rowCount(self.rootIndex())
         columns = self.model().columnCount(self.rootIndex())
@@ -410,6 +403,7 @@ class PieView(QtGui.QAbstractItemView):
             selection = QtGui.QItemSelection(noIndex, noIndex)
             self.selectionModel().select(selection, command)
 
+        self.selectionRect = QtCore.QRect(rect)
         self.update()
 
     def updateGeometries(self):
@@ -422,6 +416,8 @@ class PieView(QtGui.QAbstractItemView):
         return self.verticalScrollBar().value()
 
     def visualRect(self, index):
+        """Returns the position of the item in viewport coordinates.
+        """
         rect = self.itemRect(index)
         if rect.isValid():
             return QtCore.QRect(rect.left() - self.horizontalScrollBar().value(),
@@ -431,20 +427,35 @@ class PieView(QtGui.QAbstractItemView):
             return rect
 
     def visualRegionForSelection(self, selection):
-        region = QtGui.QRegion()
+        """Returns a region corresponding to the selection in viewport coordinates.
+        """
+        ranges = len(selection)
 
-        for span in selection:
-            for row in range(span.top(), span.bottom() + 1):
-                for col in range(span.left(), span.right() + 1):
-                    index = self.model().index(row, col, self.rootIndex())
-                    region += self.visualRect(index)
+        if ranges == 0:
+            return QtGui.QRegion()
 
-        return region
+        # Note that we use the top and bottom functions of the selection range
+        # since the data is stored in rows.
+
+        firstRow = selection[0].top()
+        lastRow = selection[0].top()
+
+        for i in range(ranges):
+            firstRow = min(firstRow, selection[i].top())
+            lastRow = max(lastRow, selection[i].bottom())
+
+        firstItem = self.model().index(min(firstRow, lastRow), 0, self.rootIndex())
+        lastItem = self.model().index(max(firstRow, lastRow), 0, self.rootIndex())
+
+        firstRect = self.visualRect(firstItem)
+        lastRect = self.visualRect(lastItem)
+
+        return QtGui.QRegion(firstRect.unite(lastRect))
 
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self):
-        super(MainWindow, self).__init__()
+    def __init__(self, parent=None):
+        QtGui.QMainWindow.__init__(self, parent)
 
         fileMenu = QtGui.QMenu(self.tr("&File"), self)
         openAction = fileMenu.addAction(self.tr("&Open..."))
@@ -457,9 +468,10 @@ class MainWindow(QtGui.QMainWindow):
         self.setupModel()
         self.setupViews()
 
-        openAction.triggered.connect(self.openFile)
-        saveAction.triggered.connect(self.saveFile)
-        quitAction.triggered.connect(QtGui.qApp.quit)
+        self.connect(openAction, QtCore.SIGNAL("triggered()"), self.openFile)
+        self.connect(saveAction, QtCore.SIGNAL("triggered()"), self.saveFile)
+        self.connect(quitAction, QtCore.SIGNAL("triggered()"),
+                     QtGui.qApp, QtCore.SLOT("quit()"))
 
         self.menuBar().addMenu(fileMenu)
         self.statusBar()
@@ -467,14 +479,12 @@ class MainWindow(QtGui.QMainWindow):
         self.openFile(QtCore.QString(":/Charts/qtdata.cht"))
 
         self.setWindowTitle(self.tr("Chart"))
-        self.resize(870, 550)
+        self.resize(640, 480)
 
     def setupModel(self):
         self.model = QtGui.QStandardItemModel(8, 2, self)
-        self.model.setHeaderData(0, QtCore.Qt.Horizontal,
-                QtCore.QVariant(self.tr("Label")))
-        self.model.setHeaderData(1, QtCore.Qt.Horizontal,
-                QtCore.QVariant(self.tr("Quantity")))
+        self.model.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant(self.tr("Label")))
+        self.model.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant(self.tr("Quantity")))
 
     def setupViews(self):
         splitter = QtGui.QSplitter()
@@ -492,14 +502,12 @@ class MainWindow(QtGui.QMainWindow):
         table.setSelectionModel(self.selectionModel)
         self.pieChart.setSelectionModel(self.selectionModel)
 
-        table.horizontalHeader().setStretchLastSection(True)
-
         self.setCentralWidget(splitter)
 
-    def openFile(self, path=QtCore.QString()):
+    def openFile(self, path = QtCore.QString()):
         if path.isNull():
-            fileName = QtGui.QFileDialog.getOpenFileName(self,
-                    self.tr("Choose a data file"), "", "*.cht")
+            fileName = QtGui.QFileDialog.getOpenFileName(self, self.tr("Choose a data file"),
+                                                    "", "*.cht")
         else:
             fileName = path
 
@@ -509,9 +517,8 @@ class MainWindow(QtGui.QMainWindow):
             if f.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
                 stream = QtCore.QTextStream(f)
 
-                self.model.removeRows(0,
-                        self.model.rowCount(QtCore.QModelIndex()),
-                        QtCore.QModelIndex())
+                self.model.removeRows(0, self.model.rowCount(QtCore.QModelIndex()),
+                                      QtCore.QModelIndex())
 
                 row = 0
                 while True:
@@ -521,11 +528,11 @@ class MainWindow(QtGui.QMainWindow):
 
                         pieces = line.split(",", QtCore.QString.SkipEmptyParts)
                         self.model.setData(self.model.index(row, 0, QtCore.QModelIndex()),
-                                QtCore.QVariant(pieces[0]))
+                                           QtCore.QVariant(pieces[0]))
                         self.model.setData(self.model.index(row, 1, QtCore.QModelIndex()),
-                                QtCore.QVariant(pieces[1]))
+                                           QtCore.QVariant(pieces[1]))
                         self.model.setData(self.model.index(row, 0, QtCore.QModelIndex()),
-                                QtCore.QVariant(QtGui.QColor(pieces[2])), QtCore.Qt.DecorationRole)
+                                           QtCore.QVariant(QtCore.QString(pieces[2])), QtCore.Qt.DecorationRole)
                         row += 1
 
                     if line.isEmpty():
@@ -536,7 +543,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def saveFile(self):
         fileName = QtGui.QFileDialog.getSaveFileName(self,
-                self.tr("Save file as"), "", "*.cht")
+            self.tr("Save file as"), "", "*.cht")
 
         if not fileName.isEmpty():
             f = QtCore.QFile(fileName)
@@ -546,11 +553,11 @@ class MainWindow(QtGui.QMainWindow):
                     pieces = QtCore.QStringList()
 
                     pieces.append(self.model.data(self.model.index(row, 0, QtCore.QModelIndex()),
-                            QtCore.Qt.DisplayRole).toString())
+                                                  QtCore.Qt.DisplayRole).toString())
                     pieces.append(self.model.data(self.model.index(row, 1, QtCore.QModelIndex()),
-                            QtCore.Qt.DisplayRole).toString())
+                                                  QtCore.Qt.DisplayRole).toString())
                     pieces.append(self.model.data(self.model.index(row, 0, QtCore.QModelIndex()),
-                            QtCore.Qt.DecorationRole).toString())
+                                                  QtCore.Qt.DecorationRole).toString())
 
                     f.write(QtCore.QByteArray(str(pieces.join(","))))
                     f.write("\n")
@@ -559,10 +566,7 @@ class MainWindow(QtGui.QMainWindow):
             self.statusBar().showMessage(self.tr("Saved %1").arg(fileName), 2000)
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     window = MainWindow()
     window.show()

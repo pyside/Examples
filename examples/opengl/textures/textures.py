@@ -1,46 +1,45 @@
 #!/usr/bin/env python
 
-############################################################################
-##
-## Copyright (C) 2005-2005 Trolltech AS. All rights reserved.
-##
-## This file is part of the example classes of the Qt Toolkit.
-##
-## This file may be used under the terms of the GNU General Public
-## License version 2.0 as published by the Free Software Foundation
-## and appearing in the file LICENSE.GPL included in the packaging of
-## this file.  Please review the following information to ensure GNU
-## General Public Licensing requirements will be met:
-## http://www.trolltech.com/products/qt/opensource.html
-##
-## If you are unsure which license is appropriate for your use, please
-## review the following information:
-## http://www.trolltech.com/products/qt/licensing.html or contact the
-## sales department at sales@trolltech.com.
-##
-## This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-## WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-##
-############################################################################
+"""***************************************************************************
+**
+** Copyright (C) 2005-2005 Trolltech AS. All rights reserved.
+**
+** This file is part of the example classes of the Qt Toolkit.
+**
+** This file may be used under the terms of the GNU General Public
+** License version 2.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of
+** this file.  Please review the following information to ensure GNU
+** General Public Licensing requirements will be met:
+** http://www.trolltech.com/products/qt/opensource.html
+**
+** If you are unsure which license is appropriate for your use, please
+** review the following information:
+** http://www.trolltech.com/products/qt/licensing.html or contact the
+** sales department at sales@trolltech.com.
+**
+** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+**
+***************************************************************************"""
 
 import sys
-
-from PyQt4 import QtCore, QtGui, QtOpenGL
+from PySide import QtCore, QtGui, QtOpenGL
 
 try:
     from OpenGL.GL import *
 except ImportError:
     app = QtGui.QApplication(sys.argv)
     QtGui.QMessageBox.critical(None, "OpenGL textures",
-            "PyOpenGL must be installed to run this example.")
+                            "PyOpenGL must be installed to run this example.",
+                            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
+                            QtGui.QMessageBox.NoButton)
     sys.exit(1)
 
 import textures_rc
 
 
 class GLWidget(QtOpenGL.QGLWidget):
-    clicked = QtCore.pyqtSignal()
-
     sharedObject = 0
     refCount = 0
 
@@ -53,28 +52,23 @@ class GLWidget(QtOpenGL.QGLWidget):
         ( ( -1, -1, +1 ), ( +1, -1, +1 ), ( +1, +1, +1 ), ( -1, +1, +1 ) )
     )
 
-    def __init__(self, parent=None, shareWidget=None):
-        super(GLWidget, self).__init__(parent, shareWidget)
+    def __init__(self, parent, shareWidget):
+        QtOpenGL.QGLWidget.__init__(self, parent, shareWidget)
 
         self.clearColor = QtCore.Qt.black
         self.xRot = 0
         self.yRot = 0
         self.zRot = 0
-
         self.clearColor = QtGui.QColor()
         self.lastPos = QtCore.QPoint()
 
     def __del__(self):
-        # If the application is terminating then the order in which things get
-        # garbage collected can cause exceptions to be raised.  Therefore we
-        # access the class variables via the instance's __class__ attribute and
-        # ignore some exceptions.
+        # For some reason, GLWidget is defined to be None when this is
+        # called. We access the class variables via the instance's __class__
+        # attribute.
         self.__class__.refCount -= 1
         if self.__class__.refCount == 0:
-            try:
-                self.makeCurrent()
-            except RuntimeError:
-                pass
+            self.makeCurrent()
             glDeleteLists(self.__class__.sharedObject, 1)
 
     def minimumSizeHint(self):
@@ -84,9 +78,9 @@ class GLWidget(QtOpenGL.QGLWidget):
         return QtCore.QSize(200, 200)
 
     def rotateBy(self, xAngle, yAngle, zAngle):
-        self.xRot += xAngle
-        self.yRot += yAngle
-        self.zRot += zAngle
+        self.xRot = (self.xRot + xAngle) % 5760
+        self.yRot = (self.yRot + yAngle) % 5760
+        self.zRot = (self.zRot + zAngle) % 5760
         self.updateGL()
 
     def setClearColor(self, color):
@@ -114,9 +108,6 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def resizeGL(self, width, height):
         side = min(width, height)
-        if side < 0:
-            return
-
         glViewport((width - side) / 2, (height - side) / 2, side, side)
 
         glMatrixMode(GL_PROJECTION)
@@ -125,7 +116,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         glMatrixMode(GL_MODELVIEW)
 
     def mousePressEvent(self, event):
-        self.lastPos = event.pos()
+        self.lastPos = QtCore.QPoint(event.pos())
 
     def mouseMoveEvent(self, event):
         dx = event.x() - self.lastPos.x()
@@ -136,10 +127,10 @@ class GLWidget(QtOpenGL.QGLWidget):
         elif event.buttons() & QtCore.Qt.RightButton:
             self.rotateBy(8 * dy, 0, 8 * dx)
 
-        self.lastPos = event.pos()
+        self.lastPos = QtCore.QPoint(event.pos())
 
     def mouseReleaseEvent(self, event):
-        self.clicked.emit()
+        self.emit(QtCore.SIGNAL("clicked()"))
 
     def makeObject(self):
         dlist = glGenLists(1)
@@ -167,8 +158,8 @@ class Window(QtGui.QWidget):
     NumRows = 2
     NumColumns = 3
 
-    def __init__(self):
-        super(Window, self).__init__()
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
 
         mainLayout = QtGui.QGridLayout()
         self.glWidgets = []
@@ -190,14 +181,15 @@ class Window(QtGui.QWidget):
                 self.glWidgets[i][j].rotateBy(+42 * 16, +42 * 16, -21 * 16)
                 mainLayout.addWidget(self.glWidgets[i][j], i, j)
 
-                self.glWidgets[i][j].clicked.connect(self.setCurrentGlWidget)
+                self.connect(self.glWidgets[i][j], QtCore.SIGNAL("clicked()"),
+                             self.setCurrentGlWidget)
 
         self.setLayout(mainLayout)
 
         self.currentGlWidget = self.glWidgets[0][0]
 
         timer = QtCore.QTimer(self)
-        timer.timeout.connect(self.rotateOneStep)
+        self.connect(timer, QtCore.SIGNAL("timeout()"), self.rotateOneStep)
         timer.start(20)
 
         self.setWindowTitle(self.tr("Textures"))
@@ -210,8 +202,7 @@ class Window(QtGui.QWidget):
             self.currentGlWidget.rotateBy(+2 * 16, +2 * 16, -1 * 16)
 
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     window = Window()
     window.show()

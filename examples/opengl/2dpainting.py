@@ -25,33 +25,33 @@
 
 import sys
 import math
-
-from PyQt4 import QtCore, QtGui, QtOpenGL
+from PySide.QtCore import *
+from PySide.QtGui import *
+from PySide.QtOpenGL import *
 
 try:
     from OpenGL import GL
 except ImportError:
-    app = QtGui.QApplication(sys.argv)
-    QtGui.QMessageBox.critical(None, "OpenGL 2dpainting",
+    app = QApplication(sys.argv)
+    QMessageBox.critical(None, "OpenGL 2dpainting",
                             "PyOpenGL must be installed to run this example.",
                             QMessageBox.Ok | QMessageBox.Default,
                             QMessageBox.NoButton)
     sys.exit(1)
 
 
-class Helper(object):
+class Helper:
     def __init__(self):
-        gradient = QtGui.QLinearGradient(QtCore.QPointF(50, -20),
-                QtCore.QPointF(80, 20))
-        gradient.setColorAt(0.0, QtCore.Qt.white)
-        gradient.setColorAt(1.0, QtGui.QColor(0xa6, 0xce, 0x39))
+        gradient = QLinearGradient(QPointF(50, -20), QPointF(80, 20))
+        gradient.setColorAt(0.0, Qt.white)
+        gradient.setColorAt(1.0, QColor(0xa6, 0xce, 0x39))
 
-        self.background = QtGui.QBrush(QtGui.QColor(64, 32, 64))
-        self.circleBrush = QtGui.QBrush(gradient)
-        self.circlePen = QtGui.QPen(QtCore.Qt.black)
+        self.background = QBrush(QColor(64, 32, 64))
+        self.circleBrush = QBrush(gradient)
+        self.circlePen = QPen(Qt.black)
         self.circlePen.setWidth(1)
-        self.textPen = QtGui.QPen(QtCore.Qt.white)
-        self.textFont = QtGui.QFont()
+        self.textPen = QPen(Qt.white)
+        self.textFont = QFont()
         self.textFont.setPixelSize(50)
 
     def paint(self, painter, event, elapsed):
@@ -69,20 +69,19 @@ class Helper(object):
             painter.rotate(30)
             radius = 0 + 120.0*((i+r)/n)
             circleRadius = 1 + ((i+r)/n)*20
-            painter.drawEllipse(QtCore.QRectF(radius, -circleRadius,
-                    circleRadius*2, circleRadius*2))
+            painter.drawEllipse(QRectF(radius, -circleRadius,
+                                       circleRadius*2, circleRadius*2))
 
         painter.restore()
 
         painter.setPen(self.textPen)
         painter.setFont(self.textFont)
-        painter.drawText(QtCore.QRect(-50, -50, 100, 100),
-                QtCore.Qt.AlignCenter, "Qt")
+        painter.drawText(QRect(-50, -50, 100, 100), Qt.AlignCenter, "Qt")
 
 
-class Widget(QtGui.QWidget):
-    def __init__(self, helper, parent):
-        super(Widget, self).__init__(parent)
+class Widget(QWidget):
+    def __init__(self, helper, parent = None):
+        QWidget.__init__(self, parent)
 
         self.helper = helper
         self.elapsed = 0
@@ -93,64 +92,61 @@ class Widget(QtGui.QWidget):
         self.repaint()
 
     def paintEvent(self, event):
-        painter = QtGui.QPainter()
+        painter = QPainter()
         painter.begin(self)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+        painter.setRenderHint(QPainter.Antialiasing)
         self.helper.paint(painter, event, self.elapsed)
         painter.end()
 
 
-class GLWidget(QtOpenGL.QGLWidget):
-    def __init__(self, helper, parent):
-        super(GLWidget, self).__init__(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
+class GLWidget(QGLWidget):
+    def __init__(self, helper, parent = None):
+        QGLWidget.__init__(self, QGLFormat(QGL.SampleBuffers), parent)
 
         self.helper = helper
         self.elapsed = 0
         self.setFixedSize(200, 200)
-        self.setAutoFillBackground(False)
 
     def animate(self):
         self.elapsed = (self.elapsed + self.sender().interval()) % 1000
         self.repaint()
 
     def paintEvent(self, event):
-        painter = QtGui.QPainter()
+        painter = QPainter()
         painter.begin(self)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
         self.helper.paint(painter, event, self.elapsed)
         painter.end()
 
 
-class Window(QtGui.QWidget):
-    def __init__(self):
-        super(Window, self).__init__()
+class Window(QWidget):
+    def __init__(self, parent = None):
+        QWidget.__init__(self, parent)
 
         helper = Helper()
         native = Widget(helper, self)
         openGL = GLWidget(helper, self)
-        nativeLabel = QtGui.QLabel(self.tr("Native"))
-        nativeLabel.setAlignment(QtCore.Qt.AlignHCenter)
-        openGLLabel = QtGui.QLabel(self.tr("OpenGL"))
-        openGLLabel.setAlignment(QtCore.Qt.AlignHCenter)
+        nativeLabel = QLabel(self.tr("Native"))
+        nativeLabel.setAlignment(Qt.AlignHCenter)
+        openGLLabel = QLabel(self.tr("OpenGL"))
+        openGLLabel.setAlignment(Qt.AlignHCenter)
 
-        layout = QtGui.QGridLayout()
+        layout = QGridLayout()
         layout.addWidget(native, 0, 0)
         layout.addWidget(openGL, 0, 1)
         layout.addWidget(nativeLabel, 1, 0)
         layout.addWidget(openGLLabel, 1, 1)
         self.setLayout(layout)
 
-        timer = QtCore.QTimer(self)
-        timer.timeout.connect(native.animate)
-        timer.timeout.connect(openGL.animate)
+        timer = QTimer(self)
+        self.connect(timer, SIGNAL("timeout()"), native.animate)
+        self.connect(timer, SIGNAL("timeout()"), openGL.animate)
         timer.start(50)
 
         self.setWindowTitle(self.tr("2D Painting on Native and OpenGL Widgets"))
 
 
 if __name__ == '__main__':
-
-    app = QtGui.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     window = Window()
     window.show()
     sys.exit(app.exec_())

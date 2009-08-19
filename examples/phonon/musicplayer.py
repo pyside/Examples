@@ -22,10 +22,10 @@
 ############################################################################
 
 import sys
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 try:
-    from PyQt4.phonon import Phonon
+    from PySide.phonon import Phonon
 except ImportError:
     app = QtGui.QApplication(sys.argv)
     QtGui.QMessageBox.critical(None, "Music Player",
@@ -37,7 +37,7 @@ except ImportError:
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
-        super(QtGui.QMainWindow, self).__init__()
+        QtGui.QMainWindow.__init__(self)
 
         self.audioOutput = Phonon.AudioOutput(Phonon.MusicCategory, self)
         self.mediaObject = Phonon.MediaObject(self)
@@ -45,11 +45,19 @@ class MainWindow(QtGui.QMainWindow):
 
         self.mediaObject.setTickInterval(1000)
 
-        self.mediaObject.tick.connect(self.tick)
-        self.mediaObject.stateChanged.connect(self.stateChanged)
-        self.metaInformationResolver.stateChanged.connect(self.metaStateChanged)
-        self.mediaObject.currentSourceChanged.connect(self.sourceChanged)
-        self.mediaObject.aboutToFinish.connect(self.aboutToFinish)
+        self.connect(self.mediaObject, QtCore.SIGNAL('tick(qint64)'),
+                self.tick)
+        self.connect(self.mediaObject,
+                QtCore.SIGNAL('stateChanged(Phonon::State, Phonon::State)'),
+                self.stateChanged)
+        self.connect(self.metaInformationResolver,
+                QtCore.SIGNAL('stateChanged(Phonon::State, Phonon::State)'),
+                self.metaStateChanged)
+        self.connect(self.mediaObject,
+                QtCore.SIGNAL('currentSourceChanged(Phonon::MediaSource)'),
+                self.sourceChanged)
+        self.connect(self.mediaObject, QtCore.SIGNAL('aboutToFinish()'),
+                self.aboutToFinish)
 
         Phonon.createPath(self.mediaObject, self.audioOutput)
 
@@ -115,17 +123,15 @@ class MainWindow(QtGui.QMainWindow):
         self.timeLcd.display(displayTime.toString('mm:ss'))
 
     def tableClicked(self, row, column):
-        wasPlaying = (self.mediaObject.state() == Phonon.PlayingState)
+        oldState = self.mediaObject.state()
 
         self.mediaObject.stop()
         self.mediaObject.clearQueue()
 
         self.mediaObject.setCurrentSource(self.sources[row])
 
-        if wasPlaying:
+        if oldState == Phonon.PlayingState:
             self.mediaObject.play()
-        else:
-            self.mediaObject.stop()
 
     def sourceChanged(self, source):
         self.musicTable.selectRow(self.sources.index(source))
@@ -225,13 +231,20 @@ class MainWindow(QtGui.QMainWindow):
         self.aboutQtAction = QtGui.QAction(self.tr("About &Qt"), self)
         self.aboutQtAction.setShortcut(self.tr("Ctrl+Q"))
 
-        self.playAction.triggered.connect(self.mediaObject.play)
-        self.pauseAction.triggered.connect(self.mediaObject.pause)
-        self.stopAction.triggered.connect(self.mediaObject.stop)
-        self.addFilesAction.triggered.connect(self.addFiles)
-        self.exitAction.triggered.connect(self.close)
-        self.aboutAction.triggered.connect(self.about)
-        self.aboutQtAction.triggered.connect(QtGui.qApp.aboutQt)
+        self.connect(self.playAction, QtCore.SIGNAL('triggered()'),
+                self.mediaObject, QtCore.SLOT('play()'))
+        self.connect(self.pauseAction, QtCore.SIGNAL('triggered()'),
+                self.mediaObject, QtCore.SLOT('pause()'))
+        self.connect(self.stopAction, QtCore.SIGNAL('triggered()'),
+                self.mediaObject, QtCore.SLOT('stop()'))
+        self.connect(self.addFilesAction, QtCore.SIGNAL('triggered()'),
+                self.addFiles)
+        self.connect(self.exitAction, QtCore.SIGNAL('triggered()'),
+                self, QtCore.SLOT('close()'))
+        self.connect(self.aboutAction, QtCore.SIGNAL('triggered()'),
+                self.about)
+        self.connect(self.aboutQtAction, QtCore.SIGNAL('triggered()'),
+                QtGui.qApp, QtCore.SLOT('aboutQt()'))
 
     def setupMenus(self):
         fileMenu = self.menuBar().addMenu(self.tr("&File"))
@@ -273,7 +286,8 @@ class MainWindow(QtGui.QMainWindow):
         self.musicTable.setHorizontalHeaderLabels(headers)
         self.musicTable.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
         self.musicTable.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
-        self.musicTable.cellPressed.connect(self.tableClicked)
+        self.connect(self.musicTable, QtCore.SIGNAL('cellPressed(int, int)'),
+                self.tableClicked)
 
         seekerLayout = QtGui.QHBoxLayout()
         seekerLayout.addWidget(self.seekSlider)

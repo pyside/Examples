@@ -1,32 +1,33 @@
 #!/usr/bin/env python
 
-############################################################################
-##
-## Copyright (C) 2005-2005 Trolltech AS. All rights reserved.
-##
-## This file is part of the example classes of the Qt Toolkit.
-##
-## This file may be used under the terms of the GNU General Public
-## License version 2.0 as published by the Free Software Foundation
-## and appearing in the file LICENSE.GPL included in the packaging of
-## this file.  Please review the following information to ensure GNU
-## General Public Licensing requirements will be met:
-## http://www.trolltech.com/products/qt/opensource.html
-##
-## If you are unsure which license is appropriate for your use, please
-## review the following information:
-## http://www.trolltech.com/products/qt/licensing.html or contact the
-## sales department at sales@trolltech.com.
-##
-## This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-## WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-##
-############################################################################
+"""***************************************************************************
+**
+** Copyright (C) 2005-2005 Trolltech AS. All rights reserved.
+**
+** This file is part of the example classes of the Qt Toolkit.
+**
+** This file may be used under the terms of the GNU General Public
+** License version 2.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of
+** this file.  Please review the following information to ensure GNU
+** General Public Licensing requirements will be met:
+** http://www.trolltech.com/products/qt/opensource.html
+**
+** If you are unsure which license is appropriate for your use, please
+** review the following information:
+** http://www.trolltech.com/products/qt/licensing.html or contact the
+** sales department at sales@trolltech.com.
+**
+** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+**
+***************************************************************************"""
 
-from PyQt4 import QtCore, QtGui, QtXml
+import sys
+from PySide import QtCore, QtGui, QtXml
 
 
-class DomItem(object):
+class DomItem:
     def __init__(self, node, row, parent=None):
         self.domNode = node
         # Record the item's location within its parent.
@@ -41,7 +42,7 @@ class DomItem(object):
         return self.parentItem
 
     def child(self, i):
-        if i in self.childItems:
+        if self.childItems.has_key(i):
             return self.childItems[i]
 
         if i >= 0 and i < self.domNode.childNodes().count():
@@ -50,15 +51,15 @@ class DomItem(object):
             self.childItems[i] = childItem
             return childItem
 
-        return None
+        return 0
 
     def row(self):
         return self.rowNumber
 
 
 class DomModel(QtCore.QAbstractItemModel):
-    def __init__(self, document, parent=None):
-        super(DomModel, self).__init__(parent)
+    def __init__(self, document, parent = None):
+        QtCore.QAbstractItemModel.__init__(self, parent)
 
         self.domDocument = document
 
@@ -97,7 +98,7 @@ class DomModel(QtCore.QAbstractItemModel):
 
     def flags(self, index):
         if not index.isValid():
-            return QtCore.Qt.NoItemFlags
+            return QtCore.Qt.ItemIsEnabled
 
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
@@ -115,7 +116,7 @@ class DomModel(QtCore.QAbstractItemModel):
         return QtCore.QVariant()
 
     def index(self, row, column, parent):
-        if not self.hasIndex(row, column, parent):
+        if row < 0 or column < 0 or row >= self.rowCount(parent) or column >= self.columnCount(parent):
             return QtCore.QModelIndex()
 
         if not parent.isValid():
@@ -154,15 +155,14 @@ class DomModel(QtCore.QAbstractItemModel):
 
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self):
-        super(MainWindow, self).__init__()
+    def __init__(self, parent=None):
+        QtGui.QMainWindow.__init__(self, parent)
 
         self.fileMenu = self.menuBar().addMenu(self.tr("&File"))
         self.fileMenu.addAction(self.tr("&Open..."), self.openFile,
-                QtGui.QKeySequence(self.tr("Ctrl+O")))
-        self.fileMenu.addAction(self.tr("E&xit"), self.close,
-                QtGui.QKeySequence(self.tr("Ctrl+Q")))
-
+                                QtGui.QKeySequence(self.tr("Ctrl+O")))
+        self.fileMenu.addAction(self.tr("E&xit"), self, QtCore.SLOT("close()"),
+                                QtGui.QKeySequence(self.tr("Ctrl+Q")))
         self.xmlPath = ""
         self.model = DomModel(QtXml.QDomDocument(), self)
         self.view = QtGui.QTreeView(self)
@@ -172,9 +172,8 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle(self.tr("Simple DOM Model"))
 
     def openFile(self):
-        filePath = QtGui.QFileDialog.getOpenFileName(self,
-                self.tr("Open File"), self.xmlPath,
-                self.tr("XML files (*.xml);;HTML files (*.html);;"
+        filePath = QtGui.QFileDialog.getOpenFileName(self, self.tr("Open File"),
+            self.xmlPath, self.tr("XML files (*.xml);;HTML files (*.html);;"
                         "SVG files (*.svg);;User Interface files (*.ui)"))
 
         if not filePath.isEmpty():
@@ -190,10 +189,7 @@ class MainWindow(QtGui.QMainWindow):
                 f.close()
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     window = MainWindow()
     window.resize(640, 480)

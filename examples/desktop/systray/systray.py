@@ -38,14 +38,15 @@
 #
 ############################################################################
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 import systray_rc
 
 
-class Window(QtGui.QDialog):
+class Window(QtGui.QWidget):
     def __init__(self):
-        super(Window, self).__init__()
+        QtGui.QWidget.__init__(self)
 
         self.createIconGroupBox()
         self.createMessageGroupBox()
@@ -55,11 +56,18 @@ class Window(QtGui.QDialog):
         self.createActions()
         self.createTrayIcon()
 
-        self.showMessageButton.clicked.connect(self.showMessage)
-        self.showIconCheckBox.toggled.connect(self.trayIcon.setVisible)
-        self.iconComboBox.currentIndexChanged.connect(self.setIcon)
-        self.trayIcon.messageClicked.connect(self.messageClicked)
-        self.trayIcon.activated.connect(self.iconActivated)
+        QtCore.QObject.connect(self.showMessageButton,
+                QtCore.SIGNAL("clicked()"), self.showMessage)
+        QtCore.QObject.connect(self.showIconCheckBox,
+                QtCore.SIGNAL("toggled(bool)"), self.trayIcon,
+                QtCore.SLOT("setVisible(bool)"))
+        QtCore.QObject.connect(self.iconComboBox,
+                QtCore.SIGNAL("currentIndexChanged(int)"), self.setIcon)
+        QtCore.QObject.connect(self.trayIcon,
+                QtCore.SIGNAL("messageClicked()"), self.messageClicked)
+        QtCore.QObject.connect(self.trayIcon,
+                QtCore.SIGNAL("activated(QSystemTrayIcon::ActivationReason)"),
+                self.iconActivated)
 
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addWidget(self.iconGroupBox)
@@ -76,15 +84,14 @@ class Window(QtGui.QDialog):
         self.minimizeAction.setEnabled(visible)
         self.maximizeAction.setEnabled(not self.isMaximized())
         self.restoreAction.setEnabled(self.isMaximized() or not visible)
-        super(Window, self).setVisible(visible)
+        QtGui.QWidget.setVisible(self, visible)
 
     def closeEvent(self, event):
         if self.trayIcon.isVisible():
             QtGui.QMessageBox.information(self, self.tr("Systray"),
                     self.tr("The program will keep running in the system "
-                            "tray. To terminate the program, choose "
-                            "<b>Quit</b> in the context menu of the system "
-                            "tray entry."))
+                        "tray. To terminate the program, choose <b>Quit</b> "
+                        "in the context menu of the system tray entry."))
             self.hide()
             event.ignore()
 
@@ -96,7 +103,8 @@ class Window(QtGui.QDialog):
         self.trayIcon.setToolTip(self.iconComboBox.itemText(index))
 
     def iconActivated(self, reason):
-        if reason in (QtGui.QSystemTrayIcon.Trigger, QtGui.QSystemTrayIcon.DoubleClick):
+        if reason == QtGui.QSystemTrayIcon.Trigger \
+                or reason == QtGui.QSystemTrayIcon.DoubleClick:
             self.iconComboBox.setCurrentIndex(
                     (self.iconComboBox.currentIndex() + 1)
                     % self.iconComboBox.count())
@@ -114,7 +122,7 @@ class Window(QtGui.QDialog):
     def messageClicked(self):
         QtGui.QMessageBox.information(None, self.tr("Systray"),
                 self.tr("Sorry, I already gave what help I could.\nMaybe you "
-                        "should try asking a human?"))
+                    "should try asking a human?"))
 
     def createIconGroupBox(self):
         self.iconGroupBox = QtGui.QGroupBox(self.tr("Tray Icon"))
@@ -142,7 +150,7 @@ class Window(QtGui.QDialog):
     def createMessageGroupBox(self):
         self.messageGroupBox = QtGui.QGroupBox(self.tr("Balloon Message"))
 
-        typeLabel = QtGui.QLabel(self.tr("Type:"))
+        self.typeLabel = QtGui.QLabel(self.tr("Type:"))
 
         self.typeComboBox = QtGui.QComboBox()
         self.typeComboBox.addItem(self.tr("None"),
@@ -165,15 +173,15 @@ class Window(QtGui.QDialog):
         self.durationSpinBox.setSuffix(" s")
         self.durationSpinBox.setValue(15)
 
-        durationWarningLabel = QtGui.QLabel(self.tr("(some systems might "
+        self.durationWarningLabel = QtGui.QLabel(self.tr("(some systems might "
                 "ignore this hint)"))
-        durationWarningLabel.setIndent(10)
+        self.durationWarningLabel.setIndent(10)
 
-        titleLabel = QtGui.QLabel(self.tr("Title:"))
+        self.titleLabel = QtGui.QLabel(self.tr("Title:"))
 
         self.titleEdit = QtGui.QLineEdit(self.tr("Cannot connect to network"))
 
-        bodyLabel = QtGui.QLabel(self.tr("Body:"))
+        self.bodyLabel = QtGui.QLabel(self.tr("Body:"))
 
         self.bodyEdit = QtGui.QTextEdit()
         self.bodyEdit.setPlainText(self.tr("Don't believe me. Honestly, I "
@@ -183,14 +191,14 @@ class Window(QtGui.QDialog):
         self.showMessageButton.setDefault(True)
 
         messageLayout = QtGui.QGridLayout()
-        messageLayout.addWidget(typeLabel, 0, 0)
+        messageLayout.addWidget(self.typeLabel, 0, 0)
         messageLayout.addWidget(self.typeComboBox, 0, 1, 1, 2)
         messageLayout.addWidget(self.durationLabel, 1, 0)
         messageLayout.addWidget(self.durationSpinBox, 1, 1)
-        messageLayout.addWidget(durationWarningLabel, 1, 2, 1, 3)
-        messageLayout.addWidget(titleLabel, 2, 0)
+        messageLayout.addWidget(self.durationWarningLabel, 1, 2, 1, 3)
+        messageLayout.addWidget(self.titleLabel, 2, 0)
         messageLayout.addWidget(self.titleEdit, 2, 1, 1, 4)
-        messageLayout.addWidget(bodyLabel, 3, 0)
+        messageLayout.addWidget(self.bodyLabel, 3, 0)
         messageLayout.addWidget(self.bodyEdit, 3, 1, 2, 4)
         messageLayout.addWidget(self.showMessageButton, 5, 4)
         messageLayout.setColumnStretch(3, 1)
@@ -199,16 +207,22 @@ class Window(QtGui.QDialog):
 
     def createActions(self):
         self.minimizeAction = QtGui.QAction(self.tr("Mi&nimize"), self)
-        self.minimizeAction.triggered.connect(self.hide)
+        QtCore.QObject.connect(self.minimizeAction,
+                QtCore.SIGNAL("triggered()"), self, QtCore.SLOT("hide()"))
 
         self.maximizeAction = QtGui.QAction(self.tr("Ma&ximize"), self)
-        self.maximizeAction.triggered.connect(self.showMaximized)
+        QtCore.QObject.connect(self.maximizeAction,
+                QtCore.SIGNAL("triggered()"), self,
+                QtCore.SLOT("showMaximized()"))
 
         self.restoreAction = QtGui.QAction(self.tr("&Restore"), self)
-        self.restoreAction.triggered.connect(self.showNormal)
+        QtCore.QObject.connect(self.restoreAction,
+                QtCore.SIGNAL("triggered()"), self,
+                QtCore.SLOT("showNormal()"))
 
         self.quitAction = QtGui.QAction(self.tr("&Quit"), self)
-        self.quitAction.triggered.connect(QtGui.qApp.quit)
+        QtCore.QObject.connect(self.quitAction, QtCore.SIGNAL("triggered()"),
+                QtGui.qApp, QtCore.SLOT("quit()"))
 
     def createTrayIcon(self):
          self.trayIconMenu = QtGui.QMenu(self)
@@ -222,10 +236,7 @@ class Window(QtGui.QDialog):
          self.trayIcon.setContextMenu(self.trayIconMenu)
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__=='__main__':
     app = QtGui.QApplication(sys.argv)
 
     if not QtGui.QSystemTrayIcon.isSystemTrayAvailable():
@@ -233,8 +244,6 @@ if __name__ == '__main__':
                 QtCore.QObject.tr(app, "I couldn't detect any system tray on "
                     "this system."))
         sys.exit(1)
-
-    QtGui.QApplication.setQuitOnLastWindowClosed(False)
 
     window = Window()
     window.show()

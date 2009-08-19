@@ -3,11 +3,11 @@
 # Form implementation generated from reading ui file 'backside.ui'
 #
 # Created: Tue May 27 18:13:23 2008
-#      by: PyQt4 UI code generator 4.4.3-snapshot-20080526
+#      by: PySide UI code generator 4.4.3-snapshot-20080526
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 class Ui_BackSide(object):
     def setupUi(self, BackSide):

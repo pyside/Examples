@@ -23,15 +23,15 @@
 ##
 #############################################################################
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 import i18n_rc
 
 
 class LanguageChooser(QtGui.QDialog):
     def __init__(self, parent=None):
-        super(LanguageChooser, self).__init__(parent,
-                QtCore.Qt.WindowStaysOnTopHint)
+        QtGui.QDialog.__init__(self, parent, QtCore.Qt.WindowStaysOnTopHint)
 
         self.qmFileForCheckBoxMap = {}
         self.mainWindowForCheckBoxMap = {} 
@@ -42,31 +42,36 @@ class LanguageChooser(QtGui.QDialog):
 
         qmFiles = self.findQmFiles()
 
-        for i, qmf in enumerate(qmFiles):
-            checkBox = QtGui.QCheckBox(self.languageName(qmf))
-            self.qmFileForCheckBoxMap[checkBox] = qmf
-            checkBox.toggled.connect(self.checkBoxToggled)
+        for i in range(len(qmFiles)):
+            checkBox = QtGui.QCheckBox(self.languageName(qmFiles[i]))
+            self.qmFileForCheckBoxMap[checkBox] = qmFiles[i]
+            self.connect(checkBox, QtCore.SIGNAL("toggled(bool)"), self.checkBoxToggled)
             groupBoxLayout.addWidget(checkBox, i / 2, i % 2)
 
         groupBox.setLayout(groupBoxLayout)
 
-        buttonBox = QtGui.QDialogButtonBox()
+        showAllButton = QtGui.QPushButton("Show All")
+        hideAllButton = QtGui.QPushButton("Hide All")
+        closeButton = QtGui.QPushButton("Close")
+        closeButton.setDefault(True)
 
-        showAllButton = buttonBox.addButton("Show All",
-                QtGui.QDialogButtonBox.ActionRole)
-        hideAllButton = buttonBox.addButton("Hide All",
-                QtGui.QDialogButtonBox.ActionRole)
+        self.connect(showAllButton, QtCore.SIGNAL("clicked()"), self.showAll)
+        self.connect(hideAllButton, QtCore.SIGNAL("clicked()"), self.hideAll)
+        self.connect(closeButton, QtCore.SIGNAL("clicked()"), self, QtCore.SLOT("close()"))
 
-        showAllButton.clicked.connect(self.showAll)
-        hideAllButton.clicked.connect(self.hideAll)
+        buttonLayout = QtGui.QHBoxLayout()
+        buttonLayout.addStretch(1)
+        buttonLayout.addWidget(showAllButton)
+        buttonLayout.addWidget(hideAllButton)
+        buttonLayout.addWidget(closeButton)
 
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addWidget(groupBox)
-        mainLayout.addWidget(buttonBox)
+        mainLayout.addLayout(buttonLayout)
         self.setLayout(mainLayout)
 
-        if hasattr(QtGui, 'qt_mac_set_menubar_merge'):
-            QtGui.qt_mac_set_menubar_merge(False)
+        # For Mac only.
+        #qt_mac_set_menubar_merge(False)
 
         self.setWindowTitle("I18N")
 
@@ -119,9 +124,8 @@ class LanguageChooser(QtGui.QDialog):
             checkBox.setChecked(False)
 
     def findQmFiles(self):
-        trans_dir = QtCore.QDir(":/translations")
-        fileNames = trans_dir.entryList(QtCore.QStringList("*.qm"),
-                QtCore.QDir.Files, QtCore.QDir.Name)
+        trans_dir = QtCore.QDir("./translations")
+        fileNames = trans_dir.entryList(QtCore.QStringList("*.qm"), QtCore.QDir.Files, QtCore.QDir.Name)
 
         for i in fileNames:
             fileNames.replaceInStrings(i, trans_dir.filePath(i))
@@ -148,7 +152,7 @@ class MainWindow(QtGui.QMainWindow):
                    QtCore.QT_TRANSLATE_NOOP("MainWindow", "Third")]
 
     def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
+        QtGui.QMainWindow.__init__(self, parent)
 
         self.centralWidget = QtGui.QWidget()
         self.setCentralWidget(self.centralWidget)
@@ -166,7 +170,7 @@ class MainWindow(QtGui.QMainWindow):
         self.centralWidget.setLayout(mainLayout)
 
         exitAction = QtGui.QAction(self.tr("E&xit"), self)
-        exitAction.triggered.connect(QtGui.qApp.quit)
+        self.connect(exitAction, QtCore.SIGNAL("triggered()"), QtGui.qApp, QtCore.SLOT("quit()"))
 
         fileMenu = self.menuBar().addMenu(self.tr("&File"))
         fileMenu.setPalette(QtGui.QPalette(QtCore.Qt.red))
@@ -192,10 +196,7 @@ class MainWindow(QtGui.QMainWindow):
         self.groupBox.setLayout(self.groupBoxLayout)
 
 
-if __name__ == "__main__":
-
-    import sys
-
+if __name__ == "__main__":    
     app = QtGui.QApplication(sys.argv)
     chooser = LanguageChooser()
     chooser.show()

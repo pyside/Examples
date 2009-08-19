@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
-"""PyQt4 port of the layouts/flowlayout example from Qt v4.x"""
+"""PySide port of the layouts/flowlayout example from Qt v4.x"""
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 
 class Window(QtGui.QWidget):
-    def __init__(self):
-        super(Window, self).__init__()
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
 
         flowLayout = FlowLayout()
         flowLayout.addWidget(QtGui.QPushButton(self.tr("Short")))
@@ -22,19 +23,13 @@ class Window(QtGui.QWidget):
 
 class FlowLayout(QtGui.QLayout):
     def __init__(self, parent=None, margin=0, spacing=-1):
-        super(FlowLayout, self).__init__(parent)
+        QtGui.QLayout.__init__(self, parent)
 
         if parent is not None:
             self.setMargin(margin)
-
         self.setSpacing(spacing)
 
         self.itemList = []
-
-    def __del__(self):
-        item = self.takeAt(0)
-        while item:
-            item = self.takeAt(0)
 
     def addItem(self, item):
         self.itemList.append(item)
@@ -46,13 +41,9 @@ class FlowLayout(QtGui.QLayout):
         if index >= 0 and index < len(self.itemList):
             return self.itemList[index]
 
-        return None
-
     def takeAt(self, index):
         if index >= 0 and index < len(self.itemList):
             return self.itemList.pop(index)
-
-        return None
 
     def expandingDirections(self):
         return QtCore.Qt.Orientations(QtCore.Qt.Orientation(0))
@@ -65,7 +56,7 @@ class FlowLayout(QtGui.QLayout):
         return height
 
     def setGeometry(self, rect):
-        super(FlowLayout, self).setGeometry(rect)
+        QtGui.QLayout.setGeometry(self, rect)
         self.doLayout(rect, False)
 
     def sizeHint(self):
@@ -86,14 +77,11 @@ class FlowLayout(QtGui.QLayout):
         lineHeight = 0
 
         for item in self.itemList:
-            wid = item.widget()
-            spaceX = self.spacing() + wid.style().layoutSpacing(QtGui.QSizePolicy.PushButton, QtGui.QSizePolicy.PushButton, QtCore.Qt.Horizontal)
-            spaceY = self.spacing() + wid.style().layoutSpacing(QtGui.QSizePolicy.PushButton, QtGui.QSizePolicy.PushButton, QtCore.Qt.Vertical)
-            nextX = x + item.sizeHint().width() + spaceX
-            if nextX - spaceX > rect.right() and lineHeight > 0:
+            nextX = x + item.sizeHint().width() + self.spacing()
+            if nextX - self.spacing() > rect.right() and lineHeight > 0:
                 x = rect.x()
-                y = y + lineHeight + spaceY
-                nextX = x + item.sizeHint().width() + spaceX
+                y = y + lineHeight + self.spacing()
+                nextX = x + item.sizeHint().width() + self.spacing()
                 lineHeight = 0
 
             if not testOnly:
@@ -105,10 +93,7 @@ class FlowLayout(QtGui.QLayout):
         return y + lineHeight - rect.y()
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     mainWin = Window()
     mainWin.show()

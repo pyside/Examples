@@ -3,12 +3,12 @@
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
 # Created: Tue Oct 31 21:22:31 2006
-#      by: PyQt4 UI code generator 4-snapshot-20061029
+#      by: PySide UI code generator 4-snapshot-20061029
 #
 # WARNING! All changes made in this file will be lost!
 
 import sys
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -149,5 +149,5 @@ class Ui_MainWindow(object):
         self.actionNewWindow.setIconText(QtGui.QApplication.translate("MainWindow", "Window", None, QtGui.QApplication.UnicodeUTF8))
         self.actionNewWindow.setShortcut(QtGui.QApplication.translate("MainWindow", "Ctrl+N", None, QtGui.QApplication.UnicodeUTF8))
 
-from PyQt4 import QAxContainer
+from PySide import QAxContainer
 import mainwindow_rc

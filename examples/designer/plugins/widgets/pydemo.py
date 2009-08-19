@@ -5,7 +5,7 @@
 # Copyright (c) 2007 Phil Thompson
 
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 
 # The purpose of this class is to show that Designer's property editor shows
@@ -14,7 +14,7 @@ class PyTextViewer(QtGui.QTextEdit):
 
     # Initialise the instance.
     def __init__(self, parent=None):
-        super(PyTextViewer, self).__init__(parent)
+        QtGui.QTextEdit.__init__(self, parent)
 
         self.setReadOnly(True)
 
@@ -38,7 +38,7 @@ class PyTextViewer(QtGui.QTextEdit):
 
     # Define the author property.  This will look like a C++ property to Qt
     # Designer and a Python property to Python.
-    author = QtCore.pyqtProperty(str, getAuthor, setAuthor, resetAuthor)
+    author = QtCore.pyqtProperty("QString", getAuthor, setAuthor, resetAuthor)
 
 
 # This is the class that implements the custom widget.
@@ -47,11 +47,11 @@ class PyDemo(PyTextViewer):
     # Define the Qt signals as a sequence of C++ function signatures excluding
     # the return type.  These may be connected to other signals or slots in Qt
     # Designer.
-    zoomChanged = QtCore.pyqtSignal(int)
+    __pyqtSignals__ = ("zoomChanged(int)", )
 
     # Initialise the instance.
     def __init__(self, parent=None):
-        super(PyDemo, self).__init__(parent)
+        PyTextViewer.__init__(self, parent)
 
         self.setWindowTitle("PyQt Demonstration Widget")
         self.setText(_demo_text)
@@ -66,7 +66,7 @@ class PyDemo(PyTextViewer):
 
     # The setter for the zoom property.  We also make define this as a Qt slot
     # which can be connected to Qt signals in Qt Designer.
-    @QtCore.pyqtSlot(int)
+    @QtCore.pyqtSignature("int")
     def setZoom(self, zoom):
         # Don't do anything if nothing has changed.
         if self._zoom == zoom:
@@ -82,7 +82,7 @@ class PyDemo(PyTextViewer):
         self._zoom = zoom
 
         # Emit the Qt signal to say that the zoom level has changed.
-        self.zoomChanged.emit(zoom)
+        self.emit(QtCore.SIGNAL("zoomChanged(int)"), zoom)
 
     # The resetter for the zoom property.
     def resetZoom(self):
@@ -90,7 +90,7 @@ class PyDemo(PyTextViewer):
 
     # Define the zoom property.  Changing the value of this in Qt Designer's
     # property editor causes the zoom level to change dynamically.
-    zoom = QtCore.pyqtProperty(int, getZoom, setZoom, resetZoom)
+    zoom = QtCore.pyqtProperty("int", getZoom, setZoom, resetZoom)
 
 
 # The text displayed in the custom widget.

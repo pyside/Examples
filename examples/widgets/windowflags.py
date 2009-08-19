@@ -23,19 +23,20 @@
 ##
 #############################################################################
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 
 class PreviewWindow(QtGui.QWidget):
     def __init__(self, parent=None):
-        super(PreviewWindow, self).__init__(parent)
-
+        QtGui.QWidget.__init__(self, parent)
+        
         self.textEdit = QtGui.QTextEdit()
         self.textEdit.setReadOnly(True)
         self.textEdit.setLineWrapMode(QtGui.QTextEdit.NoWrap)
 
         closeButton = QtGui.QPushButton(self.tr("&Close"))
-        closeButton.clicked.connect(self.close)
+        self.connect(closeButton, QtCore.SIGNAL("clicked()"), self, QtCore.SLOT("close()"))
 
         layout = QtGui.QVBoxLayout()
         layout.addWidget(self.textEdit)
@@ -45,8 +46,8 @@ class PreviewWindow(QtGui.QWidget):
         self.setWindowTitle(self.tr("Preview"))
 
     def setWindowFlags(self, flags):
-        super(PreviewWindow, self).setWindowFlags(flags)
-
+        QtGui.QWidget.setWindowFlags(self, flags)
+        
         text = QtCore.QString()
 
         flag_type = (flags & QtCore.Qt.WindowType_Mask)
@@ -67,7 +68,7 @@ class PreviewWindow(QtGui.QWidget):
             text = "QtCore.Qt.ToolTip"
         elif flag_type == QtCore.Qt.SplashScreen:
             text = "QtCore.Qt.SplashScreen"
-
+        
         if flags & QtCore.Qt.MSWindowsFixedSizeDialogHint:
             text += "\n| QtCore.Qt.MSWindowsFixedSizeDialogHint"
         if flags & QtCore.Qt.X11BypassWindowManagerHint:
@@ -82,38 +83,32 @@ class PreviewWindow(QtGui.QWidget):
             text += "\n| QtCore.Qt.WindowMinimizeButtonHint"
         if flags & QtCore.Qt.WindowMaximizeButtonHint:
             text += "\n| QtCore.Qt.WindowMaximizeButtonHint"
-        if flags & QtCore.Qt.WindowCloseButtonHint:
-            text += "\n| QtCore.Qt.WindowCloseButtonHint"
         if flags & QtCore.Qt.WindowContextHelpButtonHint:
             text += "\n| QtCore.Qt.WindowContextHelpButtonHint"
         if flags & QtCore.Qt.WindowShadeButtonHint:
             text += "\n| QtCore.Qt.WindowShadeButtonHint"
         if flags & QtCore.Qt.WindowStaysOnTopHint:
             text += "\n| QtCore.Qt.WindowStaysOnTopHint"
-        if flags & QtCore.Qt.WindowStaysOnBottomHint:
-            text += "\n| QtCore.Qt.WindowStaysOnBottomHint"
-        if flags & QtCore.Qt.CustomizeWindowHint:
-            text += "\n| QtCore.Qt.CustomizeWindowHint"
-
+    
         self.textEdit.setPlainText(text)
 
 
 class ControllerWindow(QtGui.QWidget):
-    def __init__(self):
-        super(ControllerWindow, self).__init__()
-
+    def __init__(self, parent=None):  
+        QtGui.QWidget.__init__(self, parent)
+  
         self.previewWindow = PreviewWindow(self)
-
+        
         self.createTypeGroupBox()
         self.createHintsGroupBox()
-
+        
         quitButton = QtGui.QPushButton(self.tr("&Quit"))
-        quitButton.clicked.connect(self.close)
-
+        self.connect(quitButton, QtCore.SIGNAL("clicked()"), self, QtCore.SLOT("close()"))
+    
         bottomLayout = QtGui.QHBoxLayout()
         bottomLayout.addStretch()
         bottomLayout.addWidget(quitButton)
-
+    
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addWidget(self.typeGroupBox)
         mainLayout.addWidget(self.hintsGroupBox)
@@ -142,7 +137,7 @@ class ControllerWindow(QtGui.QWidget):
             flags = QtCore.Qt.ToolTip
         elif self.splashScreenRadioButton.isChecked():
             flags = QtCore.Qt.SplashScreen
-
+    
         if self.msWindowsFixedSizeDialogCheckBox.isChecked():
             flags |= QtCore.Qt.MSWindowsFixedSizeDialogHint            
         if self.x11BypassWindowManagerCheckBox.isChecked():
@@ -157,31 +152,25 @@ class ControllerWindow(QtGui.QWidget):
             flags |= QtCore.Qt.WindowMinimizeButtonHint
         if self.windowMaximizeButtonCheckBox.isChecked():
             flags |= QtCore.Qt.WindowMaximizeButtonHint
-        if self.windowCloseButtonCheckBox.isChecked():
-            flags |= QtCore.Qt.WindowCloseButtonHint
         if self.windowContextHelpButtonCheckBox.isChecked():
             flags |= QtCore.Qt.WindowContextHelpButtonHint
         if self.windowShadeButtonCheckBox.isChecked():
             flags |= QtCore.Qt.WindowShadeButtonHint
         if self.windowStaysOnTopCheckBox.isChecked():
             flags |= QtCore.Qt.WindowStaysOnTopHint
-        if self.windowStaysOnBottomCheckBox.isChecked():
-            flags |= QtCore.Qt.WindowStaysOnBottomHint
-        if self.customizeWindowHintCheckBox.isChecked():
-            flags |= QtCore.Qt.CustomizeWindowHint
-
+        
         self.previewWindow.setWindowFlags(flags)
-
+        self.previewWindow.show()
+    
         pos = self.previewWindow.pos()
-
+        
         if pos.x() < 0:
             pos.setX(0)
-
+            
         if pos.y() < 0:
             pos.setY(0)
-
+            
         self.previewWindow.move(pos)
-        self.previewWindow.show()
 
     def createTypeGroupBox(self):
         self.typeGroupBox = QtGui.QGroupBox(self.tr("Type"))
@@ -195,7 +184,7 @@ class ControllerWindow(QtGui.QWidget):
         self.toolTipRadioButton = self.createRadioButton(self.tr("Tooltip"))
         self.splashScreenRadioButton = self.createRadioButton(self.tr("Splash screen"))
         self.windowRadioButton.setChecked(True)
-
+    
         layout = QtGui.QGridLayout()
         layout.addWidget(self.windowRadioButton, 0, 0)
         layout.addWidget(self.dialogRadioButton, 1, 0)
@@ -206,7 +195,7 @@ class ControllerWindow(QtGui.QWidget):
         layout.addWidget(self.toolTipRadioButton, 2, 1)
         layout.addWidget(self.splashScreenRadioButton, 3, 1)
         self.typeGroupBox.setLayout(layout)
-
+    
     def createHintsGroupBox(self):
         self.hintsGroupBox = QtGui.QGroupBox(self.tr("Hints"))
 
@@ -217,13 +206,10 @@ class ControllerWindow(QtGui.QWidget):
         self.windowSystemMenuCheckBox = self.createCheckBox(self.tr("Window system menu"))
         self.windowMinimizeButtonCheckBox = self.createCheckBox(self.tr("Window minimize button"))
         self.windowMaximizeButtonCheckBox = self.createCheckBox(self.tr("Window maximize button"))
-        self.windowCloseButtonCheckBox = self.createCheckBox(self.tr("Window close button"))
         self.windowContextHelpButtonCheckBox = self.createCheckBox(self.tr("Window context help button"))
         self.windowShadeButtonCheckBox = self.createCheckBox(self.tr("Window shade button"))
         self.windowStaysOnTopCheckBox = self.createCheckBox(self.tr("Window stays on top"))
-        self.windowStaysOnBottomCheckBox = self.createCheckBox(self.tr("Window stays on bottom"))
-        self.customizeWindowHintCheckBox = self.createCheckBox(self.tr("Customize window"))
-
+    
         layout = QtGui.QGridLayout()
         layout.addWidget(self.msWindowsFixedSizeDialogCheckBox, 0, 0)
         layout.addWidget(self.x11BypassWindowManagerCheckBox, 1, 0)
@@ -232,29 +218,23 @@ class ControllerWindow(QtGui.QWidget):
         layout.addWidget(self.windowSystemMenuCheckBox, 4, 0)
         layout.addWidget(self.windowMinimizeButtonCheckBox, 0, 1)
         layout.addWidget(self.windowMaximizeButtonCheckBox, 1, 1)
-        layout.addWidget(self.windowCloseButtonCheckBox, 2, 1)
-        layout.addWidget(self.windowContextHelpButtonCheckBox, 3, 1)
-        layout.addWidget(self.windowShadeButtonCheckBox, 4, 1)
-        layout.addWidget(self.windowStaysOnTopCheckBox, 5, 1)
-        layout.addWidget(self.windowStaysOnBottomCheckBox, 6, 1)
-        layout.addWidget(self.customizeWindowHintCheckBox, 5, 0)
+        layout.addWidget(self.windowContextHelpButtonCheckBox, 2, 1)
+        layout.addWidget(self.windowShadeButtonCheckBox, 3, 1)
+        layout.addWidget(self.windowStaysOnTopCheckBox, 4, 1)
         self.hintsGroupBox.setLayout(layout)
 
     def createCheckBox(self, text):
         checkBox = QtGui.QCheckBox(text)
-        checkBox.clicked.connect(self.updatePreview)
+        self.connect(checkBox, QtCore.SIGNAL("clicked()"), self.updatePreview)
         return checkBox
-
+    
     def createRadioButton(self, text):
         button = QtGui.QRadioButton(text)
-        button.clicked.connect(self.updatePreview)
+        self.connect(button, QtCore.SIGNAL("clicked()"), self.updatePreview)
         return button
 
-
+ 
 if __name__ == "__main__":
-
-    import sys
-
     app = QtGui.QApplication(sys.argv)
     controller = ControllerWindow()
     controller.show()

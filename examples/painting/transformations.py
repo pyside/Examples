@@ -1,36 +1,37 @@
 #!/usr/bin/env python
 
-############################################################################
-##
-## Copyright (C) 2005-2005 Trolltech AS. All rights reserved.
-##
-## This file is part of the example classes of the Qt Toolkit.
-##
-## This file may be used under the terms of the GNU General Public
-## License version 2.0 as published by the Free Software Foundation
-## and appearing in the file LICENSE.GPL included in the packaging of
-## this file.  Please review the following information to ensure GNU
-## General Public Licensing requirements will be met:
-## http://www.trolltech.com/products/qt/opensource.html
-##
-## If you are unsure which license is appropriate for your use, please
-## review the following information:
-## http://www.trolltech.com/products/qt/licensing.html or contact the
-## sales department at sales@trolltech.com.
-##
-## This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-## WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-##
-############################################################################
+"""***************************************************************************
+**
+** Copyright (C) 2005-2005 Trolltech AS. All rights reserved.
+**
+** This file is part of the example classes of the Qt Toolkit.
+**
+** This file may be used under the terms of the GNU General Public
+** License version 2.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of
+** this file.  Please review the following information to ensure GNU
+** General Public Licensing requirements will be met:
+** http://www.trolltech.com/products/qt/opensource.html
+**
+** If you are unsure which license is appropriate for your use, please
+** review the following information:
+** http://www.trolltech.com/products/qt/licensing.html or contact the
+** sales department at sales@trolltech.com.
+**
+** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+**
+***************************************************************************"""
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 
 NoTransformation, Translate, Rotate, Scale = range(4)
 
 class RenderArea(QtGui.QWidget):
     def __init__(self, parent=None):
-        super(RenderArea, self).__init__(parent)
+        QtGui.QWidget.__init__(self, parent)
 
         newFont = self.font()
         newFont.setPixelSize(12)
@@ -54,10 +55,11 @@ class RenderArea(QtGui.QWidget):
         return QtCore.QSize(182, 182)
 
     def sizeHint(self):
-        return QtCore.QSize(232, 232)
+        return QtCore.QSize(232, 182)
 
     def paintEvent(self, event):
-        painter = QtGui.QPainter(self)
+        painter = QtGui.QPainter()
+        painter.begin(self)
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
         painter.fillRect(event.rect(), QtGui.QBrush(QtCore.Qt.white))
 
@@ -70,8 +72,11 @@ class RenderArea(QtGui.QWidget):
 
         self.drawOutline(painter)
 
+        painter.save()
         self.transformPainter(painter)
         self.drawCoordinates(painter)
+        painter.restore()
+        painter.end()
 
     def drawCoordinates(self, painter):
         painter.setPen(QtCore.Qt.red)
@@ -114,8 +119,8 @@ class Window(QtGui.QWidget):
     operationTable = (NoTransformation, Rotate, Scale, Translate)
     NumTransformedAreas = 3
 
-    def __init__(self):
-        super(Window, self).__init__()
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
 
         self.originalRenderArea = RenderArea()
 
@@ -129,8 +134,8 @@ class Window(QtGui.QWidget):
         layout.addWidget(self.originalRenderArea, 0, 0)
         layout.addWidget(self.shapeComboBox, 1, 0)
 
-        self.transformedRenderAreas = list(range(Window.NumTransformedAreas))
-        self.operationComboBoxes = list(range(Window.NumTransformedAreas))
+        self.transformedRenderAreas = range(Window.NumTransformedAreas)
+        self.operationComboBoxes = range(Window.NumTransformedAreas)
 
         for i in range(Window.NumTransformedAreas):
             self.transformedRenderAreas[i] = RenderArea()
@@ -141,7 +146,8 @@ class Window(QtGui.QWidget):
             self.operationComboBoxes[i].addItem(self.tr("Scale to 75%"))
             self.operationComboBoxes[i].addItem(self.tr("Translate by (50, 50)"))
 
-            self.operationComboBoxes[i].activated.connect(self.operationChanged)
+            self.connect(self.operationComboBoxes[i], QtCore.SIGNAL("activated(int)"),
+                         self.operationChanged)
 
             layout.addWidget(self.transformedRenderAreas[i], 0, i + 1)
             layout.addWidget(self.operationComboBoxes[i], 1, i + 1)
@@ -202,7 +208,8 @@ class Window(QtGui.QWidget):
 
         self.shapes = (clock, house, text, truck)
 
-        self.shapeComboBox.activated.connect(self.shapeSelected)
+        self.connect(self.shapeComboBox, QtCore.SIGNAL("activated(int)"),
+                     self.shapeSelected)
 
     def operationChanged(self):
         operations = []
@@ -218,10 +225,7 @@ class Window(QtGui.QWidget):
             self.transformedRenderAreas[i].setShape(shape)
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     window = Window()
     window.show()

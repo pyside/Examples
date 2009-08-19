@@ -23,12 +23,13 @@
 ##
 ############################################################################/
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 
 class ScribbleArea(QtGui.QWidget):
-    def __init__(self, parent=None):
-        super(ScribbleArea, self).__init__(parent)
+    def __init__(self, parent = None):
+        QtGui.QWidget.__init__(self, parent)
 
         self.setAttribute(QtCore.Qt.WA_StaticContents)
         self.modified = False
@@ -86,8 +87,10 @@ class ScribbleArea(QtGui.QWidget):
             self.scribbling = False
 
     def paintEvent(self, event):
-        painter = QtGui.QPainter(self)
+        painter = QtGui.QPainter()
+        painter.begin(self)
         painter.drawImage(QtCore.QPoint(0, 0), self.image)
+        painter.end()
 
     def resizeEvent(self, event):
         if self.width() > self.image.width() or self.height() > self.image.height():
@@ -96,17 +99,21 @@ class ScribbleArea(QtGui.QWidget):
             self.resizeImage(self.image, QtCore.QSize(newWidth, newHeight))
             self.update()
 
-        super(ScribbleArea, self).resizeEvent(event)
+        QtGui.QWidget.resizeEvent(self, event)
 
     def drawLineTo(self, endPoint):
-        painter = QtGui.QPainter(self.image)
+        painter = QtGui.QPainter()
+        painter.begin(self.image)
         painter.setPen(QtGui.QPen(self.myPenColor, self.myPenWidth,
-                QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+                                  QtCore.Qt.SolidLine, QtCore.Qt.RoundCap,
+                                  QtCore.Qt.RoundJoin))
         painter.drawLine(self.lastPoint, endPoint)
+        painter.end()
         self.modified = True
 
         rad = self.myPenWidth / 2 + 2
-        self.update(QtCore.QRect(self.lastPoint, endPoint).normalized().adjusted(-rad, -rad, +rad, +rad))
+        self.update(QtCore.QRect(self.lastPoint, endPoint).normalized()
+                                         .adjusted(-rad, -rad, +rad, +rad))
         self.lastPoint = QtCore.QPoint(endPoint)
 
     def resizeImage(self, image, newSize):
@@ -115,23 +122,12 @@ class ScribbleArea(QtGui.QWidget):
 
         newImage = QtGui.QImage(newSize, QtGui.QImage.Format_RGB32)
         newImage.fill(QtGui.qRgb(255, 255, 255))
-        painter = QtGui.QPainter(newImage)
+        painter = QtGui.QPainter()
+        painter.begin(newImage)
         painter.drawImage(QtCore.QPoint(0, 0), image)
+        painter.end()
         self.image = newImage
-
-    def print_(self):
-        printer = QtGui.QPrinter(QtGui.QPrinter.HighResolution)
-
-        printDialog = QtGui.QPrintDialog(printer, self)
-        if printDialog.exec_() == QtGui.QDialog.Accepted:
-            painter = QtGui.QPainter(printer)
-            rect = painter.viewport()
-            size = self.image.size()
-            size.scale(rect.size(), QtCore.Qt.KeepAspectRatio)
-            painter.setViewport(rect.x(), rect.y(), size.width(), size.height())
-            painter.setWindow(self.image.rect())
-            painter.drawImage(0, 0, self.image)
-
+    
     def isModified(self):
         return self.modified
 
@@ -143,8 +139,8 @@ class ScribbleArea(QtGui.QWidget):
 
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self):
-        super(MainWindow, self).__init__()
+    def __init__(self, parent = None):
+        QtGui.QMainWindow.__init__(self, parent)
 
         self.saveAsActs = []
 
@@ -166,7 +162,8 @@ class MainWindow(QtGui.QMainWindow):
     def open(self):
         if self.maybeSave():
             fileName = QtGui.QFileDialog.getOpenFileName(self,
-                    self.tr("Open File"), QtCore.QDir.currentPath())
+                                                         self.tr("Open File"),
+                                                         QtCore.QDir.currentPath())
             if not fileName.isEmpty():
                 self.scribbleArea.openImage(fileName)
 
@@ -182,8 +179,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def penWidth(self):
         newWidth, ok = QtGui.QInputDialog.getInteger(self, self.tr("Scribble"),
-                self.tr("Select pen width:"), self.scribbleArea.penWidth(), 1,
-                50, 1)
+                                               self.tr("Select pen width:"),
+                                               self.scribbleArea.penWidth(),
+                                               1, 50, 1)
         if ok:
             self.scribbleArea.setPenWidth(newWidth)
 
@@ -204,73 +202,75 @@ class MainWindow(QtGui.QMainWindow):
     def createActions(self):
         self.openAct = QtGui.QAction(self.tr("&Open..."), self)
         self.openAct.setShortcut(self.tr("Ctrl+O"))
-        self.openAct.triggered.connect(self.open)
+        self.connect(self.openAct, QtCore.SIGNAL("triggered()"), self.open)
 
         for format in QtGui.QImageWriter.supportedImageFormats():
             text = self.tr("%1...").arg(QtCore.QString(format).toUpper())
 
             action = QtGui.QAction(text, self)
             action.setData(QtCore.QVariant(format))
-            action.triggered.connect(self.save)
+            self.connect(action, QtCore.SIGNAL("triggered()"), self.save)
             self.saveAsActs.append(action)
-
-        self.printAct = QtGui.QAction(self.tr("&Print..."), self)
-        self.printAct.triggered.connect(self.scribbleArea.print_)
 
         self.exitAct = QtGui.QAction(self.tr("E&xit"), self)
         self.exitAct.setShortcut(self.tr("Ctrl+Q"))
-        self.exitAct.triggered.connect(self.close)
+        self.connect(self.exitAct, QtCore.SIGNAL("triggered()"),
+                     self, QtCore.SLOT("close()"))
 
         self.penColorAct = QtGui.QAction(self.tr("&Pen Color..."), self)
-        self.penColorAct.triggered.connect(self.penColor)
+        self.connect(self.penColorAct, QtCore.SIGNAL("triggered()"),
+                     self.penColor)
 
         self.penWidthAct = QtGui.QAction(self.tr("Pen &Width..."), self)
-        self.penWidthAct.triggered.connect(self.penWidth)
+        self.connect(self.penWidthAct, QtCore.SIGNAL("triggered()"),
+                     self.penWidth)
 
         self.clearScreenAct = QtGui.QAction(self.tr("&Clear Screen"), self)
         self.clearScreenAct.setShortcut(self.tr("Ctrl+L"))
-        self.clearScreenAct.triggered.connect(self.scribbleArea.clearImage)
+        self.connect(self.clearScreenAct, QtCore.SIGNAL("triggered()"),
+                     self.scribbleArea.clearImage)
 
         self.aboutAct = QtGui.QAction(self.tr("&About"), self)
-        self.aboutAct.triggered.connect(self.about)
+        self.connect(self.aboutAct, QtCore.SIGNAL("triggered()"), self.about)
 
         self.aboutQtAct = QtGui.QAction(self.tr("About &Qt"), self)
-        self.aboutQtAct.triggered.connect(QtGui.qApp.aboutQt)
+        self.connect(self.aboutQtAct, QtCore.SIGNAL("triggered()"),
+                     QtGui.qApp, QtCore.SLOT("aboutQt()"))
 
     def createMenus(self):
         self.saveAsMenu = QtGui.QMenu(self.tr("&Save As"), self)
         for action in self.saveAsActs:
             self.saveAsMenu.addAction(action)
 
-        fileMenu = QtGui.QMenu(self.tr("&File"), self)
-        fileMenu.addAction(self.openAct)
-        fileMenu.addMenu(self.saveAsMenu)
-        fileMenu.addAction(self.printAct)
-        fileMenu.addSeparator()
-        fileMenu.addAction(self.exitAct)
+        self.fileMenu = QtGui.QMenu(self.tr("&File"), self)
+        self.fileMenu.addAction(self.openAct)
+        self.fileMenu.addMenu(self.saveAsMenu)
+        self.fileMenu.addSeparator()
+        self.fileMenu.addAction(self.exitAct)
 
-        optionMenu = QtGui.QMenu(self.tr("&Options"), self)
-        optionMenu.addAction(self.penColorAct)
-        optionMenu.addAction(self.penWidthAct)
-        optionMenu.addSeparator()
-        optionMenu.addAction(self.clearScreenAct)
+        self.optionMenu = QtGui.QMenu(self.tr("&Options"), self)
+        self.optionMenu.addAction(self.penColorAct)
+        self.optionMenu.addAction(self.penWidthAct)
+        self.optionMenu.addSeparator()
+        self.optionMenu.addAction(self.clearScreenAct)
 
-        helpMenu = QtGui.QMenu(self.tr("&Help"), self)
-        helpMenu.addAction(self.aboutAct)
-        helpMenu.addAction(self.aboutQtAct)
+        self.helpMenu = QtGui.QMenu(self.tr("&Help"), self)
+        self.helpMenu.addAction(self.aboutAct)
+        self.helpMenu.addAction(self.aboutQtAct)
 
-        self.menuBar().addMenu(fileMenu)
-        self.menuBar().addMenu(optionMenu)
-        self.menuBar().addMenu(helpMenu)
+        self.menuBar().addMenu(self.fileMenu)
+        self.menuBar().addMenu(self.optionMenu)
+        self.menuBar().addMenu(self.helpMenu)
 
     def maybeSave(self):
         if self.scribbleArea.isModified():
             ret = QtGui.QMessageBox.warning(self, self.tr("Scribble"),
                         self.tr("The image has been modified.\n"
                                 "Do you want to save your changes?"),
-                        QtGui.QMessageBox.Save | QtGui.QMessageBox.Discard |
-                        QtGui.QMessageBox.Cancel)
-            if ret == QtGui.QMessageBox.Save:
+                        QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                        QtGui.QMessageBox.No,
+                        QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Escape)
+            if ret == QtGui.QMessageBox.Yes:
                 return self.saveFile("png")
             elif ret == QtGui.QMessageBox.Cancel:
                 return False
@@ -281,8 +281,10 @@ class MainWindow(QtGui.QMainWindow):
         initialPath = QtCore.QDir.currentPath() + "/untitled." + fileFormat
 
         fileName = QtGui.QFileDialog.getSaveFileName(self, self.tr("Save As"),
-                initialPath,
-                self.tr("%1 Files (*.%2);;All Files (*)").arg(fileFormat.upper()).arg(fileFormat))
+                                    initialPath,
+                                    self.tr("%1 Files (*.%2);;All Files (*)")
+                                    .arg(QtCore.QString(fileFormat.toUpper()))
+                                    .arg(QtCore.QString(fileFormat)))
         if fileName.isEmpty():
             return False
         else:
@@ -290,9 +292,6 @@ class MainWindow(QtGui.QMainWindow):
 
 
 if __name__ == "__main__":
-
-    import sys
-
     app = QtGui.QApplication(sys.argv)
     window = MainWindow()
     window.show()

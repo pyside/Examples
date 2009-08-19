@@ -23,44 +23,44 @@
 # 
 ############################################################################
 
-from PyQt4 import QtGui, QtNetwork
+import sys
+from PySide import QtCore, QtGui, QtNetwork
 
 
 class Receiver(QtGui.QDialog):
     def __init__(self, parent=None):
-        super(Receiver, self).__init__(parent)
-
+        QtGui.QDialog.__init__(self, parent)
+       
         self.statusLabel = QtGui.QLabel(self.tr("Listening for broadcasted messages"))
-        quitButton = QtGui.QPushButton(self.tr("&Quit"))
-
+        self.quitButton = QtGui.QPushButton(self.tr("&Quit"))
+        
         self.udpSocket = QtNetwork.QUdpSocket(self)
         self.udpSocket.bind(45454)
-
-        self.udpSocket.readyRead.connect(self.processPendingDatagrams)
-        quitButton.clicked.connect(self.close)
-
+        
+        self.connect(self.udpSocket, QtCore.SIGNAL("readyRead()"),
+                     self.processPendingDatagrams)
+        self.connect(self.quitButton, QtCore.SIGNAL("clicked()"),
+                     self, QtCore.SLOT("close()"))
+        
         buttonLayout = QtGui.QHBoxLayout()
         buttonLayout.addStretch(1)
-        buttonLayout.addWidget(quitButton)
-        buttonLayout.addStretch(1)
-
+        buttonLayout.addWidget(self.quitButton)
+        
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addWidget(self.statusLabel)
         mainLayout.addLayout(buttonLayout)
         self.setLayout(mainLayout)
-
+        
         self.setWindowTitle(self.tr("Broadcast Receiver"))
-
+        
     def processPendingDatagrams(self):
         while self.udpSocket.hasPendingDatagrams():
             datagram, host, port = self.udpSocket.readDatagram(self.udpSocket.pendingDatagramSize())
-            self.statusLabel.setText(self.tr("Received datagram: \"%1\"").arg(datagram))
+            self.statusLabel.setText(self.tr("Received datagram: \"%1\"")
+                                             .arg(datagram))
+    
 
-
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     receiver = Receiver()
     receiver.show()

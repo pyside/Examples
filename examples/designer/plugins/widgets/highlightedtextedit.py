@@ -23,7 +23,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 """
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 
 class HighlightedTextEdit(QtGui.QTextEdit):
@@ -34,9 +34,9 @@ class HighlightedTextEdit(QtGui.QTextEdit):
     highlighter.
     """
     
-    def __init__(self, parent=None):
+    def __init__(self, parent = None):
     
-        super(HighlightedTextEdit, self).__init__(parent)
+        QtGui.QTextEdit.__init__(self, parent)
         
         self.setFrameShape(QtGui.QFrame.Box)
         self.setFrameShadow(QtGui.QFrame.Plain)
@@ -54,8 +54,8 @@ class HighlightedTextEdit(QtGui.QTextEdit):
     def setCode(self, text):
         self.setPlainText(text)
     
-    code = QtCore.pyqtProperty(str, getCode, setCode)
-
+    code = QtCore.pyqtProperty("QString", getCode, setCode)
+    
     # The displayFont property is implemented with the getDisplayFont() and
     # setDisplayFont() methods, and contains the font used to display the
     # text in the editor.
@@ -68,7 +68,7 @@ class HighlightedTextEdit(QtGui.QTextEdit):
         self.highlighter.updateHighlighter(font)
         self.update()
     
-    displayFont = QtCore.pyqtProperty(QtGui.QFont, getDisplayFont, setDisplayFont)
+    displayFont = QtCore.pyqtProperty("QFont", getDisplayFont, setDisplayFont)
 
 
 class PythonHighlighter(QtGui.QSyntaxHighlighter):
@@ -84,7 +84,7 @@ class PythonHighlighter(QtGui.QSyntaxHighlighter):
     
     def __init__(self, document, base_format):
     
-        super(PythonHighlighter, self).__init__(document)
+        QtGui.QSyntaxHighlighter.__init__(self, document)
         
         self.base_format = base_format
         self.document = document
@@ -130,11 +130,11 @@ class PythonHighlighter(QtGui.QSyntaxHighlighter):
     
         for expression, format in self.rules:
         
-            index = expression.indexIn(text, start)
+            index = text.indexOf(expression, start)
             while index >= start and index < finish:
                 length = expression.matchedLength()
                 self.setFormat(index, min(length, finish - index), format)
-                index = expression.indexIn(text, index + length)
+                index = text.indexOf(expression, index + length)
     
     def updateFonts(self, font):
     

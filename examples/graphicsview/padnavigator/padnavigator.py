@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-"""PyQt4 port of the examples/graphicsview/padnavigator example from Qt v4.x"""
+"""PySide port of the examples/graphicsview/padnavigator example from Qt v4.x"""
 
+import sys
 import math
-
-from PyQt4 import QtCore, QtGui, QtOpenGL
+from PySide import QtCore, QtGui, QtOpenGL
 
 from padnavigator_rc import *
 from ui_backside import Ui_BackSide
@@ -12,7 +12,7 @@ from ui_backside import Ui_BackSide
 
 class Panel(QtGui.QGraphicsView):
     def __init__(self, width, height):
-        super(Panel, self).__init__()
+        QtGui.QGraphicsView.__init__(self)
 
         self.selectedX = 0
         self.selectedY = 0
@@ -25,16 +25,12 @@ class Panel(QtGui.QGraphicsView):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
         self.setViewportUpdateMode(QtGui.QGraphicsView.FullViewportUpdate)
-        self.setRenderHints(QtGui.QPainter.Antialiasing |
-                QtGui.QPainter.SmoothPixmapTransform |
-                QtGui.QPainter.TextAntialiasing)
+        self.setRenderHints(QtGui.QPainter.Antialiasing | QtGui.QPainter.SmoothPixmapTransform)
 
-        self.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap('./images/blue_angle_swirl.jpg')))
+        self.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap("./images/blue_angle_swirl.jpg")))
 
         if QtOpenGL.QGLFormat.hasOpenGL():
             self.setViewport(QtOpenGL.QGLWidget(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers)))
-
-        self.setMinimumSize(50, 50)
 
         self.selectionTimeLine = QtCore.QTimeLine(150, self)
         self.flipTimeLine = QtCore.QTimeLine(500, self)
@@ -63,52 +59,49 @@ class Panel(QtGui.QGraphicsView):
         self.startPos = self.selectionItem.pos()
         self.endPos = QtCore.QPointF()
 
-        self.grid = []
+        self.grid = list()
 
-        for y in range(height):
-            self.grid.append([])
-            for x in range(width):
+        for y in (range(height)):
+            self.grid.append(list())
+            for x in (range(width)):
                 item = RoundRectItem(QtCore.QRectF(-54, -54, 108, 108), QtGui.QColor(214, 240, 110, 128))
                 item.setPos(self.posForLocation(x, y))
 
                 item.setParentItem(self.baseItem)
                 item.setFlag(QtGui.QGraphicsItem.ItemIsFocusable)
                 self.grid[y].append(item)
-
                 rand = QtCore.qrand() % 9
                 if rand == 0 :
-                    item.setPixmap(QtGui.QPixmap(':/images/kontact_contacts.png'))
+                    item.setPixmap(QtGui.QPixmap(":/images/kontact_contacts.png"))
                 elif rand == 1:
-                    item.setPixmap(QtGui.QPixmap(':/images/kontact_journal.png'))
+                    item.setPixmap(QtGui.QPixmap(":/images/kontact_journal.png"))
                 elif rand == 2:
-                    item.setPixmap(QtGui.QPixmap(':/images/kontact_notes.png'))
+                    item.setPixmap(QtGui.QPixmap(":/images/kontact_notes.png"))
                 elif rand == 3:
-                    item.setPixmap(QtGui.QPixmap(':/images/kopeteavailable.png'))
+                    item.setPixmap(QtGui.QPixmap(":/images/kopeteavailable.png"))
                 elif rand == 4:
-                    item.setPixmap(QtGui.QPixmap(':/images/metacontact_online.png'))
+                    item.setPixmap(QtGui.QPixmap(":/images/metacontact_online.png"))
                 elif rand == 5:
-                    item.setPixmap(QtGui.QPixmap(':/images/minitools.png'))
+                    item.setPixmap(QtGui.QPixmap(":/images/minitools.png"))
                 elif rand == 6:
-                    item.setPixmap(QtGui.QPixmap(':/images/kontact_journal.png'))
+                    item.setPixmap(QtGui.QPixmap(":/images/kontact_journal.png"))
                 elif rand == 7:
-                    item.setPixmap(QtGui.QPixmap(':/images/kontact_contacts.png'))
+                    item.setPixmap(QtGui.QPixmap(":/images/kontact_contacts.png"))
                 elif rand == 8:
-                    item.setPixmap(QtGui.QPixmap(':/images/kopeteavailable.png'))
+                    item.setPixmap(QtGui.QPixmap(":/images/kopeteavailable.png"))
                 else:
                     pass
-
-                item.qobject.activated.connect(self.flip)
+                self.connect(item.qobject, QtCore.SIGNAL("activated()"), self.flip)
 
         self.grid[0][0].setFocus()
 
-        self.backItem.qobject.activated.connect(self.flip)
-        self.selectionTimeLine.valueChanged.connect(self.updateSelectionStep)
-        self.flipTimeLine.valueChanged.connect(self.updateFlipStep)
+        self.connect(self.backItem.qobject, QtCore.SIGNAL("activated()"), self.flip)
+        self.connect(self.selectionTimeLine, QtCore.SIGNAL("valueChanged(qreal)"), self.updateSelectionStep)
+        self.connect(self.flipTimeLine, QtCore.SIGNAL("valueChanged(qreal)"), self.updateFlipStep)
 
         self.splash = SplashItem()
         self.splash.setZValue(5)
-        self.splash.setPos(-self.splash.rect().width()/2,
-                self.scene.sceneRect().top())
+        self.splash.setPos(-self.splash.rect().width()/2, self.scene.sceneRect().top())
         self.scene.addItem(self.splash)
 
         self.splash.grabKeyboard()
@@ -119,9 +112,9 @@ class Panel(QtGui.QGraphicsView):
 
     def keyPressEvent(self, event):
         if self.splash.isVisible() or event.key() == QtCore.Qt.Key_Return or self.flipped :
-            super(Panel, self).keyPressEvent(event)
+            QtGui.QGraphicsView.keyPressEvent(self, event)
             return
-
+        
         self.selectedX = (self.selectedX + self.width + (event.key() == QtCore.Qt.Key_Right) - (event.key() == QtCore.Qt.Key_Left)) % self.width
         self.selectedY = (self.selectedY + self.height + (event.key() == QtCore.Qt.Key_Down) - (event.key() == QtCore.Qt.Key_Up)) % self.height
         self.grid[self.selectedY][self.selectedX].setFocus()
@@ -132,7 +125,7 @@ class Panel(QtGui.QGraphicsView):
         self.selectionTimeLine.start()
 
     def resizeEvent(self, event):
-        super(Panel, self).resizeEvent(event)
+        QtGui.QGraphicsView.resizeEvent(self, event)
         self.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
 
     def updateSelectionStep(self, val):
@@ -149,7 +142,7 @@ class Panel(QtGui.QGraphicsView):
 
     def updateFlipStep(self, val):
         finalxrot = self.xrot - self.xrot * val
-        if self.flipLeft:
+        if (self.flipLeft):
             finalyrot = self.yrot - self.yrot * val - 180 * val
         else:
             finalyrot = self.yrot - self.yrot * val + 180 * val
@@ -159,7 +152,7 @@ class Panel(QtGui.QGraphicsView):
         scale = 1 - math.sin(3.14 * val) * 0.3
         transform.scale(scale, scale)
         self.baseItem.setTransform(transform)
-        if val == 0:
+        if (val == 0):
             self.grid[self.selectedY][self.selectedX].setFocus()
 
     def flip(self):
@@ -180,30 +173,22 @@ class Panel(QtGui.QGraphicsView):
         return QtCore.QPointF(x*150, y*150) - QtCore.QPointF((self.width - 1) * 75, (self.height - 1) * 75)
 
 
-class Activated(QtCore.QObject):
-
-    activated = QtCore.pyqtSignal()
-
-
 class RoundRectItem(QtGui.QGraphicsRectItem):
     def __init__(self, rect, brush, embeddedWidget=None):
-        super(RoundRectItem, self).__init__(rect)
+        QtGui.QGraphicsRectItem.__init__(self, rect)
 
         self.brush = QtGui.QBrush(brush)
         self.timeLine = QtCore.QTimeLine(75)
         self.lastVal = 0
         self.opa = 1
-        self.proxyWidget = None
+        self.proxyWidget = 0
         self.pix = QtGui.QPixmap()
-
         # In the C++ version of this example, this class is also derived from
-        # QObject in order to emit the activated() signal.  PyQt does not
-        # support deriving from more than one wrapped class so we just create
-        # an explicit QObject sub-class.
-        self.qobject = Activated()
-
-        self.timeLine.valueChanged.connect(self.updateValue)
-
+        # QObject in order to connect to events.  PyQt does not support
+        # deriving from more than one wrapped class so we just create an
+        # explicit QObject
+        self.qobject = QtCore.QObject()
+        self.qobject.connect(self.timeLine, QtCore.SIGNAL("valueChanged(qreal)"), self.updateValue)
         if embeddedWidget:
             self.proxyWidget = QtGui.QGraphicsProxyWidget(self)
             self.proxyWidget.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -212,7 +197,6 @@ class RoundRectItem(QtGui.QGraphicsRectItem):
 
     def paint(self, painter, qstyleoptiongraphicsitem, qwidget):
         x = painter.worldTransform()
-
         unit = x.map(QtCore.QLineF(0, 0, 1, 1))
         if unit.p1().x() > unit.p2().x() or unit.p1().y() > unit.p2().y():
             if self.proxyWidget and self.proxyWidget.isVisible():
@@ -258,8 +242,11 @@ class RoundRectItem(QtGui.QGraphicsRectItem):
             self.update()
 
     def opacity(self):
-        parent = self.parentItem()
-
+        if self.parentItem():
+            parent = self.parentItem()
+        else:
+            parent = 0
+        
         if parent:
             op = parent.opacity()
         else:
@@ -273,19 +260,18 @@ class RoundRectItem(QtGui.QGraphicsRectItem):
     def keyPressEvent(self, event):
         if event.isAutoRepeat() or event.key() != QtCore.Qt.Key_Return \
                 or (self.timeLine.state() == QtCore.QTimeLine.Running and self.timeLine.direction() == QtCore.QTimeLine.Forward):
-            super(RoundRectItem, self).keyPressEvent(event)
+            QtGui.QGraphicsRectItem.keyPressEvent(self, event)
             return
 
         self.timeLine.stop()
         self.timeLine.setDirection(QtCore.QTimeLine.Forward)
         self.timeLine.start()
-        self.qobject.activated.emit()
+        self.qobject.emit(QtCore.SIGNAL("activated()"))
 
     def keyReleaseEvent(self, event):
         if event.key() != QtCore.Qt.Key_Return:
-            super(RoundRectItem, self).keyReleaseEvent(event)
+            QtGui.QGraphicsRectItem.keyReleaseEvent(self, event)
             return
-
         self.timeLine.stop()
         self.timeLine.setDirection(QtCore.QTimeLine.Backward)
         self.timeLine.start()
@@ -298,18 +284,16 @@ class RoundRectItem(QtGui.QGraphicsRectItem):
 
 class SplashItem(QtGui.QGraphicsWidget):
     def __init__(self, parent=None):
-        super(SplashItem, self).__init__(parent)
+        QtGui.QGraphicsWidget.__init__(self, parent)
 
         self.opacity = 1.0
-
         self.timeLine = QtCore.QTimeLine(350)
         self.timeLine.setCurveShape(QtCore.QTimeLine.EaseInCurve)
-        self.timeLine.valueChanged.connect(self.setValue)
+        self.connect(self.timeLine, QtCore.SIGNAL("valueChanged(qreal)"), self.setValue)
 
-        self.text = self.tr("Welcome to the Pad Navigator Example. You can "
-                            "use the keyboard arrows to navigate the icons, "
-                            "and press enter to activate an item. Please "
-                            "press any key to continue.")
+        self.text = self.tr("Welcome to the Pad Navigator Example. You can use the"\
+                " keyboard arrows to navigate the icons, and press enter"\
+                " to activate an item. Please press any key to continue.")
         self.resize(400, 175)
 
     def paint(self, painter, qstyleoptiongraphicsitem, qwidget):
@@ -339,14 +323,9 @@ class SplashItem(QtGui.QGraphicsWidget):
             self.hide()
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
 
     panel = Panel(3, 3)
-    panel.setFocus()
     panel.show()
-
     sys.exit(app.exec_())

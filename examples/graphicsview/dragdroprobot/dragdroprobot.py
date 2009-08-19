@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-############################################################################
+#############################################################################
 ##
 ## Copyright (C) 2006-2006 Trolltech ASA. All rights reserved.
 ##
@@ -19,9 +19,10 @@
 ## This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 ## WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ##
-############################################################################
+#############################################################################
 
-from PyQt4 import QtCore, QtGui
+from math import sin, cos
+from PySide import QtCore, QtGui
 
 import dragdroprobot_rc
 
@@ -30,13 +31,12 @@ class ColorItem(QtGui.QGraphicsItem):
     n = 0
 
     def __init__(self):
-        super(ColorItem, self).__init__()
+        QtGui.QGraphicsItem.__init__(self)
 
         self.color = QtGui.QColor(QtCore.qrand() % 256, QtCore.qrand() % 256,
                 QtCore.qrand() % 256)
-
         self.setToolTip(
-            "QColor(%d, %d, %d)\nClick and drag this color onto the robot!" % 
+            "QColor(%d,%d,%d)\nClick and drag this color onto the robot!" % 
               (self.color.red(), self.color.green(), self.color.blue())
         )
         self.setCursor(QtCore.Qt.OpenHandCursor)
@@ -57,55 +57,46 @@ class ColorItem(QtGui.QGraphicsItem):
             event.ignore()
             return
 
-        self.setCursor(QtCore.Qt.ClosedHandCursor)
-
-    def mouseMoveEvent(self, event):
-        if QtCore.QLineF(QtCore.QPointF(event.screenPos()), QtCore.QPointF(event.buttonDownScreenPos(QtCore.Qt.LeftButton))).length() < QtGui.QApplication.startDragDistance():
-            return
-
         drag = QtGui.QDrag(event.widget())
         mime = QtCore.QMimeData()
         drag.setMimeData(mime)
 
         ColorItem.n += 1
-        if ColorItem.n > 2 and QtCore.qrand() % 3 == 0:
-            image = QtGui.QImage(':/images/head.png')
+        if (ColorItem.n > 2) and ((QtCore.qrand()%3) == 0):
+            image = QtGui.QImage(":/images/head.png")
             mime.setImageData(QtCore.QVariant(image))
             drag.setPixmap(QtGui.QPixmap.fromImage(image).scaled(30,40))
             drag.setHotSpot(QtCore.QPoint(15, 30))
         else:
-            mime.setColorData(QtCore.QVariant(self.color))
-            mime.setText("#%02x%02x%02x" % (self.color.red(), self.color.green(), self.color.blue()))
+            c = self.color
+            mime.setColorData(QtCore.QVariant(c))
+            mime.setText("#%02x%02x%02x" % (c.red(), c.green(), c.blue()))
 
             pixmap = QtGui.QPixmap(34, 34)
             pixmap.fill(QtCore.Qt.white)
-
             painter = QtGui.QPainter(pixmap)
             painter.translate(15, 15)
             painter.setRenderHint(QtGui.QPainter.Antialiasing)
             self.paint(painter, None, None)
             painter.end()
-
             pixmap.setMask(pixmap.createHeuristicMask())
 
             drag.setPixmap(pixmap)
             drag.setHotSpot(QtCore.QPoint(15, 20))
 
-        drag.exec_()
-        self.setCursor(QtCore.Qt.OpenHandCursor)
-
-    def mouseReleaseEvent(self, event):
-        self.setCursor(QtCore.Qt.OpenHandCursor)
+        drag.start()
 
 
 class RobotPart(QtGui.QGraphicsItem):
     def __init__(self, parent=None):
-        super(RobotPart, self).__init__(parent)
+        QtGui.QGraphicsItem.__init__(self, parent)
 
+        # NOTE: simply doing "self.color = QtCore.Qt.lightGray" doesn't work 
+        #   because QtCore.Qt.lightGray is a QtCore.GlobalColor object,
+        #   which has no "light" method, which will be called later
         self.color = QtGui.QColor(QtCore.Qt.lightGray)
         self.pixmap = None
         self.dragOver = False
-
         self.setAcceptDrops(True)
 
     def dragEnterEvent(self, event):
@@ -183,7 +174,7 @@ class RobotLimb(RobotPart):
 
 class Robot(RobotPart):
     def __init__(self):
-        super(Robot, self).__init__()
+        RobotPart.__init__(self)
 
         self.torsoItem         = RobotTorso(self)
         self.headItem          = RobotHead(self.torsoItem)
@@ -197,6 +188,11 @@ class Robot(RobotPart):
         self.lowerLeftLegItem  = RobotLimb(self.upperLeftLegItem)
 
         self.timeline = QtCore.QTimeLine()
+        self.timeline.setUpdateInterval(1000/25)
+        self.timeline.setCurveShape(QtCore.QTimeLine.SineCurve)
+        self.timeline.setLoopCount(0)
+        self.timeline.setDuration(2000)
+
         settings = [
         #             item               position    rotation at
         #                                 x    y    time 0  /  1
@@ -222,10 +218,6 @@ class Robot(RobotPart):
             self.animations.append(animation)
         self.animations[0].setScaleAt(1, 1.1, 1.1)
     
-        self.timeline.setUpdateInterval(1000 / 25)
-        self.timeline.setCurveShape(QtCore.QTimeLine.SineCurve)
-        self.timeline.setLoopCount(0)
-        self.timeline.setDuration(2000)
         self.timeline.start()
 
     def boundingRect(self):
@@ -235,21 +227,18 @@ class Robot(RobotPart):
         pass
 
 
-if __name__== '__main__':
-
+if __name__=="__main__":
     import sys
-    import math
 
     app = QtGui.QApplication(sys.argv)
 
     QtCore.qsrand(QtCore.QTime(0, 0, 0).secsTo(QtCore.QTime.currentTime()))
 
     scene = QtGui.QGraphicsScene(-200, -200, 400, 400)
-
     for i in range(10):
         item = ColorItem()
         angle = i*6.28 / 10.0
-        item.setPos(math.sin(angle)*150, math.cos(angle)*150)
+        item.setPos(sin(angle)*150, cos(angle)*150)
         scene.addItem(item)
 
     robot = Robot()
@@ -259,7 +248,6 @@ if __name__== '__main__':
 
     view = QtGui.QGraphicsView(scene)
     view.setRenderHint(QtGui.QPainter.Antialiasing)
-    view.setViewportUpdateMode(QtGui.QGraphicsView.BoundingRectViewportUpdate)
     view.setBackgroundBrush(QtGui.QColor(230, 200, 167))
     view.setWindowTitle(view.tr("Drag and Drop Robot"))
     view.show()

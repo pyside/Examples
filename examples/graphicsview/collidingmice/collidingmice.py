@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-############################################################################
+#############################################################################
 ##
 ## Copyright (C) 2006-2006 Trolltech ASA. All rights reserved.
 ##
@@ -19,11 +19,11 @@
 ## This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 ## WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ##
-############################################################################
+#############################################################################
 
+import sys
 import math
-
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 import mice_rc
 
@@ -34,17 +34,18 @@ class Mouse(QtGui.QGraphicsItem):
 
     # Create the bounding rectangle once.
     adjust = 0.5
-    BoundingRect = QtCore.QRectF(-20 - adjust, -22 - adjust, 40 + adjust,
-            83 + adjust)
+    BoundingRect = QtCore.QRectF(-20 - adjust, -22 - adjust,
+                                 40 + adjust, 83 + adjust)
 
     def __init__(self):
-        super(Mouse, self).__init__()
+        QtGui.QGraphicsItem.__init__(self)
 
         self.angle = 0.0
         self.speed = 0.0
         self.mouseEyeDirection = 0.0
-        self.color = QtGui.QColor(QtCore.qrand() % 256, QtCore.qrand() % 256,
-                QtCore.qrand() % 256)
+        self.color = QtGui.QColor(QtCore.qrand() % 256,
+                                  QtCore.qrand() % 256,
+                                  QtCore.qrand() % 256)
 
         self.rotate(QtCore.qrand() % (360 * 16))
 
@@ -53,7 +54,8 @@ class Mouse(QtGui.QGraphicsItem):
         # deriving from more than one wrapped class so we just create an
         # explicit timer instead.
         self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.timerEvent)
+        QtCore.QObject.connect(self.timer, QtCore.SIGNAL('timeout()'),
+                               self.timerEvent)
         self.timer.start(1000 / 33)
 
     @staticmethod
@@ -165,10 +167,7 @@ class Mouse(QtGui.QGraphicsItem):
         self.setPos(self.mapToParent(0, -(3 + math.sin(self.speed) * 3)))
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     MouseCount = 7
 
     app = QtGui.QApplication(sys.argv)
@@ -186,9 +185,8 @@ if __name__ == '__main__':
 
     view = QtGui.QGraphicsView(scene)
     view.setRenderHint(QtGui.QPainter.Antialiasing)
-    view.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap(':/images/cheese.jpg')))
+    view.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap(":/images/cheese.jpg")))
     view.setCacheMode(QtGui.QGraphicsView.CacheBackground)
-    view.setViewportUpdateMode(QtGui.QGraphicsView.BoundingRectViewportUpdate)
     view.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
     view.setWindowTitle(QtCore.QT_TRANSLATE_NOOP(QtGui.QGraphicsView, "Colliding Mice"))
     view.resize(400, 300)

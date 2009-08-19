@@ -23,12 +23,13 @@
 ##
 #############################################################################
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 
 class Window(QtGui.QWidget):
-    def __init__(self, parent=None):
-        super(Window, self).__init__(parent)
+    def __init__(self, parent = None):
+        QtGui.QWidget.__init__(self, parent)
 
         grid = QtGui.QGridLayout()
         grid.addWidget(self.createFirstExclusiveGroup(), 0, 0)
@@ -120,13 +121,6 @@ class Window(QtGui.QWidget):
         menu.addAction(self.tr("F&ourth Item"))
         popupButton.setMenu(menu)
 
-        newAction = menu.addAction(self.tr("Submenu"))
-        subMenu = QtGui.QMenu(self.tr("Popup Submenu"), self)
-        subMenu.addAction(self.tr("Item 1"))
-        subMenu.addAction(self.tr("Item 2"))
-        subMenu.addAction(self.tr("Item 3"))
-        newAction.setMenu(subMenu)
-
         vbox = QtGui.QVBoxLayout()
         vbox.addWidget(pushButton)
         vbox.addWidget(toggleButton)
@@ -139,9 +133,6 @@ class Window(QtGui.QWidget):
 
 
 if __name__ == "__main__":
-
-    import sys
-
     app = QtGui.QApplication(sys.argv)
     clock = Window()
     clock.show()

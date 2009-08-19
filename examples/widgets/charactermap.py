@@ -23,149 +23,117 @@
 ##
 #############################################################################
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 
 class CharacterWidget(QtGui.QWidget):
-
-    characterSelected = QtCore.pyqtSignal(str)
-
-    def __init__(self, parent=None):
-        super(CharacterWidget, self).__init__(parent)
+    def __init__(self, parent = None):
+        QtGui.QWidget.__init__(self, parent)
 
         self.displayFont = QtGui.QFont()
-        self.squareSize = 24
-        self.columns = 16
         self.lastKey = -1
         self.setMouseTracking(True)
 
     def updateFont(self, fontFamily):
         self.displayFont.setFamily(fontFamily)
-        self.squareSize = max(24, QtGui,QFontMetrics(self.displayFont).xHeight() * 3)
-        self.adjustSize()
+        self.displayFont.setPixelSize(16)
         self.update()
 
     def updateStyle(self, fontStyle):
         fontDatabase = QtGui.QFontDatabase()
-        oldStrategy = self.displayFont.styleStrategy()
         self.displayFont = fontDatabase.font(self.displayFont.family(),
-                fontStyle, self.displayFont.pointSize())
-        self.displayFont.setStyleStrategy(oldStrategy)
-        self.squareSize = max(24, QtGui,QFontMetrics(self.displayFont).xHeight() * 3)
-        self.adjustSize()
-        self.update()
-
-    def updateFontMerging(self, enable):
-        if enable:
-            self.displayFont.setStyleStrategy(QtGui.QFont.PreferDefault)
-        else:
-            self.displayFont.setStyleStrategy(QtGui.QFont.NoFontMerging)
-        self.adjustSize()
+                                             fontStyle, 12)
+        self.displayFont.setPixelSize(16)
         self.update()
 
     def sizeHint(self):
-        return QtCore.QSize(self.columns * self.squareSize,
-                (65536 / self.columns) * self.squareSize)
+        return QtCore.QSize(32*24, (65536/32)*24)
 
     def mouseMoveEvent(self, event):
         widgetPosition = self.mapFromGlobal(event.globalPos())
-        key = (widgetPosition.y() / self.squareSize) * self.columns + widgetPosition.x() / self.squareSize
-
-        text = QtCore.QString.fromLatin1("<p>Character: <span style=\"font-size: 24pt; font-family: %1\">").arg(self.displayFont.family()) + \
-                QtCore.QChar(key) + \
-                QtCore.QString.fromLatin1("</span><p>Value: 0x") + \
-                QtCore.QString.number(key, 16)
-        QtGui.QToolTip.showText(event.globalPos(), text, self)
+        key = (widgetPosition.y()/24)*32 + widgetPosition.x()/24
+        QtGui.QToolTip.showText(event.globalPos(), QtCore.QString.number(key), self)
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton:
-            self.lastKey = (event.y() / self.squareSize) * self.columns + event.x() / self.squareSize
+            self.lastKey = (event.y()/24)*32 + event.x()/24
             if QtCore.QChar(self.lastKey).category() != QtCore.QChar.NoCategory:
-                self.characterSelected.emit(QtCore.QString(QtCore.QChar(self.lastKey)))
+                self.emit(QtCore.SIGNAL("characterSelected(const QString &)"), QtCore.QString(QtCore.QChar(self.lastKey)))
             self.update()
         else:
-            super(CharacterWidget, self).mousePressEvent(event)
+            QtGui.QWidget.mousePressEvent(self, event)
 
     def paintEvent(self, event):
-        painter = QtGui.QPainter(self)
+        painter = QtGui.QPainter()
+        painter.begin(self)
         painter.fillRect(event.rect(), QtCore.Qt.white)
         painter.setFont(self.displayFont)
 
         redrawRect = event.rect()
-        beginRow = redrawRect.top() // self.squareSize
-        endRow = redrawRect.bottom() // self.squareSize
-        beginColumn = redrawRect.left() // self.squareSize
-        endColumn = redrawRect.right() // self.squareSize
+        beginRow = redrawRect.top()/24
+        endRow = redrawRect.bottom()/24
+        beginColumn = redrawRect.left()/24
+        endColumn = redrawRect.right()/24
 
         painter.setPen(QtCore.Qt.gray)
         for row in range(beginRow, endRow + 1):
             for column in range(beginColumn, endColumn + 1):
-                painter.drawRect(column * self.squareSize,
-                        row * self.squareSize, self.squareSize,
-                        self.squareSize)
+                painter.drawRect(column*24, row*24, 24, 24)
 
         fontMetrics = QtGui.QFontMetrics(self.displayFont)
         painter.setPen(QtCore.Qt.black)
         for row in range(beginRow, endRow + 1):
             for column in range(beginColumn, endColumn + 1):
-                key = row * self.columns + column
-                painter.setClipRect(column * self.squareSize,
-                        row * self.squareSize, self.squareSize,
-                        self.squareSize)
+                key = row*32 + column
+                painter.setClipRect(column*24, row*24, 24, 24)
 
                 if key == self.lastKey:
-                    painter.fillRect(column * self.squareSize + 1,
-                            row * self.squareSize + 1, self.squareSize,
-                            self.squareSize, QtCore.Qt.red)
+                    painter.fillRect(column*24, row*24, 24, 24, QtCore.Qt.red)
 
-                painter.drawText(column * self.squareSize + (self.squareSize / 2) - fontMetrics.width(QtCore.QChar(key)) / 2,
-                        row * self.squareSize + 4 + fontMetrics.ascent(),
-                        QtCore.QString(QtCore.QChar(key)))
+                painter.drawText(column*24 + 12 - fontMetrics.width(QtCore.QChar(key))/2,
+                                 row*24 + 4 + fontMetrics.ascent(),
+                                 QtCore.QString(QtCore.QChar(key)))
 
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self):
-        super(MainWindow, self).__init__()
+    def __init__(self, parent = None):
+        QtGui.QMainWindow.__init__(self, parent)
 
         centralWidget = QtGui.QWidget()
 
         fontLabel = QtGui.QLabel(self.tr("Font:"))
-        self.fontCombo = QtGui.QFontComboBox()
-        sizeLabel = QtGui.QLabel(self.tr("Size:"))
-        self.sizeCombo = QtGui.QComboBox()
+        self.fontCombo = QtGui.QComboBox()
         styleLabel = QtGui.QLabel(self.tr("Style:"))
         self.styleCombo = QtGui.QComboBox()
-        fontMergingLabel = QtGui.QLabel(self.tr("Automatic Font Merging:"))
-        self.fontMerging = QtGui.QCheckBox()
-        self.fontMerging.setChecked(True)
 
         self.scrollArea = QtGui.QScrollArea()
         self.characterWidget = CharacterWidget()
         self.scrollArea.setWidget(self.characterWidget)
 
-        self.findStyles(self.fontCombo.currentFont())
-        self.findSizes(self.fontCombo.currentFont())
+        self.findFonts()
+        self.findStyles()
 
         self.lineEdit = QtGui.QLineEdit()
         clipboardButton = QtGui.QPushButton(self.tr("&To clipboard"))
 
         self.clipboard = QtGui.QApplication.clipboard()
 
-        self.fontCombo.activated[str].connect(self.findStyles)
-        self.fontCombo.activated[str].connect(self.characterWidget.updateFont)
-        self.styleCombo.activated[str].connect(self.characterWidget.updateStyle)
-        self.characterWidget.characterSelected.connect(self.insertCharacter)
-        clipboardButton.clicked.connect(self.updateClipboard)
+        self.connect(self.fontCombo, QtCore.SIGNAL("activated(const QString &)"),
+                     self.findStyles)
+        self.connect(self.fontCombo, QtCore.SIGNAL("activated(const QString &)"),
+                     self.characterWidget.updateFont)
+        self.connect(self.styleCombo, QtCore.SIGNAL("activated(const QString &)"),
+                     self.characterWidget.updateStyle)
+        self.connect(self.characterWidget, QtCore.SIGNAL("characterSelected(const QString &)"),
+                     self.insertCharacter)
+        self.connect(clipboardButton, QtCore.SIGNAL("clicked()"), self.updateClipboard)
 
         controlsLayout = QtGui.QHBoxLayout()
         controlsLayout.addWidget(fontLabel)
         controlsLayout.addWidget(self.fontCombo, 1)
-        controlsLayout.addWidget(sizeLabel)
-        controlsLayout.addWidget(self.sizeCombo, 1)
         controlsLayout.addWidget(styleLabel)
         controlsLayout.addWidget(self.styleCombo, 1)
-        controlsLayout.addWidget(fontMergingLabel)
-        controlsLayout.addWidget(self.fontMerging, 1)
         controlsLayout.addStretch(1)
 
         lineLayout = QtGui.QHBoxLayout()
@@ -183,42 +151,28 @@ class MainWindow(QtGui.QMainWindow):
         self.setCentralWidget(centralWidget)
         self.setWindowTitle(self.tr("Character Map"))
 
-    def findStyles(self, font):
+    def findFonts(self):
+        fontDatabase = QtGui.QFontDatabase()
+        self.fontCombo.clear()
+
+        for family in fontDatabase.families():
+            self.fontCombo.addItem(family)
+
+    def findStyles(self):
         fontDatabase = QtGui.QFontDatabase()
         currentItem = self.styleCombo.currentText()
         self.styleCombo.clear()
 
-        for style in fontDatabase.styles(font.family()):
+        for style in fontDatabase.styles(self.fontCombo.currentText()):
             self.styleCombo.addItem(style)
 
-        styleIndex = self.styleCombo.findText(currentItem)
-        if styleIndex == -1:
+        index = self.styleCombo.findText(currentItem)
+        if index == -1:
             self.styleCombo.setCurrentIndex(0)
         else:
-            self.styleCombo.setCurrentIndex(styleIndex)
+            self.styleCombo.setCurrentIndex(index)
 
-    def findSizes(self, font):
-        fontDatabase = QtGui.QFontDatabase()
-        currentSize = self.sizeCombo.currentText()
-        self.sizeCombo.blockSignals(True)
-        self.sizeCombo.clear()
-
-        if fontDatabase.isSmoothlyScalable(font.family(), fontDatabase.styleString(font)):
-            for size in QtGui.QFontDatabase.standardSizes():
-                self.sizeCombo.addItem(QtCore.QVariant(size).toString())
-                self.sizeCombo.setEditable(True)
-        else:
-            for size in fontDatabase.smoothSizes(font.family(), fontDatabase.styleString(font)):
-                self.sizeCombo.addItem(QtCore.QVariant(size).toString())
-                self.sizeCombo.setEditable(False)
-
-        self.sizeCombo.blockSignals(False)
-
-        sizeIndex = self.sizeCombo.findText(currentSize)
-        if sizeIndex == -1:
-            self.sizeCombo.setCurrentIndex(max(0, self.sizeCombo.count() / 3))
-        else:
-            self.sizeCombo.setCurrentIndex(sizeIndex)
+        self.characterWidget.updateStyle(self.styleCombo.currentText())
 
     def insertCharacter(self, character):
         self.lineEdit.insert(character)
@@ -229,9 +183,6 @@ class MainWindow(QtGui.QMainWindow):
 
 
 if __name__ == "__main__":
-
-    import sys
-
     app = QtGui.QApplication(sys.argv)
     window = MainWindow()
     window.show()

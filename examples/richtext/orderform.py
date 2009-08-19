@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 
-"""PyQt4 port of the richtext/orderform example from Qt v4.x"""
+"""PySide port of the richtext/orderform example from Qt v4.x"""
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
-        super(MainWindow, self).__init__()
+        QtGui.QMainWindow.__init__(self)
 
         fileMenu = QtGui.QMenu(self.tr("&File"), self)
         newAction = fileMenu.addAction(self.tr("&New..."))
         newAction.setShortcut(self.tr("Ctrl+N"))
-        self.printAction = fileMenu.addAction(self.tr("&Print..."),
-                self.printFile)
+        self.printAction = fileMenu.addAction(self.tr("&Print..."), self.printFile)
         self.printAction.setShortcut(self.tr("Ctrl+P"))
         self.printAction.setEnabled(False)
         quitAction = fileMenu.addAction(self.tr("E&xit"))
@@ -22,8 +22,8 @@ class MainWindow(QtGui.QMainWindow):
 
         self.letters = QtGui.QTabWidget()
 
-        newAction.triggered.connect(self.openDialog)
-        quitAction.triggered.connect(self.close)
+        self.connect(newAction, QtCore.SIGNAL("triggered()"), self.openDialog)
+        self.connect(quitAction, QtCore.SIGNAL("triggered()"), self, QtCore.SLOT("close()"))
 
         self.setCentralWidget(self.letters)
         self.setWindowTitle(self.tr("Order Form"))
@@ -80,7 +80,6 @@ class MainWindow(QtGui.QMainWindow):
         cursor.insertText(self.tr("I would like to place an order for the "
                           "following items:"), textFormat)
         cursor.insertBlock()
-        cursor.insertBlock()
 
         orderTableFormat = QtGui.QTextTableFormat()
         orderTableFormat.setAlignment(QtCore.Qt.AlignHCenter)
@@ -95,32 +94,29 @@ class MainWindow(QtGui.QMainWindow):
         cursor = orderTable.cellAt(0, 1).firstCursorPosition()
         cursor.insertText(self.tr("Quantity"), boldFormat)
 
-        for text, quantity in orderItems:
+        for item in orderItems:
             row = orderTable.rows()
 
             orderTable.insertRows(row, 1)
             cursor = orderTable.cellAt(row, 0).firstCursorPosition()
-            cursor.insertText(text, textFormat)
+            cursor.insertText(item[0], textFormat)
             cursor = orderTable.cellAt(row, 1).firstCursorPosition()
-            cursor.insertText(QtCore.QString("%1").arg(quantity), textFormat)
+            cursor.insertText(QtCore.QString("%1").arg(item[1]), textFormat)
 
         cursor.setPosition(topFrame.lastPosition())
 
-        cursor.insertBlock()
-
-        cursor.insertText(self.tr("Please update my records to take account "
-                                  "of the following privacy information:"))
+        cursor.insertText(self.tr("Please update my records to take account of the "
+                                  "following privacy information:"))
         cursor.insertBlock()
 
         offersTable = cursor.insertTable(2, 2)
 
         cursor = offersTable.cellAt(0, 1).firstCursorPosition()
-        cursor.insertText(self.tr("I want to receive more information about "
-                                  "your company's products and special "
-                                  "offers."), textFormat)
+        cursor.insertText(self.tr("I want to receive more information about your "
+                                  "company's products and special offers."), textFormat)
         cursor = offersTable.cellAt(1, 1).firstCursorPosition()
-        cursor.insertText(self.tr("I do not want to receive any promotional "
-                                  "information from your company."), textFormat)
+        cursor.insertText(self.tr("I do not want to receive any promotional information "
+                                  "from your company."), textFormat)
 
         if sendOffers:
             cursor = offersTable.cellAt(0, 0).firstCursorPosition()
@@ -141,64 +137,68 @@ class MainWindow(QtGui.QMainWindow):
 
     def createSample(self):
         dialog = DetailsDialog("Dialog with default values", self)
-        self.createLetter("Mr Smith",
-                "12 High Street\nSmall Town\nThis country",
-                dialog.orderItems(), True)
+        self.createLetter("Mr Smith", "12 High Street\nSmall Town\nThis country",
+                          dialog.orderItems(), True)
 
     def openDialog(self):
         dialog = DetailsDialog(self.tr("Enter Customer Details"), self)
 
         if dialog.exec_() == QtGui.QDialog.Accepted:
             self.createLetter(dialog.senderName(), dialog.senderAddress(),
-                    dialog.orderItems(), dialog.sendOffers())
+                              dialog.orderItems(), dialog.sendOffers())
 
     def printFile(self):
         editor = self.letters.currentWidget()
+        document = editor.document()
         printer = QtGui.QPrinter()
 
         dialog = QtGui.QPrintDialog(printer, self)
         dialog.setWindowTitle(self.tr("Print Document"))
-
-        if editor.textCursor().hasSelection():
-            dialog.addEnabledOption(QtGui.QAbstractPrintDialog.PrintSelection)
-
         if dialog.exec_() != QtGui.QDialog.Accepted:
             return
 
-        editor.print_(printer)
+        document.print_(printer)
 
 
 class DetailsDialog(QtGui.QDialog):
-    def __init__(self, title, parent):
-        super(DetailsDialog, self).__init__(parent)
+    def __init__(self, title, parent=None):
+        QtGui.QDialog.__init__(self, parent)
 
         self.items = QtCore.QStringList()
 
         nameLabel = QtGui.QLabel(self.tr("Name:"))
         addressLabel = QtGui.QLabel(self.tr("Address:"))
-        addressLabel.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 
         self.nameEdit = QtGui.QLineEdit()
         self.addressEdit = QtGui.QTextEdit()
-        self.offersCheckBox = QtGui.QCheckBox(self.tr("Send information about "
-                                                      "products and special "
-                                                      "offers:"))
+        self.addressEdit.setPlainText("")
+        self.offersCheckBox = QtGui.QCheckBox(self.tr("Send offers:"))
 
         self.setupItemsTable()
 
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        okButton = QtGui.QPushButton(self.tr("OK"))
+        cancelButton = QtGui.QPushButton(self.tr("Cancel"))
+        okButton.setDefault(True)
 
-        buttonBox.accepted.connect(self.verify)
-        buttonBox.rejected.connect(self.reject)
+        self.connect(okButton, QtCore.SIGNAL("clicked()"), self.verify)
+        self.connect(cancelButton, QtCore.SIGNAL("clicked()"), self, QtCore.SLOT("reject()"))
 
-        mainLayout = QtGui.QGridLayout()
-        mainLayout.addWidget(nameLabel, 0, 0)
-        mainLayout.addWidget(self.nameEdit, 0, 1)
-        mainLayout.addWidget(addressLabel, 1, 0)
-        mainLayout.addWidget(self.addressEdit, 1, 1)
-        mainLayout.addWidget(self.itemsTable, 0, 2, 2, 1)
-        mainLayout.addWidget(self.offersCheckBox, 2, 1, 1, 2)
-        mainLayout.addWidget(buttonBox, 3, 0, 1, 3)
+        detailsLayout = QtGui.QGridLayout()
+        detailsLayout.addWidget(nameLabel, 0, 0)
+        detailsLayout.addWidget(self.nameEdit, 0, 1)
+        detailsLayout.addWidget(addressLabel, 1, 0)
+        detailsLayout.addWidget(self.addressEdit, 1, 1)
+        detailsLayout.addWidget(self.itemsTable, 0, 2, 2, 2)
+        detailsLayout.addWidget(self.offersCheckBox, 2, 1, 1, 4)
+
+        buttonLayout = QtGui.QHBoxLayout()
+        buttonLayout.addStretch(1)
+        buttonLayout.addWidget(okButton)
+        buttonLayout.addWidget(cancelButton)
+
+        mainLayout = QtGui.QVBoxLayout()
+        mainLayout.addLayout(detailsLayout)
+        mainLayout.addLayout(buttonLayout)
         self.setLayout(mainLayout)
 
         self.setWindowTitle(title)
@@ -220,9 +220,11 @@ class DetailsDialog(QtGui.QDialog):
         orderList = []
 
         for row in range(self.items.count()):
-            text = self.itemsTable.item(row, 0).text()
-            quantity, _ = self.itemsTable.item(row, 1).data(QtCore.Qt.DisplayRole).toInt()
-            orderList.append((text, max(0, quantity)))
+            item = [None, None]
+            item[0] = self.itemsTable.item(row, 0).text()
+            quantity = self.itemsTable.item(row, 1).data(QtCore.Qt.DisplayRole).toInt()[0]
+            item[1] = max(0, quantity)
+            orderList.append(item)
 
         return orderList
 
@@ -241,18 +243,15 @@ class DetailsDialog(QtGui.QDialog):
             return
 
         answer = QtGui.QMessageBox.warning(self, self.tr("Incomplete Form"),
-                self.tr("The form does not contain all the necessary "
-                        "information.\nDo you want to discard it?"),
-                QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+                    self.tr("The form does not contain all the necessary "
+                            "information.\nDo you want to discard it?"),
+                    QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
 
         if answer == QtGui.QMessageBox.Yes:
             self.reject()
 
 
 if __name__ == '__main__':
-
-    import sys
-
     app = QtGui.QApplication(sys.argv)
     window = MainWindow()
     window.resize(640, 480)

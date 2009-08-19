@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 import application_rc
 
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
-        super(MainWindow, self).__init__()
+        QtGui.QMainWindow.__init__(self)
 
         self.curFile = QtCore.QString()
 
@@ -21,10 +22,10 @@ class MainWindow(QtGui.QMainWindow):
 
         self.readSettings()
 
-        self.textEdit.document().contentsChanged.connect(self.documentWasModified)
+        self.connect(self.textEdit.document(), QtCore.SIGNAL("contentsChanged()"),
+                     self.documentWasModified)
 
         self.setCurrentFile(QtCore.QString())
-        self.setUnifiedTitleAndToolBarOnMac(True)
 
     def closeEvent(self, event):
         if self.maybeSave():
@@ -59,75 +60,70 @@ class MainWindow(QtGui.QMainWindow):
 
     def about(self):
         QtGui.QMessageBox.about(self, self.tr("About Application"),
-                self.tr("The <b>Application</b> example demonstrates how to "
-                        "write modern GUI applications using Qt, with a menu "
-                        "bar, toolbars, and a status bar."))
+            self.tr("The <b>Application</b> example demonstrates how to "
+                    "write modern GUI applications using Qt, with a menu bar, "
+                    "toolbars, and a status bar."))
 
     def documentWasModified(self):
         self.setWindowModified(self.textEdit.document().isModified())
 
     def createActions(self):
-        self.newAct = QtGui.QAction(QtGui.QIcon(":/images/new.png"),
-                self.tr("&New"), self)
-        self.newAct.setShortcut(QtGui.QKeySequence.New)
+        self.newAct = QtGui.QAction(QtGui.QIcon(":/images/new.png"), self.tr("&New"), self)
+        self.newAct.setShortcut(self.tr("Ctrl+N"))
         self.newAct.setStatusTip(self.tr("Create a new file"))
-        self.newAct.triggered.connect(self.newFile)
+        self.connect(self.newAct, QtCore.SIGNAL("triggered()"), self.newFile)
 
-        self.openAct = QtGui.QAction(QtGui.QIcon(":/images/open.png"),
-                self.tr("&Open..."), self)
-        self.openAct.setShortcut(QtGui.QKeySequence.Open)
+        self.openAct = QtGui.QAction(QtGui.QIcon(":/images/open.png"), self.tr("&Open..."), self)
+        self.openAct.setShortcut(self.tr("Ctrl+O"))
         self.openAct.setStatusTip(self.tr("Open an existing file"))
-        self.openAct.triggered.connect(self.open)
+        self.connect(self.openAct, QtCore.SIGNAL("triggered()"), self.open)
 
-        self.saveAct = QtGui.QAction(QtGui.QIcon(":/images/save.png"),
-                self.tr("&Save"), self)
-        self.saveAct.setShortcut(QtGui.QKeySequence.Save)
+        self.saveAct = QtGui.QAction(QtGui.QIcon(":/images/save.png"), self.tr("&Save"), self)
+        self.saveAct.setShortcut(self.tr("Ctrl+S"))
         self.saveAct.setStatusTip(self.tr("Save the document to disk"))
-        self.saveAct.triggered.connect(self.save)
+        self.connect(self.saveAct, QtCore.SIGNAL("triggered()"), self.save)
 
         self.saveAsAct = QtGui.QAction(self.tr("Save &As..."), self)
-        self.saveAsAct.setShortcut(QtGui.QKeySequence.SaveAs)
         self.saveAsAct.setStatusTip(self.tr("Save the document under a new name"))
-        self.saveAsAct.triggered.connect(self.saveAs)
+        self.connect(self.saveAsAct, QtCore.SIGNAL("triggered()"), self.saveAs)
 
         self.exitAct = QtGui.QAction(self.tr("E&xit"), self)
         self.exitAct.setShortcut(self.tr("Ctrl+Q"))
         self.exitAct.setStatusTip(self.tr("Exit the application"))
-        self.exitAct.triggered.connect(self.close)
+        self.connect(self.exitAct, QtCore.SIGNAL("triggered()"), self, QtCore.SLOT("close()"))
 
-        self.cutAct = QtGui.QAction(QtGui.QIcon(":/images/cut.png"),
-                self.tr("Cu&t"), self)
-        self.cutAct.setShortcut(QtGui.QKeySequence.Cut)
-        self.cutAct.setStatusTip(self.tr("Cut the current selection's "
-                                         "contents to the clipboard"))
-        self.cutAct.triggered.connect(self.textEdit.cut)
+        self.cutAct = QtGui.QAction(QtGui.QIcon(":/images/cut.png"), self.tr("Cu&t"), self)
+        self.cutAct.setShortcut(self.tr("Ctrl+X"))
+        self.cutAct.setStatusTip(self.tr("Cut the current selection's contents to the "
+                                         "clipboard"))
+        self.connect(self.cutAct, QtCore.SIGNAL("triggered()"), self.textEdit, QtCore.SLOT("cut()"))
 
-        self.copyAct = QtGui.QAction(QtGui.QIcon(":/images/copy.png"),
-                self.tr("&Copy"), self)
-        self.copyAct.setShortcut(QtGui.QKeySequence.Copy)
-        self.copyAct.setStatusTip(self.tr("Copy the current selection's "
-                                          "contents to the clipboard"))
-        self.copyAct.triggered.connect(self.textEdit.copy)
+        self.copyAct = QtGui.QAction(QtGui.QIcon(":/images/copy.png"), self.tr("&Copy"), self)
+        self.copyAct.setShortcut(self.tr("Ctrl+C"))
+        self.copyAct.setStatusTip(self.tr("Copy the current selection's contents to the "
+                                          "clipboard"))
+        self.connect(self.copyAct, QtCore.SIGNAL("triggered()"), self.textEdit, QtCore.SLOT("copy()"))
 
-        self.pasteAct = QtGui.QAction(QtGui.QIcon(":/images/paste.png"),
-                self.tr("&Paste"), self)
-        self.pasteAct.setShortcut(QtGui.QKeySequence.Paste)
-        self.pasteAct.setStatusTip(self.tr("Paste the clipboard's contents "
-                                           "into the current selection"))
-        self.pasteAct.triggered.connect(self.textEdit.paste)
+        self.pasteAct = QtGui.QAction(QtGui.QIcon(":/images/paste.png"), self.tr("&Paste"), self)
+        self.pasteAct.setShortcut(self.tr("Ctrl+V"))
+        self.pasteAct.setStatusTip(self.tr("Paste the clipboard's contents into the current "
+                                           "selection"))
+        self.connect(self.pasteAct, QtCore.SIGNAL("triggered()"), self.textEdit, QtCore.SLOT("paste()"))
 
         self.aboutAct = QtGui.QAction(self.tr("&About"), self)
         self.aboutAct.setStatusTip(self.tr("Show the application's About box"))
-        self.aboutAct.triggered.connect(self.about)
+        self.connect(self.aboutAct, QtCore.SIGNAL("triggered()"), self.about)
 
         self.aboutQtAct = QtGui.QAction(self.tr("About &Qt"), self)
         self.aboutQtAct.setStatusTip(self.tr("Show the Qt library's About box"))
-        self.aboutQtAct.triggered.connect(QtGui.qApp.aboutQt)
+        self.connect(self.aboutQtAct, QtCore.SIGNAL("triggered()"), QtGui.qApp, QtCore.SLOT("aboutQt()"))
 
         self.cutAct.setEnabled(False)
         self.copyAct.setEnabled(False)
-        self.textEdit.copyAvailable.connect(self.cutAct.setEnabled)
-        self.textEdit.copyAvailable.connect(self.copyAct.setEnabled)
+        self.connect(self.textEdit, QtCore.SIGNAL("copyAvailable(bool)"),
+                     self.cutAct, QtCore.SLOT("setEnabled(bool)"))
+        self.connect(self.textEdit, QtCore.SIGNAL("copyAvailable(bool)"),
+                     self.copyAct, QtCore.SLOT("setEnabled(bool)"))
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu(self.tr("&File"))
@@ -180,9 +176,10 @@ class MainWindow(QtGui.QMainWindow):
             ret = QtGui.QMessageBox.warning(self, self.tr("Application"),
                         self.tr("The document has been modified.\n"
                                 "Do you want to save your changes?"),
-                        QtGui.QMessageBox.Save | QtGui.QMessageBox.Discard |
-                        QtGui.QMessageBox.Cancel)
-            if ret == QtGui.QMessageBox.Save:
+                        QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                        QtGui.QMessageBox.No,
+                        QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Escape)
+            if ret == QtGui.QMessageBox.Yes:
                 return self.save()
             elif ret == QtGui.QMessageBox.Cancel:
                 return False
@@ -235,10 +232,7 @@ class MainWindow(QtGui.QMainWindow):
         return QtCore.QFileInfo(fullFileName).fileName()
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     mainWin = MainWindow()
     mainWin.show()

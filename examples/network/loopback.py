@@ -23,7 +23,8 @@
 # 
 ############################################################################
 
-from PyQt4 import QtCore, QtGui, QtNetwork
+import sys
+from PySide import QtCore, QtGui, QtNetwork
 
 
 class Dialog(QtGui.QDialog):
@@ -31,77 +32,87 @@ class Dialog(QtGui.QDialog):
     PayloadSize = 65536
 
     def __init__(self, parent=None):
-        super(Dialog, self).__init__(parent)
-
+        QtGui.QDialog.__init__(self, parent)
+        
         self.tcpServer = QtNetwork.QTcpServer()
         self.tcpClient = QtNetwork.QTcpSocket()
         self.bytesToWrite = 0
         self.bytesWritten = 0
         self.bytesReceived = 0
-
+        
         self.clientProgressBar = QtGui.QProgressBar()
         self.clientStatusLabel = QtGui.QLabel(self.tr("Client ready"))
         self.serverProgressBar = QtGui.QProgressBar()
         self.serverStatusLabel = QtGui.QLabel(self.tr("Server ready"))
-
+        
         self.startButton = QtGui.QPushButton(self.tr("&Start"))
         self.quitButton = QtGui.QPushButton(self.tr("&Quit"))
-
-        buttonBox = QtGui.QDialogButtonBox()
-        buttonBox.addButton(self.startButton, QtGui.QDialogButtonBox.ActionRole)
-        buttonBox.addButton(self.quitButton, QtGui.QDialogButtonBox.RejectRole)
-
-        self.startButton.clicked.connect(self.start)
-        self.quitButton.clicked.connect(self.close)
-        self.tcpServer.newConnection.connect(self.acceptConnection)
-        self.tcpClient.connected.connect(self.startTransfer)
-        self.tcpClient.bytesWritten.connect(self.updateClientProgress)
-        self.tcpClient.error.connect(self.displayError)
-
+        
+        self.connect(self.startButton, QtCore.SIGNAL("clicked()"), self.start)
+        self.connect(self.quitButton, QtCore.SIGNAL("clicked()"),
+                     self, QtCore.SLOT("close()"))
+        self.connect(self.tcpServer, QtCore.SIGNAL("newConnection()"),
+                     self.acceptConnection)
+        self.connect(self.tcpClient, QtCore.SIGNAL("connected()"), 
+                     self.startTransfer)
+        self.connect(self.tcpClient, QtCore.SIGNAL("bytesWritten(qint64)"),     
+                     self.updateClientProgress)
+        self.connect(self.tcpClient, 
+                     QtCore.SIGNAL("error(QAbstractSocket::SocketError)"), 
+                     self.displayError)
+        
+        buttonLayout = QtGui.QHBoxLayout()
+        buttonLayout.addStretch(1)
+        buttonLayout.addWidget(self.startButton)
+        buttonLayout.addWidget(self.quitButton)
+        
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addWidget(self.clientProgressBar)
         mainLayout.addWidget(self.clientStatusLabel)
         mainLayout.addWidget(self.serverProgressBar)
         mainLayout.addWidget(self.serverStatusLabel)
-        mainLayout.addStretch(1)
-        mainLayout.addSpacing(10)
-        mainLayout.addWidget(buttonBox)
+        mainLayout.addLayout(buttonLayout)
         self.setLayout(mainLayout)
-
+        
         self.setWindowTitle(self.tr("Loopback"))
-
+        
     def start(self):
         self.startButton.setEnabled(False)
-
+        
         QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-
+        
         self.bytesWritten = 0
         self.bytesReceived = 0
-
+        
         while not self.tcpServer.isListening() and not self.tcpServer.listen():
             ret = QtGui.QMessageBox.critical(self, self.tr("Loopback"),
-                    self.tr("Unable to start the test: %1.").arg(self.tcpServer.errorString()),
-                    QtGui.QMessageBox.Retry | QtGui.QMessageBox.Cancel)
+                            self.tr("Unable to start the test: %1.").arg(
+                                    self.tcpServer.errorString()),
+                            QtGui.QMessageBox.Retry,
+                            QtGui.QMessageBox.Cancel)
             if ret == QtGui.QMessageBox.Cancel:
                 return
-
+        
         self.serverStatusLabel.setText(self.tr("Listening"))
         self.clientStatusLabel.setText(self.tr("Connecting"))
-
+        
         self.tcpClient.connectToHost(QtNetwork.QHostAddress(QtNetwork.QHostAddress.LocalHost), self.tcpServer.serverPort())
 
     def acceptConnection(self):
         self.tcpServerConnection = self.tcpServer.nextPendingConnection()
-        self.tcpServerConnection.readyRead.connect(self.updateServerProgress)
-        self.tcpServerConnection.error.connect(self.displayError)
-
+        self.connect(self.tcpServerConnection, QtCore.SIGNAL("readyRead()"),
+                     self.updateServerProgress)
+        self.connect(self.tcpServerConnection, 
+                     QtCore.SIGNAL("error(QAbstractSocket::SocketError)"),
+                     self.displayError)
+        
         self.serverStatusLabel.setText(self.tr("Accepted connection"))
         self.tcpServer.close()
-
+        
     def startTransfer(self):
         self.bytesToWrite = Dialog.TotalBytes - self.tcpClient.write(QtCore.QByteArray(Dialog.PayloadSize, '@'))
         self.clientStatusLabel.setText(self.tr("Connected"))
-
+        
     def updateServerProgress(self):
         self.bytesReceived += self.tcpServerConnection.bytesAvailable()
         self.tcpServerConnection.readAll()
@@ -110,12 +121,12 @@ class Dialog(QtGui.QDialog):
         self.serverProgressBar.setValue(self.bytesReceived)
         self.serverStatusLabel.setText(self.tr("Received %1MB")
                                        .arg(self.bytesReceived / (1024 * 1024)))
-
+        
         if self.bytesReceived == Dialog.TotalBytes:
             self.tcpServerConnection.close()
             self.startButton.setEnabled(True)
             QtGui.QApplication.restoreOverrideCursor()
-
+            
     def updateClientProgress(self, numBytes):
         self.bytesWritten += numBytes
         if self.bytesToWrite > 0:
@@ -126,13 +137,15 @@ class Dialog(QtGui.QDialog):
         self.clientProgressBar.setValue(self.bytesWritten)
         self.clientStatusLabel.setText(self.tr("Sent %1MB")
                                        .arg(self.bytesWritten / (1024 * 1024)))
-
+        
     def displayError(self, socketError):
         if socketError == QtNetwork.QTcpSocket.RemoteHostClosedError:
             return
-
+        
         QtGui.QMessageBox.information(self, self.tr("Network error"),
-                self.tr("The following error occured: %1.").arg(self.tcpClient.errorString()))
+                                      self.tr("The following error occured: "\
+                                              "%1.")
+                                      .arg(self.tcpClient.errorString()))
 
         self.tcpClient.close()
         self.tcpServer.close()
@@ -144,10 +157,7 @@ class Dialog(QtGui.QDialog):
         QtGui.QApplication.restoreOverrideCursor()
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     dialog = Dialog()
     dialog.show()

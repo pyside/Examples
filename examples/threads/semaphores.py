@@ -25,13 +25,12 @@
 
 import sys
 import random
-
-from PyQt4 import QtCore
+from PySide import QtCore
 
 
 DataSize = 100000
 BufferSize = 8192
-buffer = list(range(BufferSize))
+buffer = range(BufferSize)
 
 freeBytes = QtCore.QSemaphore(BufferSize)
 usedBytes = QtCore.QSemaphore()
@@ -55,7 +54,7 @@ class Consumer(QtCore.QThread):
         sys.stderr.write("\n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QtCore.QCoreApplication(sys.argv)
     producer = Producer()
     consumer = Consumer()

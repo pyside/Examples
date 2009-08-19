@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-############################################################################
+#############################################################################
 ##
 ## Copyright (C) 2006-2006 Trolltech ASA. All rights reserved.
 ##
@@ -19,11 +19,11 @@
 ## This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 ## WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ##
-############################################################################
+#############################################################################
 
+import sys
 import math
-
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 
 class Edge(QtGui.QGraphicsItem):
@@ -33,12 +33,11 @@ class Edge(QtGui.QGraphicsItem):
     Type = QtGui.QGraphicsItem.UserType + 2
 
     def __init__(self, sourceNode, destNode):
-        super(Edge, self).__init__()
+        QtGui.QGraphicsItem.__init__(self)
 
         self.arrowSize = 10.0
         self.sourcePoint = QtCore.QPointF()
         self.destPoint = QtCore.QPointF()
-
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
         self.source = sourceNode
         self.dest = destNode
@@ -67,15 +66,13 @@ class Edge(QtGui.QGraphicsItem):
         if not self.source or not self.dest:
             return
 
-        line = QtCore.QLineF(self.mapFromItem(self.source, 0, 0),
-                self.mapFromItem(self.dest, 0, 0))
+        line = QtCore.QLineF(self.mapFromItem(self.source, 0, 0), self.mapFromItem(self.dest, 0, 0))
         length = line.length()
 
         if length == 0.0:
             return
 
-        edgeOffset = QtCore.QPointF((line.dx() * 10) / length,
-                (line.dy() * 10) / length)
+        edgeOffset = QtCore.QPointF((line.dx() * 10) / length, (line.dy() * 10) / length)
 
         self.prepareGeometryChange()
         self.sourcePoint = line.p1() + edgeOffset
@@ -102,8 +99,7 @@ class Edge(QtGui.QGraphicsItem):
         if line.length() == 0.0:
             return
 
-        painter.setPen(QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine,
-                QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+        painter.setPen(QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
         painter.drawLine(line)
 
         # Draw the arrows if there's enough room.
@@ -129,14 +125,12 @@ class Node(QtGui.QGraphicsItem):
     Type = QtGui.QGraphicsItem.UserType + 1
 
     def __init__(self, graphWidget):
-        super(Node, self).__init__()
+        QtGui.QGraphicsItem.__init__(self)
 
         self.graph = graphWidget
         self.edgeList = []
         self.newPos = QtCore.QPointF()
-
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
-        self.setCacheMode(QtGui.QGraphicsItem.DeviceCoordinateCache)
         self.setZValue(1)
 
     def type(self):
@@ -161,8 +155,7 @@ class Node(QtGui.QGraphicsItem):
             if not isinstance(item, Node):
                 continue
 
-            line = QtCore.QLineF(self.mapFromItem(item, 0, 0),
-                    QtCore.QPointF(0, 0))
+            line = QtCore.QLineF(self.mapFromItem(item, 0, 0), QtCore.QPointF(0, 0))
             dx = line.dx()
             dy = line.dy()
             l = 2.0 * (dx * dx + dy * dy)
@@ -197,8 +190,8 @@ class Node(QtGui.QGraphicsItem):
 
     def boundingRect(self):
         adjust = 2.0
-        return QtCore.QRectF(-10 - adjust, -10 - adjust, 23 + adjust,
-                23 + adjust)
+        return QtCore.QRectF(-10 - adjust, -10 - adjust,
+                             23 + adjust, 23 + adjust)
 
     def shape(self):
         path = QtGui.QPainterPath()
@@ -230,20 +223,20 @@ class Node(QtGui.QGraphicsItem):
                 edge.adjust()
             self.graph.itemMoved()
 
-        return super(Node, self).itemChange(change, value)
+        return QtGui.QGraphicsItem.itemChange(self, change, value)
 
     def mousePressEvent(self, event):
         self.update()
-        super(Node, self).mousePressEvent(event)
+        QtGui.QGraphicsItem.mousePressEvent(self, event)
 
     def mouseReleaseEvent(self, event):
         self.update()
-        super(Node, self).mouseReleaseEvent(event)
+        QtGui.QGraphicsItem.mouseReleaseEvent(self, event)
 
 
 class GraphWidget(QtGui.QGraphicsView):
     def __init__(self):
-        super(GraphWidget, self).__init__()
+        QtGui.QGraphicsView.__init__(self)
 
         self.timerId = 0
 
@@ -252,7 +245,6 @@ class GraphWidget(QtGui.QGraphicsView):
         scene.setSceneRect(-200, -200, 400, 400)
         self.setScene(scene)
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
-        self.setViewportUpdateMode(QtGui.QGraphicsView.BoundingRectViewportUpdate)
         self.setRenderHint(QtGui.QPainter.Antialiasing)
         self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
@@ -326,7 +318,7 @@ class GraphWidget(QtGui.QGraphicsView):
                 if isinstance(item, Node):
                     item.setPos(-150 + QtCore.qrand() % 300, -150 + QtCore.qrand() % 300)
         else:
-            super(GraphWidget, self).keyPressEvent(event)
+            QtGui.QGraphicsView.keyPressEvent(self, event)
 
     def timerEvent(self, event):
         nodes = [item for item in self.scene().items() if isinstance(item, Node)]
@@ -349,18 +341,15 @@ class GraphWidget(QtGui.QGraphicsView):
     def drawBackground(self, painter, rect):
         # Shadow.
         sceneRect = self.sceneRect()
-        rightShadow = QtCore.QRectF(sceneRect.right(), sceneRect.top() + 5, 5,
-                sceneRect.height())
-        bottomShadow = QtCore.QRectF(sceneRect.left() + 5, sceneRect.bottom(),
-                sceneRect.width(), 5)
+        rightShadow = QtCore.QRectF(sceneRect.right(), sceneRect.top() + 5, 5, sceneRect.height())
+        bottomShadow = QtCore.QRectF(sceneRect.left() + 5, sceneRect.bottom(), sceneRect.width(), 5)
         if rightShadow.intersects(rect) or rightShadow.contains(rect):
 	        painter.fillRect(rightShadow, QtCore.Qt.darkGray)
         if bottomShadow.intersects(rect) or bottomShadow.contains(rect):
 	        painter.fillRect(bottomShadow, QtCore.Qt.darkGray)
 
         # Fill.
-        gradient = QtGui.QLinearGradient(sceneRect.topLeft(),
-                sceneRect.bottomRight())
+        gradient = QtGui.QLinearGradient(sceneRect.topLeft(), sceneRect.bottomRight())
         gradient.setColorAt(0, QtCore.Qt.white)
         gradient.setColorAt(1, QtCore.Qt.lightGray)
         painter.fillRect(rect.intersect(sceneRect), QtGui.QBrush(gradient))
@@ -369,7 +358,7 @@ class GraphWidget(QtGui.QGraphicsView):
 
         # Text.
         textRect = QtCore.QRectF(sceneRect.left() + 4, sceneRect.top() + 4,
-                sceneRect.width() - 4, sceneRect.height() - 4)
+                                 sceneRect.width() - 4, sceneRect.height() - 4)
         message = self.tr("Click and drag the nodes around, and zoom with the "
                           "mouse wheel or the '+' and '-' keys")
 
@@ -391,10 +380,7 @@ class GraphWidget(QtGui.QGraphicsView):
         self.scale(scaleFactor, scaleFactor)
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     QtCore.qsrand(QtCore.QTime(0,0,0).secsTo(QtCore.QTime.currentTime()))
 

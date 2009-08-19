@@ -23,45 +23,44 @@
 # 
 ############################################################################
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 import dockwidgets_rc
 
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self):
-        super(MainWindow, self).__init__()
-
+    def __init__(self, parent=None):
+        QtGui.QMainWindow.__init__(self, parent)
+        
         self.textEdit = QtGui.QTextEdit()
         self.setCentralWidget(self.textEdit)
-
+        
         self.createActions()
         self.createMenus()
         self.createToolBars()
         self.createStatusBar()
         self.createDockWindows()
-
         self.setWindowTitle(self.tr("Dock Widgets"))
-
+        
         self.newLetter()
-        self.setUnifiedTitleAndToolBarOnMac(True)
 
     def newLetter(self):
         self.textEdit.clear()
-
+        
         cursor = self.textEdit.textCursor()
         cursor.movePosition(QtGui.QTextCursor.Start)
         topFrame = cursor.currentFrame()
         topFrameFormat = topFrame.frameFormat()
         topFrameFormat.setPadding(16)
         topFrame.setFrameFormat(topFrameFormat)
-
+        
         textFormat = QtGui.QTextCharFormat()
         boldFormat = QtGui.QTextCharFormat()
         boldFormat.setFontWeight(QtGui.QFont.Bold)
         italicFormat = QtGui.QTextCharFormat()
         italicFormat.setFontItalic(True)
-
+        
         tableFormat = QtGui.QTextTableFormat()
         tableFormat.setBorder(1)
         tableFormat.setCellPadding(16)
@@ -75,8 +74,7 @@ class MainWindow(QtGui.QMainWindow):
         cursor.insertBlock()
         cursor.insertText("Some Country")
         cursor.setPosition(topFrame.lastPosition())
-        cursor.insertText(QtCore.QDate.currentDate().toString("d MMMM yyyy"),
-                textFormat)
+        cursor.insertText(QtCore.QDate.currentDate().toString("d MMMM yyyy"), textFormat)
         cursor.insertBlock()
         cursor.insertBlock()
         cursor.insertText("Dear ", textFormat)
@@ -100,7 +98,7 @@ class MainWindow(QtGui.QMainWindow):
             return
 
         document.print_(printer)
-
+        
         self.statusBar().showMessage(self.tr("Ready"), 2000)
 
     def save(self):
@@ -122,13 +120,13 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         out << self.textEdit.toHtml()
         QtGui.QApplication.restoreOverrideCursor()
-
+        
         self.statusBar().showMessage(self.tr("Saved '%1'").arg(filename), 2000)
-
+        
     def undo(self):
         document = self.textEdit.document()
         document.undo()
-
+        
     def insertCustomer(self, customer):
         if customer.isEmpty():
             return
@@ -147,7 +145,7 @@ class MainWindow(QtGui.QMainWindow):
                 cursor.endEditBlock()
             else:
                 oldcursor.endEditBlock()
-
+    
     def addParagraph(self, paragraph):
         if paragraph.isEmpty():
             return
@@ -156,8 +154,7 @@ class MainWindow(QtGui.QMainWindow):
         if cursor.isNull():
             return
         cursor.beginEditBlock()
-        cursor.movePosition(QtGui.QTextCursor.PreviousBlock,
-                QtGui.QTextCursor.MoveAnchor, 2)
+        cursor.movePosition(QtGui.QTextCursor.PreviousBlock, QtGui.QTextCursor.MoveAnchor, 2)
         cursor.insertBlock()
         cursor.insertText(paragraph)
         cursor.insertBlock()
@@ -165,48 +162,45 @@ class MainWindow(QtGui.QMainWindow):
 
     def about(self):
         QtGui.QMessageBox.about(self, self.tr("About Dock Widgets"),
-                self.tr("The <b>Dock Widgets</b> example demonstrates how to "
-                        "use Qt's dock widgets. You can enter your own text, "
-                        "click a customer to add a customer name and address, "
-                        "and click standard paragraphs to add them."))
-
+            self.tr("The <b>Dock Widgets</b> example demonstrates how to "
+                    "use Qt's dock widgets. You can enter your own text, "
+                    "click a customer to add a customer name and "
+                    "address, and click standard paragraphs to add them."))
+    
     def createActions(self):
-        self.newLetterAct = QtGui.QAction(QtGui.QIcon(":/images/new.png"),
-                self.tr("&New Letter"), self)
-        self.newLetterAct.setShortcut(QtGui.QKeySequence.New)
+        self.newLetterAct = QtGui.QAction(QtGui.QIcon(":/images/new.png"), self.tr("&New Letter"), self)
+        self.newLetterAct.setShortcut(self.tr("Ctrl+N"))
         self.newLetterAct.setStatusTip(self.tr("Create a new form letter"))
-        self.newLetterAct.triggered.connect(self.newLetter)
+        self.connect(self.newLetterAct, QtCore.SIGNAL("triggered()"), self.newLetter)
 
-        self.saveAct = QtGui.QAction(QtGui.QIcon(":/images/save.png"),
-                self.tr("&Save..."), self)
-        self.saveAct.setShortcut(QtGui.QKeySequence.Save)
+        self.saveAct = QtGui.QAction(QtGui.QIcon(":/images/save.png"), self.tr("&Save..."), self)
+        self.saveAct.setShortcut(self.tr("Ctrl+S"))
         self.saveAct.setStatusTip(self.tr("Save the current form letter"))
-        self.saveAct.triggered.connect(self.save)
+        self.connect(self.saveAct, QtCore.SIGNAL("triggered()"), self.save)
 
-        self.printAct = QtGui.QAction(QtGui.QIcon(":/images/print.png"),
-                self.tr("&Print..."), self)
-        self.printAct.setShortcut(QtGui.QKeySequence.Print)
+        self.printAct = QtGui.QAction(QtGui.QIcon(":/images/print.png"), self.tr("&Print..."), self)
+        self.printAct.setShortcut(self.tr("Ctrl+P"))
         self.printAct.setStatusTip(self.tr("Print the current form letter"))
-        self.printAct.triggered.connect(self.print_)
+        self.connect(self.printAct, QtCore.SIGNAL("triggered()"), self.print_)
 
-        self.undoAct = QtGui.QAction(QtGui.QIcon(":/images/undo.png"),
-                self.tr("&Undo"), self)
-        self.undoAct.setShortcut(QtGui.QKeySequence.Undo)
+        self.undoAct = QtGui.QAction(QtGui.QIcon(":/images/undo.png"), self.tr("&Undo"), self)
+        self.undoAct.setShortcut(self.tr("Ctrl+Z"))
         self.undoAct.setStatusTip(self.tr("Undo the last editing action"))
-        self.undoAct.triggered.connect(self.undo)
+        self.connect(self.undoAct, QtCore.SIGNAL("triggered()"), self.undo)
 
         self.quitAct = QtGui.QAction(self.tr("&Quit"), self)
         self.quitAct.setShortcut(self.tr("Ctrl+Q"))
         self.quitAct.setStatusTip(self.tr("Quit the application"))
-        self.quitAct.triggered.connect(self.close)
-
+        self.connect(self.quitAct, QtCore.SIGNAL("triggered()"), self.close)
+        
         self.aboutAct = QtGui.QAction(self.tr("&About"), self)
         self.aboutAct.setStatusTip(self.tr("Show the application's About box"))
-        self.aboutAct.triggered.connect(self.about)
+        self.connect(self.aboutAct, QtCore.SIGNAL("triggered()"), self.about)
 
         self.aboutQtAct = QtGui.QAction(self.tr("About &Qt"), self)
         self.aboutQtAct.setStatusTip(self.tr("Show the Qt library's About box"))
-        self.aboutQtAct.triggered.connect(QtGui.qApp.aboutQt)
+        self.connect(self.aboutQtAct, QtCore.SIGNAL("triggered()"),
+                     QtGui.qApp, QtCore.SLOT("aboutQt()"))
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu(self.tr("&File"))
@@ -215,14 +209,12 @@ class MainWindow(QtGui.QMainWindow):
         self.fileMenu.addAction(self.printAct)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(self.quitAct)
-
+        
         self.editMenu = self.menuBar().addMenu(self.tr("&Edit"))
         self.editMenu.addAction(self.undoAct)
-
-        self.viewMenu = self.menuBar().addMenu(self.tr("&View"))
-
+        
         self.menuBar().addSeparator()
-
+        
         self.helpMenu = self.menuBar().addMenu(self.tr("&Help"))
         self.helpMenu.addAction(self.aboutAct)
         self.helpMenu.addAction(self.aboutQtAct)
@@ -232,13 +224,13 @@ class MainWindow(QtGui.QMainWindow):
         self.fileToolBar.addAction(self.newLetterAct)
         self.fileToolBar.addAction(self.saveAct)
         self.fileToolBar.addAction(self.printAct)
-
+        
         self.editToolBar = self.addToolBar(self.tr("Edit"))
         self.editToolBar.addAction(self.undoAct)
-
+        
     def createStatusBar(self):
         self.statusBar().showMessage(self.tr("Ready"))
-
+        
     def createDockWindows(self):
         dock = QtGui.QDockWidget(self.tr("Customers"), self)
         dock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
@@ -252,8 +244,7 @@ class MainWindow(QtGui.QMainWindow):
             << "Sally Hobart, Tiroli Tea, 67 Long River, Fedula")
         dock.setWidget(self.customerList)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock)
-        self.viewMenu.addAction(dock.toggleViewAction())
-
+        
         dock = QtGui.QDockWidget(self.tr("Paragraphs"), self)
         self.paragraphsList = QtGui.QListWidget(dock)
         self.paragraphsList.addItems(QtCore.QStringList()
@@ -276,17 +267,13 @@ class MainWindow(QtGui.QMainWindow):
                "buy more items, or should we return the excess to you?")
         dock.setWidget(self.paragraphsList)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock)
-        self.viewMenu.addAction(dock.toggleViewAction())
+        
+        self.connect(self.customerList, QtCore.SIGNAL("currentTextChanged(const QString&)"), self.insertCustomer)
+        self.connect(self.paragraphsList, QtCore.SIGNAL("currentTextChanged(const QString&)"), self.addParagraph)
 
-        self.customerList.currentTextChanged.connect(self.insertCustomer)
-        self.paragraphsList.currentTextChanged.connect(self.addParagraph)
-
-
-if __name__ == '__main__':
-
-    import sys
-
+        
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
-    mainWin = MainWindow()
-    mainWin.show()
+    mainwindow = MainWindow()
+    mainwindow.show()
     sys.exit(app.exec_())

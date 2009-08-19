@@ -23,41 +23,44 @@
 # 
 ############################################################################
 
-from PyQt4 import QtCore, QtGui, QtNetwork
+import sys
+from PySide import QtCore, QtGui, QtNetwork
 
 
 class Sender(QtGui.QDialog):
     def __init__(self, parent=None):
-        super(Sender, self).__init__(parent)
-
-        self.statusLabel = QtGui.QLabel(self.tr("Ready to broadcast datagrams on port 45454"))
-
+        QtGui.QDialog.__init__(self, parent)
+        
+        self.statusLabel = QtGui.QLabel(self.tr("Ready to broadcast datagramms on port 45454"))
         self.startButton = QtGui.QPushButton(self.tr("&Start"))
-        quitButton = QtGui.QPushButton(self.tr("&Quit"))
-
-        buttonBox = QtGui.QDialogButtonBox()
-        buttonBox.addButton(self.startButton, QtGui.QDialogButtonBox.ActionRole)
-        buttonBox.addButton(quitButton, QtGui.QDialogButtonBox.RejectRole)
-
+        self.quitButton = QtGui.QPushButton(self.tr("&Quit"))
         self.timer = QtCore.QTimer(self)
         self.udpSocket = QtNetwork.QUdpSocket(self)
         self.messageNo = 1
-
-        self.startButton.clicked.connect(self.startBroadcasting)
-        quitButton.clicked.connect(self.close)
-        self.timer.timeout.connect(self.broadcastDatagramm)
-
+        
+        self.connect(self.startButton, QtCore.SIGNAL("clicked()"),
+                     self.startBroadcasting)
+        self.connect(self.quitButton, QtCore.SIGNAL("clicked()"),
+                     self, QtCore.SLOT("close()"))
+        self.connect(self.timer, QtCore.SIGNAL("timeout()"), 
+                     self.broadcastDatagramm)
+        
+        buttonLayout = QtGui.QHBoxLayout()
+        buttonLayout.addStretch(1)
+        buttonLayout.addWidget(self.startButton)
+        buttonLayout.addWidget(self.quitButton)
+        
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addWidget(self.statusLabel)
-        mainLayout.addWidget(buttonBox)
+        mainLayout.addLayout(buttonLayout)
         self.setLayout(mainLayout)
-
+        
         self.setWindowTitle(self.tr("Broadcast Sender"))
 
     def startBroadcasting(self):
         self.startButton.setEnabled(False)
         self.timer.start(1000)
-
+        
     def broadcastDatagramm(self):
         self.statusLabel.setText(self.tr("Now broadcasting datagram %1").arg(self.messageNo))
         datagram = "Broadcast message %d" % self.messageNo
@@ -65,10 +68,7 @@ class Sender(QtGui.QDialog):
         self.messageNo += 1
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     sender = Sender()
     sender.show()

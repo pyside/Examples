@@ -1,6 +1,6 @@
 PyQt's painting system is able to render vector graphics, images, and outline
-font-based text with sub-pixel accuracy using anti-aliasing to improve
-rendering quality.
+font-based text with sub-pixel accuracy accuracy using anti-aliasing to
+improve rendering quality.
 
 These examples show the most common techniques that are used when painting
 with PyQt, from basic concepts such as drawing simple primitives to the use of
@@ -20,9 +20,9 @@ Finding the PyQt Examples and Demos launcher
 On Windows:
 
 The launcher can be accessed via the Windows Start menu. Select the menu
-entry entitled "Examples and Demos" entry in the submenu containing PyQt4.
+entry entitled "Examples and Demos" entry in the submenu containing PySide.
 
 On all platforms:
 
-The source code for the launcher can be found in the examples/demos/qtdemo
+The source code for the launcher can be found in the examples/tools/qtdemo
 directory in the PyQt package.

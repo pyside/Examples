@@ -22,31 +22,27 @@
 ## WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 ##
 #############################################################################
+
 import sys
-
-sys.path +=['/usr/local/lib/python2.6/site-packages']
-import PySide as PyQt4
-
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 
 class WigglyWidget(QtGui.QWidget):
     def __init__(self, parent=None):
-        super(WigglyWidget, self).__init__(parent)
-
+        QtGui.QWidget.__init__(self, parent)
+        
         self.setBackgroundRole(QtGui.QPalette.Midlight)
-        self.setAutoFillBackground(True)
-
+        
         newFont = self.font()
         newFont.setPointSize(newFont.pointSize() + 20)
         self.setFont(newFont)
 
         self.timer = QtCore.QBasicTimer()
-        self.text = ""
-
+        self.text = QtCore.QString("Hello World !")
+        
         self.step = 0;
         self.timer.start(60, self)   
-
+        
     def paintEvent(self, event):
         sineTable = [0, 38, 71, 92, 100, 92, 71, 38, 0, -38, -71, -92, -100, -92, -71, -38]
 
@@ -56,29 +52,29 @@ class WigglyWidget(QtGui.QWidget):
         color = QtGui.QColor()
 
         painter = QtGui.QPainter(self)
-
-        for i in range(self.text.size()):
+        
+        for i in xrange(self.text.size()):
             index = (self.step + i) % 16
             color.setHsv((15 - index) * 16, 255, 191)
             painter.setPen(color)
             painter.drawText(x, y - ((sineTable[index] * metrics.height()) / 400), QtCore.QString(self.text[i]))
             x += metrics.width(self.text[i])
-
+    
     def setText(self, newText):
-        self.text = newText
+        self.text = QtCore.QString(newText)
 
     def timerEvent(self, event):
-        if event.timerId() == self.timer.timerId():
-            self.step += 1
+        if (event.timerId() == self.timer.timerId()):
+            self.step = self.step + 1
             self.update()
         else:
-            super(WigglyWidget, self).timerEvent(event)
+            QtGui.QWidget.timerEvent(event)
 
 
 class Dialog(QtGui.QDialog):
     def __init__(self, parent=None):
-        super(Dialog, self).__init__(parent)
-
+        QtGui.QDialog.__init__(self, parent)
+        
         wigglyWidget = WigglyWidget()
         lineEdit = QtGui.QLineEdit()
 
@@ -87,7 +83,7 @@ class Dialog(QtGui.QDialog):
         layout.addWidget(lineEdit)
         self.setLayout(layout)
 
-        lineEdit.connect(QtCore.SIGNAL("textChanged()"), wigglyWidget.setText)
+        self.connect(lineEdit, QtCore.SIGNAL("textChanged(QString)"), wigglyWidget.setText)
 
         lineEdit.setText(self.tr("Hello world!"))
 
@@ -96,10 +92,7 @@ class Dialog(QtGui.QDialog):
 
 
 if __name__ == "__main__":
-
-    import sys
-
     app = QtGui.QApplication(sys.argv)
     dialog = Dialog()
     dialog.show();
-    sys.exit(app.exec_())    
+    sys.exit(dialog.exec_())    

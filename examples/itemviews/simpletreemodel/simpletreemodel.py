@@ -1,34 +1,35 @@
 #!/usr/bin/env python
 
-############################################################################
-##
-## Copyright (C) 2005-2005 Trolltech AS. All rights reserved.
-##
-## This file is part of the example classes of the Qt Toolkit.
-##
-## This file may be used under the terms of the GNU General Public
-## License version 2.0 as published by the Free Software Foundation
-## and appearing in the file LICENSE.GPL included in the packaging of
-## this file.  Please review the following information to ensure GNU
-## General Public Licensing requirements will be met:
-## http://www.trolltech.com/products/qt/opensource.html
-##
-## If you are unsure which license is appropriate for your use, please
-## review the following information:
-## http://www.trolltech.com/products/qt/licensing.html or contact the
-## sales department at sales@trolltech.com.
-##
-## This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
-## WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-##
-############################################################################
+"""***************************************************************************
+**
+** Copyright (C) 2005-2005 Trolltech AS. All rights reserved.
+**
+** This file is part of the example classes of the Qt Toolkit.
+**
+** This file may be used under the terms of the GNU General Public
+** License version 2.0 as published by the Free Software Foundation
+** and appearing in the file LICENSE.GPL included in the packaging of
+** this file.  Please review the following information to ensure GNU
+** General Public Licensing requirements will be met:
+** http://www.trolltech.com/products/qt/opensource.html
+**
+** If you are unsure which license is appropriate for your use, please
+** review the following information:
+** http://www.trolltech.com/products/qt/licensing.html or contact the
+** sales department at sales@trolltech.com.
+**
+** This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+** WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+**
+***************************************************************************"""
 
-from PyQt4 import QtCore, QtGui
+import sys
+from PySide import QtCore, QtGui
 
 import simpletreemodel_rc
 
 
-class TreeItem(object):
+class TreeItem:
     def __init__(self, data, parent=None):
         self.parentItem = parent
         self.itemData = data
@@ -61,9 +62,11 @@ class TreeItem(object):
 
 class TreeModel(QtCore.QAbstractItemModel):
     def __init__(self, data, parent=None):
-        super(TreeModel, self).__init__(parent)
+        QtCore.QAbstractItemModel.__init__(self, parent)
 
-        rootData = [QtCore.QVariant("Title"), QtCore.QVariant("Summary")]
+        rootData = []
+        rootData.append(QtCore.QVariant("Title"))
+        rootData.append(QtCore.QVariant("Summary"))
         self.rootItem = TreeItem(rootData)
         self.setupModelData(data.split("\n"), self.rootItem)
 
@@ -86,7 +89,7 @@ class TreeModel(QtCore.QAbstractItemModel):
 
     def flags(self, index):
         if not index.isValid():
-            return QtCore.Qt.NoItemFlags
+            return QtCore.Qt.ItemIsEnabled
 
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
@@ -97,7 +100,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         return QtCore.QVariant()
 
     def index(self, row, column, parent):
-        if not self.hasIndex(row, column, parent):
+        if row < 0 or column < 0 or row >= self.rowCount(parent) or column >= self.columnCount(parent):
             return QtCore.QModelIndex()
 
         if not parent.isValid():
@@ -135,8 +138,10 @@ class TreeModel(QtCore.QAbstractItemModel):
         return parentItem.childCount()
 
     def setupModelData(self, lines, parent):
-        parents = [parent]
-        indentations = [0]
+        parents = []
+        indentations = []
+        parents.append(parent)
+        indentations.append(0)
 
         number = 0
 
@@ -151,15 +156,14 @@ class TreeModel(QtCore.QAbstractItemModel):
 
             if not lineData.isEmpty():
                 # Read the column data from the rest of the line.
-                columnStrings = lineData.split("\t",
-                        QtCore.QString.SkipEmptyParts)
+                columnStrings = lineData.split("\t", QtCore.QString.SkipEmptyParts)
                 columnData = []
                 for column in range(0, len(columnStrings)):
                     columnData.append(columnStrings[column])
 
                 if position > indentations[-1]:
-                    # The last child of the current parent is now the new
-                    # parent unless the current parent has no children.
+                    # The last child of the current parent is now the new parent
+                    # unless the current parent has no children.
 
                     if parents[-1].childCount() > 0:
                         parents.append(parents[-1].child(parents[-1].childCount() - 1))
@@ -176,10 +180,7 @@ class TreeModel(QtCore.QAbstractItemModel):
             number += 1
 
 
-if __name__ == '__main__':
-
-    import sys
-
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
 
     f = QtCore.QFile(":/default.txt")

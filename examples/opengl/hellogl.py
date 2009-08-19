@@ -1,37 +1,34 @@
 #!/usr/bin/env python
 
-"""PyQt4 port of the opengl/hellogl example from Qt v4.x"""
+"""PySide port of the opengl/hellogl example from Qt v4.x"""
 
 import sys
 import math
-
-from PyQt4 import QtCore, QtGui, QtOpenGL
+from PySide import QtCore, QtGui, QtOpenGL
 
 try:
     from OpenGL import GL
 except ImportError:
     app = QtGui.QApplication(sys.argv)
     QtGui.QMessageBox.critical(None, "OpenGL hellogl",
-            "PyOpenGL must be installed to run this example.")
+                            "PyOpenGL must be installed to run this example.",
+                            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
+                            QtGui.QMessageBox.NoButton)
     sys.exit(1)
 
 
 class Window(QtGui.QWidget):
-    def __init__(self):
-        super(Window, self).__init__()
+    def __init__(self, parent=None):
+        QtGui.QWidget.__init__(self, parent)
 
         self.glWidget = GLWidget()
 
-        self.xSlider = self.createSlider()
-        self.ySlider = self.createSlider()
-        self.zSlider = self.createSlider()
-
-        self.xSlider.valueChanged.connect(self.glWidget.setXRotation)
-        self.glWidget.xRotationChanged.connect(self.xSlider.setValue)
-        self.ySlider.valueChanged.connect(self.glWidget.setYRotation)
-        self.glWidget.yRotationChanged.connect(self.ySlider.setValue)
-        self.zSlider.valueChanged.connect(self.glWidget.setZRotation)
-        self.glWidget.zRotationChanged.connect(self.zSlider.setValue)
+        self.xSlider = self.createSlider(QtCore.SIGNAL("xRotationChanged(int)"),
+                                         self.glWidget.setXRotation)
+        self.ySlider = self.createSlider(QtCore.SIGNAL("yRotationChanged(int)"),
+                                         self.glWidget.setYRotation)
+        self.zSlider = self.createSlider(QtCore.SIGNAL("zRotationChanged(int)"),
+                                         self.glWidget.setZRotation)
 
         mainLayout = QtGui.QHBoxLayout()
         mainLayout.addWidget(self.glWidget)
@@ -46,7 +43,7 @@ class Window(QtGui.QWidget):
 
         self.setWindowTitle(self.tr("Hello GL"))
 
-    def createSlider(self):
+    def createSlider(self, changedSignal, setterSlot):
         slider = QtGui.QSlider(QtCore.Qt.Vertical)
 
         slider.setRange(0, 360 * 16)
@@ -55,16 +52,15 @@ class Window(QtGui.QWidget):
         slider.setTickInterval(15 * 16)
         slider.setTickPosition(QtGui.QSlider.TicksRight)
 
+        self.glWidget.connect(slider, QtCore.SIGNAL("valueChanged(int)"), setterSlot)
+        self.connect(self.glWidget, changedSignal, slider, QtCore.SLOT("setValue(int)"))
+
         return slider
 
 
 class GLWidget(QtOpenGL.QGLWidget):
-    xRotationChanged = QtCore.pyqtSignal(int)
-    yRotationChanged = QtCore.pyqtSignal(int)
-    zRotationChanged = QtCore.pyqtSignal(int)
-
     def __init__(self, parent=None):
-        super(GLWidget, self).__init__(parent)
+        QtOpenGL.QGLWidget.__init__(self, parent)
 
         self.object = 0
         self.xRot = 0
@@ -76,6 +72,15 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.trolltechGreen = QtGui.QColor.fromCmykF(0.40, 0.0, 1.0, 0.0)
         self.trolltechPurple = QtGui.QColor.fromCmykF(0.39, 0.39, 0.0, 0.0)
 
+    def xRotation(self):
+        return self.xRot
+
+    def yRotation(self):
+        return self.yRot
+
+    def zRotation(self):
+        return self.zRot
+
     def minimumSizeHint(self):
         return QtCore.QSize(50, 50)
 
@@ -86,21 +91,21 @@ class GLWidget(QtOpenGL.QGLWidget):
         angle = self.normalizeAngle(angle)
         if angle != self.xRot:
             self.xRot = angle
-            self.xRotationChanged.emit(angle)
+            self.emit(QtCore.SIGNAL("xRotationChanged(int)"), angle)
             self.updateGL()
 
     def setYRotation(self, angle):
         angle = self.normalizeAngle(angle)
         if angle != self.yRot:
             self.yRot = angle
-            self.yRotationChanged.emit(angle)
+            self.emit(QtCore.SIGNAL("yRotationChanged(int)"), angle)
             self.updateGL()
 
     def setZRotation(self, angle):
         angle = self.normalizeAngle(angle)
         if angle != self.zRot:
             self.zRot = angle
-            self.zRotationChanged.emit(angle)
+            self.emit(QtCore.SIGNAL("zRotationChanged(int)"), angle)
             self.updateGL()
 
     def initializeGL(self):
@@ -121,9 +126,6 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def resizeGL(self, width, height):
         side = min(width, height)
-        if side < 0:
-            return
-
         GL.glViewport((width - side) / 2, (height - side) / 2, side, side)
 
         GL.glMatrixMode(GL.GL_PROJECTION)
@@ -132,7 +134,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         GL.glMatrixMode(GL.GL_MODELVIEW)
 
     def mousePressEvent(self, event):
-        self.lastPos = event.pos()
+        self.lastPos = QtCore.QPoint(event.pos())
 
     def mouseMoveEvent(self, event):
         dx = event.x() - self.lastPos.x()
@@ -145,7 +147,7 @@ class GLWidget(QtOpenGL.QGLWidget):
             self.setXRotation(self.xRot + 8 * dy)
             self.setZRotation(self.zRot + 8 * dx)
 
-        self.lastPos = event.pos()
+        self.lastPos = QtCore.QPoint(event.pos())
 
     def makeObject(self):
         genList = GL.glGenLists(1)
@@ -173,16 +175,17 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.extrude(x4, y4, y4, x4)
         self.extrude(y4, x4, y3, x3)
 
+        Pi = 3.14159265358979323846
         NumSectors = 200
 
         for i in range(NumSectors):
-            angle1 = (i * 2 * math.pi) / NumSectors
+            angle1 = (i * 2 * Pi) / NumSectors
             x5 = 0.30 * math.sin(angle1)
             y5 = 0.30 * math.cos(angle1)
             x6 = 0.20 * math.sin(angle1)
             y6 = 0.20 * math.cos(angle1)
 
-            angle2 = ((i + 1) * 2 * math.pi) / NumSectors
+            angle2 = ((i + 1) * 2 * Pi) / NumSectors
             x7 = 0.20 * math.sin(angle2)
             y7 = 0.20 * math.cos(angle2)
             x8 = 0.30 * math.sin(angle2)
@@ -228,7 +231,6 @@ class GLWidget(QtOpenGL.QGLWidget):
 
 
 if __name__ == '__main__':
-
     app = QtGui.QApplication(sys.argv)
     window = Window()
     window.show()
