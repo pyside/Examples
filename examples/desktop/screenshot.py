@@ -101,7 +101,7 @@ class Screenshot(QtGui.QWidget):
         self.delaySpinBox = QtGui.QSpinBox()
         self.delaySpinBox.setSuffix(self.tr(" s"))
         self.delaySpinBox.setMaximum(60)
-        self.delaySpinBox.valueChanged.connect(self.updateCheckBox)
+        self.delaySpinBox.connect(QtCore.SIGNAL("valueChanged()"), self.updateCheckBox)
 
         self.delaySpinBoxLabel = QtGui.QLabel(self.tr("Screenshot Delay:"))
 
@@ -131,7 +131,7 @@ class Screenshot(QtGui.QWidget):
 
     def createButton(self, text, member):
         button = QtGui.QPushButton(text)
-        button.clicked.connect(member)
+        button.connect(QtCore.SIGNAL("clicked()"), member)
         return button
 
     def updateScreenshotLabel(self):
