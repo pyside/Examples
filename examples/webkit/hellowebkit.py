@@ -1,5 +1,9 @@
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
 #       hellowebkit.py
-#       
+
+
 #       Copyright 2009 Piotr Maliński, riklaunim@gmail.com
 #       
 #       This program is free software; you can redistribute it and/or modify
@@ -25,7 +29,7 @@ from PySide.QtWebKit import *
 app = QApplication(sys.argv)
 
 web = QWebView()
-web.load(QUrl("http://google."))
+web.load(QUrl("http://google.com"))
 web.show()
 
 sys.exit(app.exec_())
