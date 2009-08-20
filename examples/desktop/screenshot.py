@@ -23,7 +23,8 @@
 ##
 #############################################################################
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
+
 
 
 class Screenshot(QtGui.QWidget):
