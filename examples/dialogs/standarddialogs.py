@@ -207,9 +207,9 @@ class Dialog(QtGui.QDialog):
 
     def criticalMessage(self):    
         reply = QtGui.QMessageBox.critical(self, self.tr("QMessageBox.showCritical()"),
-                                           Dialog.MESSAGE, QtGui.QMessageBox.Abort,
-                                           QtGui.QMessageBox.Retry,
-                                           QtGui.QMessageBox.Ignore)
+                                           Dialog.MESSAGE, QtGui.QMessageBox.Abort|
+                                           QtGui.QMessageBox.StandardButton.Retry|
+                                           QtGui.QMessageBox.StandardButton.Ignore)
         if reply == QtGui.QMessageBox.Abort:
             self.criticalLabel.setText(self.tr("Abort"))
         elif reply == QtGui.QMessageBox.Retry:
@@ -223,9 +223,7 @@ class Dialog(QtGui.QDialog):
 
     def questionMessage(self):    
         reply = QtGui.QMessageBox.question(self, self.tr("QMessageBox.showQuestion()"),
-                                           Dialog.MESSAGE, QtGui.QMessageBox.Yes,
-                                           QtGui.QMessageBox.No,
-                                           QtGui.QMessageBox.Cancel)
+                                           Dialog.MESSAGE, QtGui.QMessageBox.StandardButton.Yes | QtGui.QMessageBox.StandardButton.No)
         if reply == QtGui.QMessageBox.Yes:
             self.questionLabel.setText(self.tr("Yes"))
         elif reply == QtGui.QMessageBox.No:
@@ -235,8 +233,7 @@ class Dialog(QtGui.QDialog):
 
     def warningMessage(self):    
         reply = QtGui.QMessageBox.warning(self, self.tr("QMessageBox.showWarning()"),
-                                          Dialog.MESSAGE, self.tr("Save &Again"),
-                                          self.tr("&Continue"))
+                                          Dialog.MESSAGE, QtGui.QMessageBox.StandardButton.Ok | QtGui.QMessageBox.StandardButton.Discard )
         if reply == 0:
             self.warningLabel.setText(self.tr("Save Again"))
         else:
