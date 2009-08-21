@@ -359,9 +359,11 @@ class MainWindow(QtGui.QGraphicsView):
     def resizeEvent(self, event):
         self.resetMatrix()
         self.scale(event.size().width() / 800.0, event.size().height() / 600.0)
-
-        super(MainWindow, self).resizeEvent(event)
-
+        
+        #FIXME: The best i came up with..?
+        self.fitInView(self.scene.sceneRect())
+        #super(MainWindow, self).resizeEvent(event)
+        
         DemoItem.setMatrix(self.matrix())
 
         if self.trolltechLogo:
