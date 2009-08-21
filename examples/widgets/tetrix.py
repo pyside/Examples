@@ -338,11 +338,11 @@ class TetrixBoard(QtGui.QFrame):
                          self.squareWidth() - 2, self.squareHeight() - 2,
                          color)
 
-        painter.setPen(color.light())
+        painter.setPen(color.lighter())
         painter.drawLine(x, y + self.squareHeight() - 1, x, y)
         painter.drawLine(x, y, x + self.squareWidth() - 1, y)
 
-        painter.setPen(color.dark())
+        painter.setPen(color.darker())
         painter.drawLine(x + 1, y + self.squareHeight() - 1,
                          x + self.squareWidth() - 1, y + self.squareHeight() - 1)
         painter.drawLine(x + self.squareWidth() - 1, y + self.squareHeight() - 1,
