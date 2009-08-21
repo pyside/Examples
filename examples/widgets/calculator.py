@@ -92,7 +92,7 @@ class Calculator(QtGui.QDialog):
         self.clearButton = self.createButton(self.tr("Clear"), backspaceColor,
                                              self.clear)
         self.clearAllButton = self.createButton(self.tr("Clear All"),
-                                                backspaceColor.light(120),
+                                                backspaceColor.lighter(120),
                                                 self.clearAll)
 
         self.clearMemoryButton = self.createButton(self.tr("MC"), memoryColor,
@@ -121,7 +121,7 @@ class Calculator(QtGui.QDialog):
         self.reciprocalButton = self.createButton(self.tr("1/x"), operatorColor,
                                                   self.unaryOperatorClicked)
         self.equalButton = self.createButton(self.tr("="),
-                                             operatorColor.light(120),
+                                             operatorColor.lighter(120),
                                              self.equalClicked)
 
         mainLayout = QtGui.QGridLayout()
