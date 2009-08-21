@@ -1,3 +1,4 @@
+import PySide as PyQt4
 # -*- coding: utf-8 -*-
 
 # Resource object code

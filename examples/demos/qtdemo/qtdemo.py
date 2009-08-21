@@ -42,6 +42,7 @@
 ##
 #############################################################################
 
+import PySide as PyQt4
 from PyQt4 import QtCore, QtGui
 
 import qtdemo_rc

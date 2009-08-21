@@ -1,3 +1,4 @@
+import PySide as PyQt4
 import math
 
 from PyQt4 import QtCore

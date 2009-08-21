@@ -1,3 +1,4 @@
+import PySide as PyQt4
 import os
 import sys
 
