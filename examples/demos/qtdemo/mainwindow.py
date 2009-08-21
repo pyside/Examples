@@ -57,7 +57,7 @@ class MainWindow(QtGui.QGraphicsView):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setFrameStyle(QtGui.QFrame.NoFrame)
         self.setRenderingSystem()
-        self.updateTimer.timeout.connect(self.tick)
+        self.connect(self.updateTimer, QtCore.SIGNAL('timeout()'), self.tick)
 
     def setRenderingSystem(self):
         if Colors.direct3dRendering:
