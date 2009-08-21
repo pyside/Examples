@@ -109,7 +109,7 @@ class GLWidget(QtOpenGL.QGLWidget):
             self.updateGL()
 
     def initializeGL(self):
-        self.qglClearColor(self.trolltechPurple.dark())
+        self.qglClearColor(self.trolltechPurple.darker())
         self.object = self.makeObject()
         GL.glShadeModel(GL.GL_FLAT)
         GL.glEnable(GL.GL_DEPTH_TEST)
@@ -215,7 +215,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         GL.glVertex3d(x1, y1, +0.05)
 
     def extrude(self, x1, y1, x2, y2):
-        self.qglColor(self.trolltechGreen.dark(250 + int(100 * x1)))
+        self.qglColor(self.trolltechGreen.darker(250 + int(100 * x1)))
 
         GL.glVertex3d(x1, y1, +0.05)
         GL.glVertex3d(x2, y2, +0.05)

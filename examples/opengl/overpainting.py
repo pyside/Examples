@@ -180,7 +180,7 @@ class GLWidget(QGLWidget):
         glMatrixMode(GL_MODELVIEW)
         glPushMatrix()
 
-        self.qglClearColor(self.trolltechPurple.dark())
+        self.qglClearColor(self.trolltechPurple.darker())
         glShadeModel(GL_SMOOTH)
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_CULL_FACE)
@@ -302,7 +302,7 @@ class GLWidget(QGLWidget):
         glVertex3d(x1, y1, +0.05)
 
     def extrude(self, x1, y1, x2, y2):
-        self.qglColor(self.trolltechGreen.dark(250 + int(100 * x1)))
+        self.qglColor(self.trolltechGreen.darker(250 + int(100 * x1)))
 
         glNormal3d((x1 + x2)/2.0, (y1 + y2)/2.0, 0.0)
         glVertex3d(x1, y1, +0.05)
