@@ -90,17 +90,17 @@ class AddressBook(QtGui.QWidget):
 
         self.dialog = FindDialog()
 
-        self.addButton.clicked.connect(self.addContact)
-        self.submitButton.clicked.connect(self.submitContact)
-        self.editButton.clicked.connect(self.editContact)
-        self.removeButton.clicked.connect(self.removeContact)
-        self.findButton.clicked.connect(self.findContact)
-        self.cancelButton.clicked.connect(self.cancel)
-        self.nextButton.clicked.connect(self.next)
-        self.previousButton.clicked.connect(self.previous)
-        self.loadButton.clicked.connect(self.loadFromFile)
-        self.saveButton.clicked.connect(self.saveToFile)
-        self.exportButton.clicked.connect(self.exportAsVCard)
+        self.connect(self.addButton,QtCore.SIGNAL("clicked()"),self.addContact)
+        self.connect(self.submitButton,QtCore.SIGNAL("clicked()"),self.submitContact)
+        self.connect(self.cancelButton,QtCore.SIGNAL("clicked()"),self.cancel)
+        self.connect(self.nextButton,QtCore.SIGNAL("clicked()"), self.next)
+        self.connect(self.previousButton,QtCore.SIGNAL("clicked()"),self.previous)
+        self.connect(self.editButton, QtCore.SIGNAL("clicked()"),self.editContact)
+        self.connect(self.removeButton, QtCore.SIGNAL("clicked()"),self.removeContact)
+        self.connect(self.findButton, QtCore.SIGNAL("clicked()"), self.findContact)
+        self.connect(self.loadButton, QtCore.SIGNAL("clicked()"),self.loadFromFile)
+        self.connect(self.saveButton, QtCore.SIGNAL("clicked()"), self.saveToFile)
+        self.connect(self.exportButton, QtCore.SIGNAL("clicked()"),self.exportAsVCard)
 
         buttonLayout1 = QtGui.QVBoxLayout()
         buttonLayout1.addWidget(self.addButton)
@@ -433,8 +433,10 @@ class FindDialog(QtGui.QDialog):
         self.setLayout(layout)
         self.setWindowTitle(self.tr("Find a Contact"))
 
-        self.findButton.clicked.connect(self.findClicked)
-        self.findButton.clicked.connect(self.accept)
+
+        self.connect(self.findButton, QtCore.SIGNAL("clicked()"), self.findClicked)
+        self.connect(self.findButton, QtCore.SIGNAL("clicked()"), self.accept)
+
 
     def findClicked(self):
         text = self.lineEdit.text()

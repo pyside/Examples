@@ -66,11 +66,11 @@ class AddressBook(QtGui.QWidget):
         self.previousButton = QtGui.QPushButton(self.tr("&Previous"))
         self.previousButton.setEnabled(False)
 
-        self.addButton.clicked.connect(self.addContact)
-        self.submitButton.clicked.connect(self.submitContact)
-        self.cancelButton.clicked.connect(self.cancel)
-        self.nextButton.clicked.connect(self.next)
-        self.previousButton.clicked.connect(self.previous)
+        self.connect(self.addButton,QtCore.SIGNAL("clicked()"),self.addContact)
+        self.connect(self.submitButton,QtCore.SIGNAL("clicked()"),self.submitContact)
+        self.connect(self.cancelButton,QtCore.SIGNAL("clicked()"),self.cancel)
+        self.connect(self.nextButton,QtCore.SIGNAL("clicked()"), self.next)
+        self.connect(self.previousButton,QtCore.SIGNAL("clicked()"),self.previous)
 
         buttonLayout1 = QtGui.QVBoxLayout()
         buttonLayout1.addWidget(self.addButton, QtCore.Qt.AlignTop)
