@@ -26,7 +26,6 @@
 from PySide import QtCore, QtGui
 
 
-
 class Screenshot(QtGui.QWidget):
     def __init__(self):
         super(Screenshot, self).__init__()
@@ -121,7 +120,7 @@ class Screenshot(QtGui.QWidget):
                 self.saveScreenshot)
 
         self.quitScreenshotButton = self.createButton(self.tr("Quit"),
-                self.close)
+                self.closeme)
 
         self.buttonsLayout = QtGui.QHBoxLayout()
         self.buttonsLayout.addStretch()
@@ -138,7 +137,9 @@ class Screenshot(QtGui.QWidget):
         self.screenshotLabel.setPixmap(self.originalPixmap.scaled(
                 self.screenshotLabel.size(), QtCore.Qt.KeepAspectRatio,
                 QtCore.Qt.SmoothTransformation))
-
+    
+    def closeme(self):
+        self.close()
 
 if __name__ == "__main__":
 
