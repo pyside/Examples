@@ -207,8 +207,8 @@ class Node(QtGui.QGraphicsItem):
         if option.state & QtGui.QStyle.State_Sunken:
             gradient.setCenter(3, 3)
             gradient.setFocalPoint(3, 3)
-            gradient.setColorAt(1, QtGui.QColor(QtCore.Qt.yellow).light(120))
-            gradient.setColorAt(0, QtGui.QColor(QtCore.Qt.darkYellow).light(120))
+            gradient.setColorAt(1, QtGui.QColor(QtCore.Qt.yellow).lighter(120))
+            gradient.setColorAt(0, QtGui.QColor(QtCore.Qt.darkYellow).lighter(120))
         else:
             gradient.setColorAt(0, QtCore.Qt.yellow)
             gradient.setColorAt(1, QtCore.Qt.darkYellow)
