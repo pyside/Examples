@@ -24,8 +24,8 @@ class Dialog(QtGui.QDialog):
 
         buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
 
-        buttonBox.accepted.connect(self.accept)
-        buttonBox.rejected.connect(self.reject)
+        self.connect(buttonBox, QtCore.SIGNAL("accepted()"),self.accept)
+        self.connect(buttonBox, QtCore.SIGNAL("rejected()"), self.reject)
 
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.setMenuBar(self.menuBar)
@@ -45,7 +45,7 @@ class Dialog(QtGui.QDialog):
         self.exitAction = self.fileMenu.addAction(self.tr("E&xit"))
         self.menuBar.addMenu(self.fileMenu)
 
-        self.exitAction.triggered.connect(self.accept)
+        self.connect(self.exitAction, QtCore.SIGNAL("triggered()"),self.accept)
 
     def createHorizontalGroupBox(self):
         self.horizontalGroupBox = QtGui.QGroupBox(self.tr("Horizontal layout"))
