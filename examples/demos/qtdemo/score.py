@@ -1,3 +1,4 @@
+import PySide as PyQt4
 from colors import Colors
 
 

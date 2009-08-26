@@ -1,5 +1,6 @@
-import sys
 
+import sys
+import PySide as PyQt4
 from PyQt4 import QtGui
 
 

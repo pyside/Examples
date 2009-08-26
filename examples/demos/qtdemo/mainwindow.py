@@ -1,3 +1,4 @@
+import PySide as PyQt4
 from PyQt4 import QtCore, QtGui
 
 from colors import Colors
@@ -57,7 +58,7 @@ class MainWindow(QtGui.QGraphicsView):
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setFrameStyle(QtGui.QFrame.NoFrame)
         self.setRenderingSystem()
-        self.updateTimer.timeout.connect(self.tick)
+        self.connect(self.updateTimer, QtCore.SIGNAL('timeout()'), self.tick)
 
     def setRenderingSystem(self):
         if Colors.direct3dRendering:
@@ -358,9 +359,11 @@ class MainWindow(QtGui.QGraphicsView):
     def resizeEvent(self, event):
         self.resetMatrix()
         self.scale(event.size().width() / 800.0, event.size().height() / 600.0)
-
-        super(MainWindow, self).resizeEvent(event)
-
+        
+        #FIXME: The best i came up with..?
+        self.fitInView(self.scene.sceneRect())
+        #super(MainWindow, self).resizeEvent(event)
+        
         DemoItem.setMatrix(self.matrix())
 
         if self.trolltechLogo:

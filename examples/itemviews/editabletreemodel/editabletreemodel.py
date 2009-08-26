@@ -301,16 +301,17 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         for column in range(model.columnCount(QtCore.QModelIndex())):
             self.view.resizeColumnToContents(column)
 
-        self.exitAction.triggered.connect(QtGui.qApp.quit)
+        self.connect(self.exitAction, QtCore.SIGNAL("triggered()"), QtGui.qApp.quit)
 
-        self.view.selectionModel().selectionChanged.connect(self.updateActions)
-
-        self.actionsMenu.aboutToShow.connect(self.updateActions)
-        self.insertRowAction.triggered.connect(self.insertRow)
-        self.insertColumnAction.triggered.connect(self.insertColumn)
-        self.removeRowAction.triggered.connect(self.removeRow)
-        self.removeColumnAction.triggered.connect(self.removeColumn)
-        self.insertChildAction.triggered.connect(self.insertChild)
+        self.connect(self.view.selectionModel(), QtCore.SIGNAL("selectionChanged()"), self.updateActions)
+        
+        self.connect(self.actionsMenu, QtCore.SIGNAL("aboutToShow()"),self.updateActions)
+        
+        self.connect(self.insertRowAction, QtCore.SIGNAL("triggered()"), self.insertRow)
+        self.connect(self.insertColumnAction, QtCore.SIGNAL("triggered()"),self.insertColumn)
+        self.connect(self.removeRowAction, QtCore.SIGNAL("triggered()"), self.removeRow)
+        self.connect(self.removeColumnAction, QtCore.SIGNAL("triggered()"), self.removeColumn)
+        self.connect(self.insertChildAction,QtCore.SIGNAL("triggered()"), self.insertChild)
 
         self.updateActions()
 

@@ -188,7 +188,8 @@ if __name__ == "__main__":
     view.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap(":/images/cheese.jpg")))
     view.setCacheMode(QtGui.QGraphicsView.CacheBackground)
     view.setDragMode(QtGui.QGraphicsView.ScrollHandDrag)
-    view.setWindowTitle(QtCore.QT_TRANSLATE_NOOP(QtGui.QGraphicsView, "Colliding Mice"))
+    view.setWindowTitle("Colliding Mice")
+    #view.setWindowTitle(QtCore.QT_TRANSLATE_NOOP(QtGui.QGraphicsView, "Colliding Mice"))
     view.resize(400, 300)
     view.show()
 
