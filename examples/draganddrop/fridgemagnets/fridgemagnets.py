@@ -73,8 +73,8 @@ class DragLabel(QtGui.QLabel):
         drag.setPixmap(self.pixmap())
 
         self.hide()
-
-        if drag.start(QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
+        #use exec_ instead of start
+        if drag.exec_(QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
             self.close()
         else:
             self.show()

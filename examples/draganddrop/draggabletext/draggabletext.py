@@ -46,7 +46,7 @@ class DragLabel(QtGui.QLabel):
         drag.setMimeData(mimeData)
         drag.setHotSpot(event.pos() - self.rect().topLeft())
 
-        dropAction = drag.start(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction)
+        dropAction = drag.exec_(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction)
 
         if dropAction == QtCore.Qt.MoveAction:
             self.close()

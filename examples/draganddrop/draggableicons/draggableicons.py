@@ -114,8 +114,8 @@ class DragWidget(QtGui.QFrame):
         painter.end()
 
         child.setPixmap(tempPixmap)
-
-        if drag.start(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
+        #use exec_ instead of start.
+        if drag.exec_(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
             child.close()
         else:
             child.show()
