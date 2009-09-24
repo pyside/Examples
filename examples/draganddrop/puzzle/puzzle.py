@@ -142,7 +142,7 @@ class PuzzleWidget(QtGui.QWidget):
         drag.setHotSpot(event.pos() - square.topLeft())
         drag.setPixmap(pixmap)
 
-        if not (drag.start(QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction):
+        if not (drag.exec_(QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction):
             self.pieceLocations.insert(found, location)
             self.piecePixmaps.insert(found, pixmap)
             self.pieceRects.insert(found, square)
@@ -234,7 +234,7 @@ class PiecesList(QtGui.QListWidget):
         drag.setHotSpot(QtCore.QPoint(pixmap.width()/2, pixmap.height()/2))
         drag.setPixmap(pixmap)
 
-        if drag.start(QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
+        if drag.exec_(QtCore.Qt.MoveAction) == QtCore.Qt.MoveAction:
             self.takeItem(self.row(item))
 
 
