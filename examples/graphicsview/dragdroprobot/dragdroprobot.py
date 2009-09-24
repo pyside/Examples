@@ -84,7 +84,7 @@ class ColorItem(QtGui.QGraphicsItem):
             drag.setPixmap(pixmap)
             drag.setHotSpot(QtCore.QPoint(15, 20))
 
-        drag.start()
+        drag.exec_()
 
 
 class RobotPart(QtGui.QGraphicsItem):
@@ -128,7 +128,7 @@ class RobotHead(RobotPart):
 
     def paint(self, painter, option, widget=None):
         if not self.pixmap:
-            painter.setBrush(self.dragOver and self.color.light(130) 
+            painter.setBrush(self.dragOver and self.color.lighter(130) 
                                             or self.color)
             painter.drawRoundedRect(-10, -30, 20, 30, 25, 25,
                     QtCore.Qt.RelativeSize)
@@ -151,7 +151,7 @@ class RobotTorso(RobotPart):
         return QtCore.QRectF(-30, -20, 60, 60)
 
     def paint(self, painter, option, widget=None):
-        painter.setBrush(self.dragOver and self.color.light(130) 
+        painter.setBrush(self.dragOver and self.color.lighter(130) 
                                         or self.color)
         painter.drawRoundedRect(-20, -20, 40, 60, 25, 25,
                 QtCore.Qt.RelativeSize)
@@ -166,7 +166,7 @@ class RobotLimb(RobotPart):
         return QtCore.QRectF(-5, -5, 40, 10)
 
     def paint(self, painter, option, widget=None):
-        painter.setBrush(self.dragOver and self.color.light(130) or self.color)
+        painter.setBrush(self.dragOver and self.color.lighter(130) or self.color)
         painter.drawRoundedRect(self.boundingRect(), 50, 50,
                 QtCore.Qt.RelativeSize)
         painter.drawEllipse(-5, -5, 10, 10)
