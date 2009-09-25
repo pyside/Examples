@@ -153,7 +153,7 @@ class PieView(QtGui.QAbstractItemView):
                     listItem += 1
 
             if index.column() == 0:
-            
+
                 itemHeight = QtGui.QFontMetrics(self.viewOptions().font).height()
                 return QtCore.QRect(self.totalSize,
                              int(self.margin + listItem*itemHeight),
@@ -379,7 +379,7 @@ class PieView(QtGui.QAbstractItemView):
             for column in range(columns):
                 index = self.model().index(row, column, self.rootIndex())
                 region = self.itemRegion(index)
-                if not region.intersect(QtGui.QRegion(contentsRect)).isEmpty():
+                if not region.intersected(QtGui.QRegion(contentsRect)).isEmpty():
                     indexes.append(index)
 
         if len(indexes) > 0:
