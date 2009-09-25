@@ -189,10 +189,10 @@ class DiagramItem(QtGui.QGraphicsPolygonItem):
 
     def removeArrow(self, arrow):
         if arrow in self.arrows:
-            arrows.remove(arrow)
+            self.arrows.remove(arrow)
 
     def removeArrows(self):
-        for arrow in arrows:
+        for arrow in self.arrows:
             arrow.startItem().removeArrow(arrow)
             arrow.endItem().removeArrow(arrow)
             self.scene().removeItem(arrow)
@@ -203,7 +203,6 @@ class DiagramItem(QtGui.QGraphicsPolygonItem):
     def contextMenuEvent(self, event):
         self.scene().clearSelection()
         self.setSelected(True)
-        self.myContextMenu.exec_(event.screenPos())
 
     def itemChange(self, change, value):
         if change == QtGui.QGraphicsItem.ItemPositionChange:
@@ -510,7 +509,7 @@ class MainWindow(QtGui.QMainWindow):
         font = item.font()
         color = item.defaultTextColor()
         self.fontCombo.setCurrentFont(font)
-        self.fontSizeCombo.setEditText(QString().setNum(font.pointSize()))
+        self.fontSizeCombo.setEditText(QString.number(font.pointSize()))
         self.boldAction.setChecked(font.weight() == QtGui.QFont.Bold)
         self.italicAction.setChecked(font.italic())
         self.underlineAction.setChecked(font.underline())
@@ -801,7 +800,7 @@ class MainWindow(QtGui.QMainWindow):
             action = QtGui.QAction(name, self)
             #need to specifically create a QColor from "color", since the "color" is a GlobalColor
             # and not a QColor object
-            action.setData(QtCore.QVariant(QtGui.QColor(color))) 
+            action.setData(QtCore.QVariant(QtGui.QColor(color)))
             action.setIcon(self.createColorIcon(color))
             self.connect(action, QtCore.SIGNAL("triggered()"), slot)
             colorMenu.addAction(action)
