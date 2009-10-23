@@ -54,7 +54,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.connect(timer, QtCore.SIGNAL("timeout()"), self.advanceGears)
         timer.start(20)
 
-    def __del__(self):
+    def deinitialize(self):
         self.makeCurrent()
         glDeleteLists(self.gear1, 1)
         glDeleteLists(self.gear2, 1)
@@ -300,6 +300,10 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setWindowTitle(self.tr("Grabber"))
         self.resize(400, 300)
+
+    def closeEvent(self, event):
+        self.glWidget.deinitialize()
+        QtGui.QMainWindow.closeEvent(self, event)
 
     def renderIntoPixmap(self):
         size = self.getSize()
