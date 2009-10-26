@@ -102,7 +102,7 @@ class CannonField(QtGui.QWidget):
         if shotR.x() > self.width() or shotR.y() > self.height():
             self.autoShootTimer.stop()
         else:
-            region = region.unite(QtGui.QRegion(shotR))
+            region = region.united(QtGui.QRegion(shotR))
 
         self.update(region)
 
