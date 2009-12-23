@@ -67,7 +67,7 @@ def main():
     scene.addItem(mainWindow)
     mainWindow.setGeometry(0, 0, width, height)
 
-    #System.setViewMode(view, System.PortraitMode)
+    System.setViewMode(view, System.PortraitMode)
 
     if USE_MAEMO:
         view.showFullScreen()

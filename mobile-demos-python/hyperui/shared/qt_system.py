@@ -26,24 +26,31 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 
+try:
+    from PySide.QtMaemo5 import *
+    USE_MAEMO_5 = True
+except:
+    USE_MAEMO_5 = False
+
 class System(QObject):
     _instance_ = None
+
+    LandscapeMode = 0
+    PortraitMode = 1
 
     def __init__(self):
         QObject.__init__(self)
 
-
+    @staticmethod
     def instance():
         if not System._instance_:
             _instance_ = System()
 
         return _instance_
 
+    @staticmethod
     def setViewMode(window, mode):
-        pass
-        """
         if USE_MAEMO_5:
-            enabled = (mode == PortraitMode);
-            window.setAttribute(Qt::WA_Maemo5ForcePortraitOrientation, enabled);
-            window.setAttribute(Qt::WA_Maemo5ForceLandscapeOrientation, !enabled);
-        """
+            enabled = (mode == System.PortraitMode)
+            window.setAttribute(Qt.WA_Maemo5ForcePortraitOrientation, enabled)
+            window.setAttribute(Qt.WA_Maemo5ForceLandscapeOrientation, not enabled)
