@@ -66,7 +66,7 @@ class HttpWindow(QtGui.QDialog):
         fileInfo = QtCore.QFileInfo(url.path())
         fileName = QtCore.QString(fileInfo.fileName())
     
-        if QtCore.QFile.exists(fileName):
+        if QtCore.QFile.fileExists(fileName):
             QtGui.QMessageBox.information(self, self.tr("HTTP"), self.tr(
                                           "There already exists a file called %1 "
                                           "in the current directory.").arg(fileName))

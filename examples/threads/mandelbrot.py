@@ -183,7 +183,7 @@ class RenderThread(QtCore.QThread):
         g = pow(g * s, 0.8)
         b = pow(b * s, 0.8)
 
-        return QtGui.qRgb(r*255, g*255, b*255)
+        return QtGui.qRgb(int(r*255), int(g*255), int(b*255))
 
 
 class MandelbrotWidget(QtGui.QWidget):
