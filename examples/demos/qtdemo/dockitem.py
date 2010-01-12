@@ -1,5 +1,4 @@
-import PySide as PyQt4
-from PyQt4 import QtGui
+from PySide import QtGui
 
 from colors import Colors
 from demoitem import DemoItem

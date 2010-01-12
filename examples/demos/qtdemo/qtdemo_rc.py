@@ -1,4 +1,3 @@
-import PySide as PyQt4
 # -*- coding: utf-8 -*-
 
 # Resource object code
@@ -8,7 +7,7 @@ import PySide as PyQt4
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt4 import QtCore
+from PySide import QtCore
 
 qt_resource_data = "\
 \x00\x00\x0d\xda\

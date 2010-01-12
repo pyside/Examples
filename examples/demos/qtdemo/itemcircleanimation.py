@@ -1,8 +1,7 @@
-import PySide as PyQt4
 import math
 import random
 
-from PyQt4 import QtCore
+from PySide import QtCore
 
 from colors import Colors
 from demoitem import DemoItem

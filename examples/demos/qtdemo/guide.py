@@ -1,5 +1,4 @@
-import PySide as PyQt4
-from PyQt4 import QtCore
+from PySide import QtCore
 
 
 class Guide(object):

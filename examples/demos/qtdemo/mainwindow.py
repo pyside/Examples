@@ -1,5 +1,4 @@
-import PySide as PyQt4
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 from colors import Colors
 from demoitem import DemoItem
@@ -66,7 +65,7 @@ class MainWindow(QtGui.QGraphicsView):
             self.setCacheMode(QtGui.QGraphicsView.CacheNone)
             Colors.debug("- using Direct3D")
         elif Colors.openGlRendering:
-            from PyQt4 import QtOpenGL
+            from PySide import QtOpenGL
 
             viewport = QtOpenGL.QGLWidget(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers))
 
