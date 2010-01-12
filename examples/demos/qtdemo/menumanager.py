@@ -281,8 +281,10 @@ class MenuManager(QtCore.QObject):
         executable = self.resolveExeFile(name)
 
         process = QtCore.QProcess(self)
-        process.finished.connect(self.exampleFinished)
-        process.error.connect(self.exampleError)
+        #process.finished.connect(self.exampleFinished)
+        #process.error.connect(self.exampleError)
+        QtCore.QObject.connect(process, QtCore.SIGNAL('finished()'), self.exampleFinished)
+        QtCore.QObject.connect(process, QtCore.SIGNAL('error()'), self.exampleError)
 
         if sys.platform == 'win32':
             # Make sure it finds the DLLs on Windows.

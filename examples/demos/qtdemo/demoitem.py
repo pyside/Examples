@@ -55,7 +55,7 @@ class DemoItem(QtGui.QGraphicsItem):
             return
 
         self.setVisible(visible)
-        for c in self.children():
+        for c in self.childItems(): # Was children(), obsolete
             c.setVisible(visible)
 
     def useGuide(self, guide, startFrame=0.0):
