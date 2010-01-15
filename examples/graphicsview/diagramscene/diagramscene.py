@@ -51,13 +51,13 @@ class Arrow(QtGui.QGraphicsLineItem):
 
         centerLine = QtCore.QLineF(myStartItem.pos(), myEndItem.pos())
         endPolygon = myEndItem.polygon()
-        p1 = endPolygon.first() + myEndItem.pos()
+        p1 = endPolygon[0] + myEndItem.pos()
 
         intersectPoint = QtCore.QPointF()
         for i in endPolygon:
             p2 = i + myEndItem.pos()
             polyLine = QtCore.QLineF(p1, p2)
-            intersectType = polyLine.intersect(centerLine, intersectPoint)
+            (intersectType, intersectPoint) = polyLine.intersect(centerLine)
             if intersectType == QtCore.QLineF.BoundedIntersection:
                 break
             p1 = p2
