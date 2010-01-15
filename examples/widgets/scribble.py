@@ -265,11 +265,10 @@ class MainWindow(QtGui.QMainWindow):
     def maybeSave(self):
         if self.scribbleArea.isModified():
             ret = QtGui.QMessageBox.warning(self, self.tr("Scribble"),
-                        self.tr("The image has been modified.\n"
-                                "Do you want to save your changes?"),
-                        QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
-                        QtGui.QMessageBox.No,
-                        QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Escape)
+                                            self.tr("The image has been modified.\n"
+                                                    "Do you want to save your changes?"),
+                                            QtGui.QMessageBox.Yes | QtGui.QMessageBox.Default,
+                                            QtGui.QMessageBox.No)
             if ret == QtGui.QMessageBox.Yes:
                 return self.saveFile("png")
             elif ret == QtGui.QMessageBox.Cancel:
