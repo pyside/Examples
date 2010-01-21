@@ -2,7 +2,7 @@
 
 """PyQt4 port of the network/http example from Qt v4.x"""
 
-from PyQt4 import QtCore, QtGui, QtNetwork
+from PySide import QtCore, QtGui, QtNetwork, QtUiTools
 
 
 class HttpWindow(QtGui.QDialog):
@@ -34,15 +34,26 @@ class HttpWindow(QtGui.QDialog):
 
         self.http = QtNetwork.QHttp(self)
 
-        self.urlLineEdit.textChanged.connect(self.enableDownloadButton)
-        self.http.requestFinished.connect(self.httpRequestFinished)
-        self.http.dataReadProgress.connect(self.updateDataReadProgress)
-        self.http.responseHeaderReceived.connect(self.readResponseHeader)
-        self.http.authenticationRequired.connect(self.slotAuthenticationRequired)
-        self.http.sslErrors.connect(self.sslErrors)
-        self.progressDialog.canceled.connect(self.cancelDownload)
-        self.downloadButton.clicked.connect(self.downloadFile)
-        self.quitButton.clicked.connect(self.close)
+        #self.urlLineEdit.textChanged.connect(self.enableDownloadButton)
+        #self.http.requestFinished.connect(self.httpRequestFinished)
+        #self.http.dataReadProgress.connect(self.updateDataReadProgress)
+        #self.http.responseHeaderReceived.connect(self.readResponseHeader)
+        #self.http.authenticationRequired.connect(self.slotAuthenticationRequired)
+        #self.http.sslErrors.connect(self.sslErrors)
+        #self.progressDialog.canceled.connect(self.cancelDownload)
+        #self.downloadButton.clicked.connect(self.downloadFile)
+        #self.quitButton.clicked.connect(self.close)
+
+        QtCore.QObject.connect(self.urlLineEdit, QtCore.SIGNAL('textChanged()'), self.enableDownloadButton)
+        QtCore.QObject.connect(self.http, QtCore.SIGNAL('requestFinished(int,bool)'), self.httpRequestFinished)
+        QtCore.QObject.connect(self.http, QtCore.SIGNAL('dataReadProgress(int,int)'), self.updateDataReadProgress)
+        QtCore.QObject.connect(self.http, QtCore.SIGNAL('responseHeaderReceived(const QHttpResponseHeader&)'), self.readResponseHeader)
+        QtCore.QObject.connect(self.http, QtCore.SIGNAL('authenticationRequired(const QString&, quint16, QAuthenticator *)'),self.slotAuthenticationRequired)
+        QtCore.QObject.connect(self.http, QtCore.SIGNAL('sslErrors(const QList<QSslError>&)'), self.sslErrors)
+        QtCore.QObject.connect(self.progressDialog, QtCore.SIGNAL('canceled()'), self.cancelDownload)
+        QtCore.QObject.connect(self.downloadButton, QtCore.SIGNAL('clicked()'), self.downloadFile)
+        QtCore.QObject.connect(self.quitButton, QtCore.SIGNAL('clicked()'), self.close)
+
 
         topLayout = QtGui.QHBoxLayout()
         topLayout.addWidget(urlLabel)
@@ -65,7 +76,7 @@ class HttpWindow(QtGui.QDialog):
         if fileName.isEmpty():
             fileName = "index.html"
 
-        if QtCore.QFile.exists(fileName):
+        if QtCore.QFile.fileExists(fileName):
             ret = QtGui.QMessageBox.question(self, self.tr("HTTP"),
                     self.tr("There already exists a file called %1 in the "
                             "current directory.").arg(fileName),
@@ -75,7 +86,7 @@ class HttpWindow(QtGui.QDialog):
             if ret == QtGui.QMessageBox.Cancel:
                 return
 
-            QtCore.QFile.remove(fileName)
+            QtCore.QFile.fileRemove(fileName)
 
         self.outFile = QtCore.QFile(fileName)
         if not self.outFile.open(QtCore.QIODevice.WriteOnly):
@@ -163,13 +174,17 @@ class HttpWindow(QtGui.QDialog):
         self.downloadButton.setEnabled(not self.urlLineEdit.text().isEmpty())
 
     def slotAuthenticationRequired(self, hostName, _, authenticator):
-        import os
-        from PyQt4 import uic
 
         ui = os.path.join(os.path.dirname(__file__), 'authenticationdialog.ui')
-        dlg = uic.loadUi(ui)
+
+        loader = QtUiTools.QUiLoader()
+        uifile = QtCore.QFile(ui)
+        dlg = loader.load(QFile(uifile, self)
+
         dlg.adjustSize()
-        dlg.siteDescription.setText(self.tr("%1 at %2").arg(authenticator.realm()).arg(hostName))
+        # ugly way to get the children. Somehow findChild wasn't working in this case
+        siteDescripition = [x for x in dlg.children() if x.objectName() == 'siteDescription'][0]
+        siteDescription.setText(self.tr("%1 at %2").arg(authenticator.realm()).arg(hostName))
 
         if dlg.exec_() == QtGui.QDialog.Accepted:
             authenticator.setUser(dlg.userEdit.text())

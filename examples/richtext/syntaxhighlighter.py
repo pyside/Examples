@@ -2,7 +2,7 @@
 
 """PyQt4 port of the richtext/syntaxhighlighter example from Qt v4.x"""
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 
 class MainWindow(QtGui.QMainWindow):

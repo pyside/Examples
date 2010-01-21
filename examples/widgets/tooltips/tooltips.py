@@ -205,13 +205,13 @@ class SortingBox(QtGui.QWidget):
         else:
             x = (self.width() / len(self.shapeItems) - path.controlPointRect().width()) / 2
     
-        return QtCore.QPoint(x, y)
+        return QtCore.QPoint(int(x), int(y))
     
     def randomItemPosition(self):
         x = random.randint(0, self.width() - 120)
         y = random.randint(0, self.height() - 120)
         
-        return QtCore.QPoint(x, y)
+        return QtCore.QPoint(int(x), int(y))
     
     def initialItemColor(self):
         hue = ((len(self.shapeItems) + 1) * 85) % 256

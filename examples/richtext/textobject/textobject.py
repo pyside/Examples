@@ -2,10 +2,11 @@
 
 """PyQt4 port of the richtext/textobject example from Qt v4.x"""
 
-from PyQt4 import QtCore, QtGui, QtSvg
+from PySide import QtCore, QtGui, QtSvg
 
 
-class SvgTextObject(QtGui.QPyTextObject):
+class SvgTextObject(QtCore.QObject, QtGui.QTextObjectInterface):
+
     def intrinsicSize(self, doc, posInDocument, format):
         renderer = QtSvg.QSvgRenderer(format.property(Window.SvgData).toByteArray())
         size = renderer.defaultSize()
@@ -49,7 +50,7 @@ class Window(QtGui.QWidget):
         svgCharFormat.setProperty(Window.SvgData, QtCore.QVariant(svgData))
 
         cursor = self.textEdit.textCursor()
-        cursor.insertText(QtCore.QString(QtCore.QChar.ObjectReplacementCharacter), svgCharFormat)
+        cursor.insertText(QtCore.QString(QtCore.QChar(QtCore.QChar.ObjectReplacementCharacter)), svgCharFormat)
         self.textEdit.setTextCursor(cursor)
 
     def setupTextObject(self):
@@ -62,7 +63,7 @@ class Window(QtGui.QWidget):
         insertTextObjectButton = QtGui.QPushButton(self.tr("Insert Image"))
 
         self.fileNameLineEdit.setText('./files/heart.svg')
-        insertTextObjectButton.clicked.connect(self.insertTextObject)
+        QtCore.QObject.connect(insertTextObjectButton, QtCore.SIGNAL('clicked()'), self.insertTextObject)
 
         bottomLayout = QtGui.QHBoxLayout()
         bottomLayout.addWidget(fileNameLabel)

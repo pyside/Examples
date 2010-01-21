@@ -87,7 +87,7 @@ class FtpWindow(QtGui.QDialog):
     def downloadFile(self):
         fileName = QtCore.QString(self.fileList.currentItem().text())
     
-        if QtCore.QFile.exists(fileName):
+        if QtCore.QFile.fileExists(fileName):
             QtGui.QMessageBox.information(self, self.tr("FTP"), self.tr(
                                           "There already exists a file called %1 "
                                           "in the current directory.").arg(fileName))

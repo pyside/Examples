@@ -23,7 +23,7 @@
 ##
 ############################################################################
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 import editabletreemodel_rc
 from ui_mainwindow import Ui_MainWindow
@@ -179,7 +179,11 @@ class TreeModel(QtCore.QAbstractItemModel):
 
         return success
 
-    def parent(self, index):
+    def parent(self, index=None):
+
+        if index is None: # Overload with QObject.parent()
+            return QtCore.QObject.parent(self)
+
         if not index.isValid():
             return QtCore.QModelIndex()
 
@@ -223,7 +227,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         result = item.setData(index.column(), value)
 
         if result:
-            self.dataChanged.emit(index, index)
+            self.emit(QtCore.SIGNAL('dataChanged(const QModelIndex&, const QModelIndex&)'), index, index)
 
         return result
 
@@ -233,7 +237,7 @@ class TreeModel(QtCore.QAbstractItemModel):
 
         result = self.rootItem.setData(section, value)
         if result:
-            self.headerDataChanged.emit(orientation, section, section)
+            self.emit(QtCore.SIGNAL('headerDataChanged(Qt::Orientation, int, int)'), orientation, section, section)
 
         return result
 
@@ -301,7 +305,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         for column in range(model.columnCount(QtCore.QModelIndex())):
             self.view.resizeColumnToContents(column)
 
-        self.connect(self.exitAction, QtCore.SIGNAL("triggered()"), QtGui.qApp.quit)
+        self.connect(self.exitAction, QtCore.SIGNAL("triggered()"), QtGui.qApp, QtCore.SLOT('quit()'))
 
         self.connect(self.view.selectionModel(), QtCore.SIGNAL("selectionChanged()"), self.updateActions)
         

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 import classwizard_rc
 
@@ -197,7 +197,7 @@ class ClassInfoPage(QtGui.QWizardPage):
 
         defaultCtorRadioButton.setChecked(True)
 
-        defaultCtorRadioButton.toggled.connect(copyCtorCheckBox.setEnabled)
+        QtCore.QObject.connect(defaultCtorRadioButton, QtCore.SIGNAL('toggled()'), copyCtorCheckBox.setEnabled)
 
         self.registerField("className*", classNameLineEdit)
         self.registerField("baseClass", baseClassLineEdit)
@@ -252,10 +252,10 @@ class CodeStylePage(QtGui.QWizardPage):
         self.baseIncludeLineEdit = QtGui.QLineEdit()
         self.baseIncludeLabel.setBuddy(self.baseIncludeLineEdit)
 
-        protectCheckBox.toggled.connect(macroNameLabel.setEnabled)
-        protectCheckBox.toggled.connect(self.macroNameLineEdit.setEnabled)
-        self.includeBaseCheckBox.toggled.connect(self.baseIncludeLabel.setEnabled)
-        self.includeBaseCheckBox.toggled.connect(self.baseIncludeLineEdit.setEnabled)
+        QtCore.QObject.connect(protectCheckBox, QtCore.SIGNAL('toggled()'), macroNameLabel.setEnabled)
+        QtCore.QObject.connect(protectCheckBox, QtCore.SIGNAL('toggled()'), self.macroNameLineEdit.setEnabled)
+        QtCore.QObject.connect(self.includeBaseCheckBox, QtCore.SIGNAL('toggled()'), self.baseIncludeLabel.setEnabled)
+        QtCore.QObject.connect(self.includeBaseCheckBox, QtCore.SIGNAL('toggled()'), self.baseIncludeLineEdit.setEnabled)
 
         self.registerField("comment", commentCheckBox)
         self.registerField("protect", protectCheckBox)

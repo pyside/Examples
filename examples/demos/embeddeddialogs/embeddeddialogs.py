@@ -3,7 +3,7 @@
 """PySide port of the demos/embeddeddialogs example from Qt v4.x"""
 
 import sys
-from PySide import QtCore, QtGui, uic
+from PySide import QtCore, QtGui
 
 from embeddeddialog import Ui_embeddedDialog
 from embeddeddialogs_rc import *
