@@ -139,7 +139,7 @@ class CannonField(QtGui.QWidget):
             self.autoShootTimer.stop()
             self.emit(QtCore.SIGNAL("missed()"))
         else:
-            region = region.unite(QtGui.QRegion(shotR))
+            region = region.united(QtGui.QRegion(shotR))
 
         self.update(region)
 

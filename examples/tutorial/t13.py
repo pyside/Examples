@@ -159,7 +159,7 @@ class CannonField(QtGui.QWidget):
             self.emit(QtCore.SIGNAL("missed()"))
             self.emit(QtCore.SIGNAL("canShoot(bool)"), True)
         else:
-            region = region.unite(QtGui.QRegion(shotR))
+            region = region.united(QtGui.QRegion(shotR))
 
         self.update(region)
 
