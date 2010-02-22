@@ -36,11 +36,11 @@ class ColorItem(QtGui.QGraphicsItem):
         self.color = QtGui.QColor(QtCore.qrand() % 256, QtCore.qrand() % 256,
                 QtCore.qrand() % 256)
         self.setToolTip(
-            "QColor(%d,%d,%d)\nClick and drag this color onto the robot!" % 
+            "QColor(%d,%d,%d)\nClick and drag this color onto the robot!" %
               (self.color.red(), self.color.green(), self.color.blue())
         )
         self.setCursor(QtCore.Qt.OpenHandCursor)
-    
+
     def boundingRect(self):
         return QtCore.QRectF(-15.5, -15.5, 34, 34)
 
@@ -91,7 +91,7 @@ class RobotPart(QtGui.QGraphicsItem):
     def __init__(self, parent=None):
         QtGui.QGraphicsItem.__init__(self, parent)
 
-        # NOTE: simply doing "self.color = QtCore.Qt.lightGray" doesn't work 
+        # NOTE: simply doing "self.color = QtCore.Qt.lightGray" doesn't work
         #   because QtCore.Qt.lightGray is a QtCore.GlobalColor object,
         #   which has no "light" method, which will be called later
         self.color = QtGui.QColor(QtCore.Qt.lightGray)
@@ -111,7 +111,7 @@ class RobotPart(QtGui.QGraphicsItem):
     def dragLeaveEvent(self, event):
         self.dragOver = False
         self.update()
- 
+
     def dropEvent(self, event):
         self.dragOver = False
         if event.mimeData().hasColor():
@@ -128,7 +128,7 @@ class RobotHead(RobotPart):
 
     def paint(self, painter, option, widget=None):
         if not self.pixmap:
-            painter.setBrush(self.dragOver and self.color.lighter(130) 
+            painter.setBrush(self.dragOver and self.color.lighter(130)
                                             or self.color)
             painter.drawRoundedRect(-10, -30, 20, 30, 25, 25,
                     QtCore.Qt.RelativeSize)
@@ -151,7 +151,7 @@ class RobotTorso(RobotPart):
         return QtCore.QRectF(-30, -20, 60, 60)
 
     def paint(self, painter, option, widget=None):
-        painter.setBrush(self.dragOver and self.color.lighter(130) 
+        painter.setBrush(self.dragOver and self.color.lighter(130)
                                         or self.color)
         painter.drawRoundedRect(-20, -20, 40, 60, 25, 25,
                 QtCore.Qt.RelativeSize)
@@ -208,7 +208,7 @@ class Robot(RobotPart):
             ( self.torsoItem,             0,    0,       5,   -20 )
         ]
         self.animations = []
-        for item, pos_x, pos_y, rotation1, rotation2 in settings: 
+        for item, pos_x, pos_y, rotation1, rotation2 in settings:
             item.setPos(pos_x,pos_y)
             animation = QtGui.QGraphicsItemAnimation()
             animation.setItem(item)
@@ -217,7 +217,7 @@ class Robot(RobotPart):
             animation.setRotationAt(1, rotation2)
             self.animations.append(animation)
         self.animations[0].setScaleAt(1, 1.1, 1.1)
-    
+
         self.timeline.start()
 
     def boundingRect(self):
