@@ -9,25 +9,25 @@ from PySide import QtCore, QtGui, QtNetwork
 class HttpWindow(QtGui.QDialog):
     def __init__(self, parent=None):
         QtGui.QDialog.__init__(self, parent)
-        
+
         self.urlLineEdit = QtGui.QLineEdit("http://www.ietf.org/iesg/1rfc_index.txt")
-    
+
         self.urlLabel = QtGui.QLabel(self.tr("&URL:"))
         self.urlLabel.setBuddy(self.urlLineEdit)
         self.statusLabel = QtGui.QLabel(self.tr("Please enter the URL of a file "
                                                 "you want to download."))
-    
+
         self.quitButton = QtGui.QPushButton(self.tr("Quit"))
         self.downloadButton = QtGui.QPushButton(self.tr("Download"))
         self.downloadButton.setDefault(True)
-    
+
         self.progressDialog = QtGui.QProgressDialog(self)
-    
+
         self.http = QtNetwork.QHttp(self)
         self.outFile = None
         self.httpGetId = 0
         self.httpRequestAborted = False
-    
+
         self.connect(self.urlLineEdit, QtCore.SIGNAL("textChanged(QString &)"),
                      self.enableDownloadButton)
         self.connect(self.http, QtCore.SIGNAL("requestFinished(int, bool)"),
@@ -42,22 +42,22 @@ class HttpWindow(QtGui.QDialog):
                      self.downloadFile)
         self.connect(self.quitButton, QtCore.SIGNAL("clicked()"),
                      self, QtCore.SLOT("close()"))
-    
+
         topLayout = QtGui.QHBoxLayout()
         topLayout.addWidget(self.urlLabel)
         topLayout.addWidget(self.urlLineEdit)
-    
+
         buttonLayout = QtGui.QHBoxLayout()
         buttonLayout.addStretch(1)
         buttonLayout.addWidget(self.downloadButton)
         buttonLayout.addWidget(self.quitButton)
-    
+
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addLayout(topLayout)
         mainLayout.addWidget(self.statusLabel)
         mainLayout.addLayout(buttonLayout)
         self.setLayout(mainLayout)
-    
+
         self.setWindowTitle(self.tr("HTTP"))
         self.urlLineEdit.setFocus()
 
@@ -65,8 +65,8 @@ class HttpWindow(QtGui.QDialog):
         url = QtCore.QUrl(self.urlLineEdit.text())
         fileInfo = QtCore.QFileInfo(url.path())
         fileName = QtCore.QString(fileInfo.fileName())
-    
-        if QtCore.QFile.fileExists(fileName):
+
+        if QtCore.QFile.exists(fileName):
             QtGui.QMessageBox.information(self, self.tr("HTTP"), self.tr(
                                           "There already exists a file called %1 "
                                           "in the current directory.").arg(fileName))
@@ -79,17 +79,17 @@ class HttpWindow(QtGui.QDialog):
                                           .arg(fileName).arg(self.outFile.errorString()))
             self.outFile = None
             return
-        
+
         if url.port() != -1:
             self.http.setHost(url.host(), url.port())
         else:
             self.http.setHost(url.host(), 80)
         if  not url.userName().isEmpty():
             self.http.setUser(url.userName(), url.password())
-    
+
         self.httpRequestAborted = False
         self.httpGetId = self.http.get(url.path(), self.outFile)
-    
+
         self.progressDialog.setWindowTitle(self.tr("HTTP"))
         self.progressDialog.setLabelText(self.tr("Downloading %1.").arg(fileName))
         self.downloadButton.setEnabled(False)
@@ -112,10 +112,10 @@ class HttpWindow(QtGui.QDialog):
 
         if requestId != self.httpGetId:
             return
-    
+
         self.progressDialog.hide()
         self.outFile.close()
-    
+
         if error:
             self.outFile.remove()
             QtGui.QMessageBox.information(self, self.tr("HTTP"),
@@ -141,7 +141,7 @@ class HttpWindow(QtGui.QDialog):
     def updateDataReadProgress(self, bytesRead, totalBytes):
         if self.httpRequestAborted:
             return
-    
+
         self.progressDialog.setMaximum(totalBytes)
         self.progressDialog.setValue(bytesRead)
 
