@@ -179,7 +179,7 @@ class HttpWindow(QtGui.QDialog):
 
         loader = QtUiTools.QUiLoader()
         uifile = QtCore.QFile(ui)
-        dlg = loader.load(QFile(uifile, self)
+        dlg = loader.load(QFile(uifile, self))
 
         dlg.adjustSize()
         # ugly way to get the children. Somehow findChild wasn't working in this case
