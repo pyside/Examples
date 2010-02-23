@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """PySide port of the network/ftp example from Qt v4.x"""
 
@@ -87,7 +88,7 @@ class FtpWindow(QtGui.QDialog):
     def downloadFile(self):
         fileName = QtCore.QString(self.fileList.currentItem().text())
     
-        if QtCore.QFile.fileExists(fileName):
+        if QtCore.QFile.exists(fileName):
             QtGui.QMessageBox.information(self, self.tr("FTP"), self.tr(
                                           "There already exists a file called %1 "
                                           "in the current directory.").arg(fileName))
