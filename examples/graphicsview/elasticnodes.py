@@ -110,7 +110,7 @@ class Edge(QtGui.QGraphicsItem):
         sourceArrowP1 = self.sourcePoint + QtCore.QPointF(math.sin(angle + Edge.Pi / 3) * self.arrowSize,
                                                           math.cos(angle + Edge.Pi / 3) * self.arrowSize)
         sourceArrowP2 = self.sourcePoint + QtCore.QPointF(math.sin(angle + Edge.Pi - Edge.Pi / 3) * self.arrowSize,
-                                                          math.cos(angle + Edge.Pi - Edge.Pi / 3) * self.arrowSize);   
+                                                          math.cos(angle + Edge.Pi - Edge.Pi / 3) * self.arrowSize);
         destArrowP1 = self.destPoint + QtCore.QPointF(math.sin(angle - Edge.Pi / 3) * self.arrowSize,
                                                       math.cos(angle - Edge.Pi / 3) * self.arrowSize)
         destArrowP2 = self.destPoint + QtCore.QPointF(math.sin(angle - Edge.Pi + Edge.Pi / 3) * self.arrowSize,
@@ -131,7 +131,9 @@ class Node(QtGui.QGraphicsItem):
         self.edgeList = []
         self.newPos = QtCore.QPointF()
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
-        self.setZValue(1)
+        self.setFlag(QtGui.QGraphicsItem.ItemSendsGeometryChanges)
+        self.setCacheMode(self.DeviceCoordinateCache)
+        self.setZValue(-1)
 
     def type(self):
         return Node.Type
@@ -147,7 +149,7 @@ class Node(QtGui.QGraphicsItem):
         if not self.scene() or self.scene().mouseGrabberItem() is self:
             self.newPos = self.pos()
             return
-    
+
         # Sum up all forces pushing this item away.
         xvel = 0.0
         yvel = 0.0
@@ -172,7 +174,7 @@ class Node(QtGui.QGraphicsItem):
                 pos = self.mapFromItem(edge.sourceNode(), 0, 0)
             xvel += pos.x() / weight
             yvel += pos.y() / weight
-    
+
         if QtCore.qAbs(xvel) < 0.1 and QtCore.qAbs(yvel) < 0.1:
             xvel = yvel = 0.0
 

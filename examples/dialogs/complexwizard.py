@@ -62,7 +62,7 @@ class ComplexWizard(QtGui.QDialog):
         if oldPage is not None:
             oldPage.hide()
             self.mainLayout.removeWidget(oldPage)
-            self.disconnect(oldPage, QtCore.SIGNAL("completeStateChanged())"),
+            self.disconnect(oldPage, QtCore.SIGNAL("completeStateChanged()"),
                             self.completeStateChanged)
 
         newpage = self.history[-1]
@@ -301,8 +301,8 @@ class DetailsPage(LicenseWizardPage):
         return self.wizard.finishPage
 
     def isComplete(self):
-        return (not self.companyLineEdit.text().isEmpty() and 
-                not self.emailLineEdit.text().isEmpty() and 
+        return (not self.companyLineEdit.text().isEmpty() and
+                not self.emailLineEdit.text().isEmpty() and
                 not self.postalLineEdit.text().isEmpty())
 
 
