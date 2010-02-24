@@ -107,7 +107,7 @@ class SpinBoxes(QtGui.QWidget):
         formatComboBox.addItem("hh:mm:ss")
         formatComboBox.addItem("hh:mm ap")
 
-        self.connect(formatComboBox, QtCore.SIGNAL("activated(const QString &)"), self, QtCore.SLOT("self.setFormatString(const QString &)"))
+        self.connect(formatComboBox, QtCore.SIGNAL("activated(const QString &)"), self.setFormatString)
 
         self.setFormatString(formatComboBox.currentText())
 

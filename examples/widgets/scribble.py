@@ -44,7 +44,7 @@ class ScribbleArea(QtGui.QWidget):
         if not loadedImage.load(fileName):
             return False
 
-        newSize = loadedImage.size().expandedTo(size())
+        newSize = loadedImage.size().expandedTo(self.size())
         self.resizeImage(loadedImage, newSize)
         self.image = loadedImage
         self.modified = False
@@ -53,7 +53,7 @@ class ScribbleArea(QtGui.QWidget):
 
     def saveImage(self, fileName, fileFormat):
         visibleImage = self.image
-        self.resizeImage(visibleImage, size())
+        self.resizeImage(visibleImage, self.size())
 
         if visibleImage.save(fileName, fileFormat):
             self.modified = False
@@ -127,7 +127,7 @@ class ScribbleArea(QtGui.QWidget):
         painter.drawImage(QtCore.QPoint(0, 0), image)
         painter.end()
         self.image = newImage
-    
+
     def isModified(self):
         return self.modified
 

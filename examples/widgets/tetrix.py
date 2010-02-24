@@ -183,6 +183,7 @@ class TetrixBoard(QtGui.QFrame):
                                 boardTop + (TetrixBoard.BoardHeight - y - 1) * self.squareHeight(),
                                 self.curPiece.shape())
 
+
     def keyPressEvent(self, event):
         if not self.isStarted or self.isPaused or self.curPiece.shape() == TetrixShape.NoShape:
             QtGui.QWidget.keyPressEvent(self, event)
