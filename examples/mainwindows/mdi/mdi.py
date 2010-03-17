@@ -249,11 +249,7 @@ class MainWindow(QtGui.QMainWindow):
         i = 0
 
         for child in windows:
-            if i < 9:
-                text = self.tr("&%1 %2").arg(i + 1).arg(child.userFriendlyCurrentFile())
-            else:
-                text = self.tr("%1 %2").arg(i + 1).arg(child.userFriendlyFile())
-
+            text = self.tr("&%1 %2").arg(i + 1).arg(child.userFriendlyCurrentFile())
             i += 1
 
             action = self.windowMenu.addAction(text)
