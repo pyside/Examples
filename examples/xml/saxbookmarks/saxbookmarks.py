@@ -1,3 +1,4 @@
+#!/usr/bin/python
 ############################################################################
 ##
 ## Copyright (C) 2004-2005 Trolltech AS. All rights reserved.
