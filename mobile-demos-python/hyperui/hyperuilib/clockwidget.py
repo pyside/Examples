@@ -26,8 +26,8 @@
 from PySide.QtGui import *
 from PySide.QtCore import *
 
-from dataresource import *
-from qt_global import *
+from hyperuilib.shared.dataresource import *
+from hyperuilib.qt_global import *
 
 class ClockEvent(object):
     def __init__(self, begin, end, color, text):

@@ -26,13 +26,13 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-from dataresource import *
-from label import *
-from qt_global import *
-from button import *
-from contactlist import *
-from contactresource import *
-from view import *
+from hyperuilib.shared.dataresource import *
+from hyperuilib.shared.label import *
+from hyperuilib.qt_global import *
+from hyperuilib.shared.button import *
+from hyperuilib.contactlist import *
+from hyperuilib.contactresource import *
+from hyperuilib.view import *
 
 
 def resourceButtonFont():

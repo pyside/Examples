@@ -26,7 +26,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-from dataresource import *
+from hyperuilib.shared.dataresource import *
 
 
 class PageMenu(QGraphicsWidget):

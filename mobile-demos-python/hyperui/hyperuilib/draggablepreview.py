@@ -26,12 +26,12 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-from dataresource import *
+from hyperuilib.shared.dataresource import *
 
 class DraggablePreview(QGraphicsWidget):
 
     def SCALED_POS(self, sw, sh, scale):
-        return QPointF(round(sw * 0.5 - (sw * 0.5 + self._leftMargin) * scale), 
+        return QPointF(round(sw * 0.5 - (sw * 0.5 + self._leftMargin) * scale),
                    round(sh - (sh + self._topMargin) * 0.5 * scale))
 
     def __init__(self, item, screenSize, parent = None):

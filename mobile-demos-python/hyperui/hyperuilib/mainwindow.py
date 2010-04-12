@@ -27,11 +27,11 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 
 
-from dataresource import *
-from pageview import *
-from menuview import *
-from clockwidget import *
-from draggablepreview import *
+from hyperuilib.shared.dataresource import *
+from hyperuilib.pageview import *
+from hyperuilib.menuview import *
+from hyperuilib.clockwidget import *
+from hyperuilib.draggablepreview import *
 
 
 class MainWindow(QGraphicsWidget):

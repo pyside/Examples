@@ -26,7 +26,7 @@
 
 from PySide.QtCore import QSettings, QVariant, QString
 from PySide.QtGui import QPixmap
-from hyperui_rc import *
+from hyperuilib.resource.hyperui_rc import *
 
 class Resource(object):
     _instance_ = None

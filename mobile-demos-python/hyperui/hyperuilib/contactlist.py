@@ -27,11 +27,11 @@
 from PySide.QtGui import *
 from PySide.QtCore import *
 
-from dataresource import *
-from contactresource import *
-from label import *
-from scrollarea import *
-from pixmapwidget import *
+from hyperuilib.shared.dataresource import *
+from hyperuilib.contactresource import *
+from hyperuilib.shared.label import *
+from hyperuilib.scrollarea import *
+from hyperuilib.shared.pixmapwidget import *
 
 
 class LetterScroll(PixmapWidget):
@@ -234,7 +234,7 @@ class ContactList(QGraphicsWidget):
                 break
 
             photo = ContactResource.photo(i)
-            if not photo.isEmpty(): 
+            if not photo.isEmpty():
                 k += 1
                 topLayout.addItem(ContactPhoto(i, self))
 

@@ -26,10 +26,10 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-from dataresource import *
-from qt_global import *
-from button import *
-from phoneview import *
+from hyperuilib.shared.dataresource import *
+from hyperuilib.qt_global import *
+from hyperuilib.shared.button import *
+from hyperuilib.phoneview import *
 
 
 class MenuView(View):

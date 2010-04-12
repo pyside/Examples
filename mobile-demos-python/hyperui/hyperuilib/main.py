@@ -33,10 +33,10 @@ try:
 except:
     USE_MAEMO = False
 
-from qt_system import *
-from dataresource import *
-from mainwindow import *
-from hyperui_rc import * 
+from hyperuilib.shared.qt_system import *
+from hyperuilib.shared.dataresource import *
+from hyperuilib.mainwindow import *
+from hyperuilib.resource.hyperui_rc import *
 
 
 def main():

@@ -27,10 +27,10 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-from dataresource import *
-from view import *
-from button import *
-from pagemenu import *
+from hyperuilib.shared.dataresource import *
+from hyperuilib.view import *
+from hyperuilib.shared.button import *
+from hyperuilib.pagemenu import *
 
 
 class PageSlot(QGraphicsWidget):
