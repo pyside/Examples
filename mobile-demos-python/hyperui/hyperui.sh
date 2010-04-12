@@ -1,3 +1,3 @@
 #!/bin/sh
 
-PYTHONPATH=./shared:./resource python ./main.py
+PYTHONPATH=./shared:./resource:$PYTHONPATH python ./main.py
