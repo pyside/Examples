@@ -76,7 +76,7 @@ class HttpWindow(QtGui.QDialog):
         if fileName.isEmpty():
             fileName = "index.html"
 
-        if QtCore.QFile.fileExists(fileName):
+        if QtCore.QFile.exists(fileName):
             ret = QtGui.QMessageBox.question(self, self.tr("HTTP"),
                     self.tr("There already exists a file called %1 in the "
                             "current directory.").arg(fileName),
@@ -86,7 +86,7 @@ class HttpWindow(QtGui.QDialog):
             if ret == QtGui.QMessageBox.Cancel:
                 return
 
-            QtCore.QFile.fileRemove(fileName)
+            QtCore.QFile.remove(fileName)
 
         self.outFile = QtCore.QFile(fileName)
         if not self.outFile.open(QtCore.QIODevice.WriteOnly):
