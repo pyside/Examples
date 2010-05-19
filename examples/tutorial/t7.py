@@ -47,6 +47,12 @@ class MyWidget(QtGui.QWidget):
         grid = QtGui.QGridLayout()
         previousRange = None
 
+
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(quit)
+        layout.addLayout(grid)
+        self.setLayout(layout)
+
         for row in range(3):
             for column in range(3):
                 lcdRange = LCDRange()
@@ -58,10 +64,6 @@ class MyWidget(QtGui.QWidget):
 
                 previousRange = lcdRange
 
-        layout = QtGui.QVBoxLayout()
-        layout.addWidget(quit)
-        layout.addLayout(grid)
-        self.setLayout(layout)
 
 
 app = QtGui.QApplication(sys.argv)

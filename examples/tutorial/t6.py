@@ -34,14 +34,15 @@ class MyWidget(QtGui.QWidget):
                      QtGui.qApp, QtCore.SLOT("quit()"))
 
         grid = QtGui.QGridLayout()
-        for row in range(3):
-            for column in range(3):
-                grid.addWidget(LCDRange(), row, column)
-
         layout = QtGui.QVBoxLayout()
         layout.addWidget(quit)
         layout.addLayout(grid)
         self.setLayout(layout)
+        for row in range(3):
+            for column in range(3):
+                grid.addWidget(LCDRange(), row, column)
+
+
 
 
 app = QtGui.QApplication(sys.argv)
