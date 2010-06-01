@@ -1,25 +1,20 @@
-PyQt is supplied with a number of example applications and demonstrations that
-have been written to provide developers with examples of the Qt API in use,
-highlight good programming practise, and showcase features found in each of
-Qt's core technologies.
+PySide comes with a plenty of example applications, illustrating the
+usage and functionality of different Qt functionality and concepts from
+Python.
 
-The example and demo launcher can be used to explore the different categories
-available. It provides an overview of each example, lets you view the
-documentation in Qt Assistant, and is able to launch examples and demos.
+The examples are organized into topical subdirectories within the
+current directory. To browse and run the examples, change to the
+relevant directory and run the example there, either on the command line
+or by using your favourite file manager.
 
-Documentation for these examples can be found in the Tutorial and Examples
-section of the Qt documentation.
+The majority of the examples have been ported as-is from PyQt, in which
+case the original boilerplates have been retained. Hence, although
+PySide itself is licensed under LGPLv2.1, most of the examples are
+licensed under GPLv2.
 
+We have tried to ensure that every example works with PySide. If you
+experience unexpected results when running any of the examples, PLEASE
+report the issue at PySide Bugzilla [1]. This will greatly help us
+improve the quality of PySide future releases.
 
-Finding the PyQt Examples and Demos launcher
-============================================
-
-On Windows:
-
-The launcher can be accessed via the Windows Start menu. Select the menu
-entry entitled "Examples and Demos" entry in the submenu containing PySide.
-
-On all platforms:
-
-The source code for the launcher can be found in the examples/tools/qtdemo
-directory in the PyQt package.
+[1] http://bugs.openbossa.org/
