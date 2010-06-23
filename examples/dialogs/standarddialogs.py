@@ -14,7 +14,7 @@ class Dialog(QtGui.QDialog):
     def __init__(self, parent=None):
         QtGui.QDialog.__init__(self, parent)
 
-        self.openFilesPath = QtCore.QString()
+        self.openFilesPath = ""#QtCore.QString()
 
         self.errorMessageDialog = QtGui.QErrorMessage(self)
 
@@ -142,11 +142,11 @@ class Dialog(QtGui.QDialog):
     def setDouble(self):
         d, ok = QtGui.QInputDialog.getDouble(self, self.tr("QInputDialog.getDouble()"),
                                              self.tr("Amount:"), 37.56, -10000, 10000, 2)
-        if ok:
-            self.doubleLabel.setText(QtCore.QString("$%1").arg(d))
+        #if ok:
+        #    self.doubleLabel.setText(QtCore.QString("$%1").arg(d))
 
     def setItem(self):
-        items = QtCore.QStringList()
+        items = []#QtCore.QStringList()
         items << self.tr("Spring") << self.tr("Summer") << self.tr("Fall") << self.tr("Winter")
 
         item, ok = QtGui.QInputDialog.getItem(self, self.tr("QInputDialog.getItem()"),
@@ -181,10 +181,11 @@ class Dialog(QtGui.QDialog):
             self.directoryLabel.setText(directory)
 
     def setOpenFileName(self):
-        fileName = QtGui.QFileDialog.getOpenFileName(self,
-                                         self.tr("QFileDialog.getOpenFileName()"),
-                                         self.openFileNameLabel.text(),
-                                         self.tr("All Files (*);;Text Files (*.txt)"))
+        fileName, filte = QtGui.QFileDialog.getOpenFileName()#self,
+                                         #self.tr("QFileDialog.getOpenFileName()"),
+                                         #self.openFileNameLabel.text(),
+                                         #self.tr("All Files (*);;Text Files (*.txt)"))
+        print "Imprimiu: ",fileName, filte
         if not fileName.isEmpty():
             self.openFileNameLabel.setText(fileName)
 
@@ -195,7 +196,7 @@ class Dialog(QtGui.QDialog):
                                       self.tr("All Files (*);;Text Files (*.txt)"))
         if files.count():
             self.openFilesPath = files[0]
-            self.openFileNamesLabel.setText(QtCore.QString("[%1]").arg(files.join(", ")))
+            #self.openFileNamesLabel.setText(QtCore.QString("[%1]").arg(files.join(", ")))
 
     def setSaveFileName(self):
         fileName = QtGui.QFileDialog.getSaveFileName(self,
