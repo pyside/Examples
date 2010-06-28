@@ -40,7 +40,7 @@
 
 from PySide.QtGui import QMessageBox, QWidget, QHeaderView, QTreeWidgetItem
 from PySide.QtCore import QTimer, QEvent
-from QtMobility.SystemInfo import SystemInfo, SystemDeviceInfo, SystemDisplayInfo, SystemStorageInfo, SystemNetworkInfo, SystemScreenSaver
+from QtMobility.SystemInfo import QSystemInfo, QSystemDeviceInfo, QSystemDisplayInfo, QSystemStorageInfo, QSystemNetworkInfo, QSystemScreenSaver
 
 from dialog_rc import Ui_Dialog
 
@@ -91,7 +91,7 @@ class Dialog(QWidget, Ui_Dialog):
     def setupGeneral(self):
         del self.systemInfo
 
-        self.systemInfo = SystemInfo(self)
+        self.systemInfo = QSystemInfo(self)
         self.curLanguageLineEdit.setText(self.systemInfo.currentLanguage())
 
         self.languagesComboBox.clear()
@@ -101,7 +101,7 @@ class Dialog(QWidget, Ui_Dialog):
     def setupDevice(self):
         del self.di
 
-        self.di = SystemDeviceInfo(self)
+        self.di = QSystemDeviceInfo(self)
         self.batteryLevelBar.setValue(self.di.batteryLevel())
         self.di.batteryLevelChanged.connect(self.updateBatteryStatus)
         self.di.batteryStatusChanged.connect(self.displayBatteryStatus)
@@ -117,28 +117,28 @@ class Dialog(QWidget, Ui_Dialog):
         self.updateProfile()
 
         self.di.currentProfileChanged.connect(self.onProfileChanged)
-        if self.di.currentPowerState() == SystemDeviceInfo.BatteryPower:
+        if self.di.currentPowerState() == QSystemDeviceInfo.BatteryPower:
             self.radioButton_2.setChecked(True)
-        elif self.di.currentPowerState() == SystemDeviceInfo.WallPower:
+        elif self.di.currentPowerState() == QSystemDeviceInfo.WallPower:
             self.radioButton_3.setChecked(True)
-        elif self.di.currentPowerState() == SystemDeviceInfo.WallPowerChargingBattery:
+        elif self.di.currentPowerState() == QSystemDeviceInfo.WallPowerChargingBattery:
             self.radioButton_4.setChecked(True)
         else:
             self.radioButton.setChecked(True)
 
         methods = self.di.inputMethodType()
         inputs = []
-        if methods & SystemDeviceInfo.Keys:
+        if methods & QSystemDeviceInfo.Keys:
             inputs.append("Keys")
-        if methods & SystemDeviceInfo.Keypad:
+        if methods & QSystemDeviceInfo.Keypad:
             inputs.append("Keypad")
-        if methods & SystemDeviceInfo.Keyboard:
+        if methods & QSystemDeviceInfo.Keyboard:
             inputs.append("Keyboard")
-        if methods & SystemDeviceInfo.SingleTouch:
+        if methods & QSystemDeviceInfo.SingleTouch:
             inputs.append("Touch Screen")
-        if methods & SystemDeviceInfo.MultiTouch:
+        if methods & QSystemDeviceInfo.MultiTouch:
             inputs.append("Multi touch")
-        if methods & SystemDeviceInfo.Mouse:
+        if methods & QSystemDeviceInfo.Mouse:
             inputs.append("Mouse")
 
         self.inputMethodLabel.setText(" ".join(inputs))
@@ -158,18 +158,18 @@ class Dialog(QWidget, Ui_Dialog):
 
 
     def setupDisplay(self):
-        di = SystemDisplayInfo()
+        di = QSystemDisplayInfo()
         self.brightnessLabel.setText(str(di.displayBrightness(0)))
         self.colorDepthLabel.setText(str(di.colorDepth((0))))
 
         orientation = di.getOrientation(0);
-        if orientation == SystemDisplayInfo.Landscape:
+        if orientation == QSystemDisplayInfo.Landscape:
             orientStr="Landscape"
-        elif orientation == SystemDisplayInfo.Portrait:
+        elif orientation == QSystemDisplayInfo.Portrait:
             orientStr="Portrait"
-        elif orientation == SystemDisplayInfo.InvertedLandscape:
+        elif orientation == QSystemDisplayInfo.InvertedLandscape:
             orientStr="Inverted Landscape";
-        elif orientation == SystemDisplayInfo.InvertedPortrait:
+        elif orientation == QSystemDisplayInfo.InvertedPortrait:
             orientStr="Inverted Portrait";
         else:
             orientStr = "Orientation unknown"
@@ -183,7 +183,7 @@ class Dialog(QWidget, Ui_Dialog):
 
     def setupStorage(self):
         if not self.sti:
-            self.sti = SystemStorageInfo(self)
+            self.sti = QSystemStorageInfo(self)
             self.storageTreeWidget.header().setResizeMode(QHeaderView.ResizeToContents)
             self.sti.logicalDrivesChanged.connect(self.storageChanged)
         self.updateStorage();
@@ -194,13 +194,13 @@ class Dialog(QWidget, Ui_Dialog):
         vols = self.sti.logicalDrives()
         for volName in vols:
             volType = self.sti.typeForDrive(volName)
-            if volType == SystemStorageInfo.InternalDrive:
+            if volType == QSystemStorageInfo.InternalDrive:
                 typeName =  "Internal"
-            elif volType == SystemStorageInfo.RemovableDrive:
+            elif volType == QSystemStorageInfo.RemovableDrive:
                 typeName = "Removable"
-            elif volType == SystemStorageInfo.CdromDrive:
+            elif volType == QSystemStorageInfo.CdromDrive:
                 typeName =  "Cdrom"
-            elif volType == SystemStorageInfo.RemoteDrive:
+            elif volType == QSystemStorageInfo.RemoteDrive:
                 typeName =  "Network"
             items = []
             items.append(volName);
@@ -213,7 +213,7 @@ class Dialog(QWidget, Ui_Dialog):
 
     def setupNetwork(self):
         del self.ni
-        self.ni = SystemNetworkInfo(self)
+        self.ni = QSystemNetworkInfo(self)
         self.netStatusComboBox.activated[int].connect(self.netStatusComboActivated)
         self.ni.networkSignalStrengthChanged.connect(self.networkSignalStrengthChanged)
         self.ni.networkNameChanged.connect(self.networkNameChanged)
@@ -240,50 +240,50 @@ class Dialog(QWidget, Ui_Dialog):
         self.operatorNameLabel.setText(self.ni.networkName(reIndex))
 
     def getVersion(self, index):
-        version = SystemInfo.Version()
+        version = QSystemInfo.Version()
         if index == 0:
             self.versionLineEdit.setText("")
         elif index == 1:
-            version = SystemInfo.Os
+            version = QSystemInfo.Os
         elif index == 2:
-            version = SystemInfo.QtCore;
+            version = QSystemInfo.QtCore;
         elif index == 3:
-            version = SystemInfo.Firmware
+            version = QSystemInfo.Firmware
 
-        si = SystemInfo()
+        si = QSystemInfo()
         self.versionLineEdit.setText(si.version(version))
 
     def getFeature(self, index):
         if index == 0:
             return
         elif index == 1:
-           feature = SystemInfo.BluetoothFeature
+           feature = QSystemInfo.BluetoothFeature
         elif index == 2:
-            feature = SystemInfo.CameraFeature
+            feature = QSystemInfo.CameraFeature
         elif index == 3:
-            feature = SystemInfo.FmradioFeature
+            feature = QSystemInfo.FmradioFeature
         elif index == 4:
-            feature = SystemInfo.IrFeature;
+            feature = QSystemInfo.IrFeature;
         elif index == 5:
-            feature = SystemInfo.LedFeature
+            feature = QSystemInfo.LedFeature
         elif index == 6:
-            feature = SystemInfo.MemcardFeature
+            feature = QSystemInfo.MemcardFeature
         elif index == 7:
-            feature = SystemInfo.UsbFeature
+            feature = QSystemInfo.UsbFeature
         elif index == 8:
-            feature = SystemInfo.VibFeature
+            feature = QSystemInfo.VibFeature
         elif index == 9:
-            feature = SystemInfo.WlanFeature
+            feature = QSystemInfo.WlanFeature
         elif index == 10:
-            feature = SystemInfo.SimFeature
+            feature = QSystemInfo.SimFeature
         elif index == 11:
-            feature = SystemInfo.LocationFeature
+            feature = QSystemInfo.LocationFeature
         elif index == 12:
-            feature = SystemInfo.VideoOutFeature
+            feature = QSystemInfo.VideoOutFeature
         elif index == 13:
-            feature = SystemInfo.HapticsFeature
+            feature = QSystemInfo.HapticsFeature
 
-        si = SystemInfo()
+        si = QSystemInfo()
         text = "false"
         if si.hasFeatureSupported(feature):
             text = "true"
@@ -291,7 +291,7 @@ class Dialog(QWidget, Ui_Dialog):
 
     def setupSaver(self):
         if not self.saver:
-            self.saver = SystemScreenSaver(self)
+            self.saver = QSystemScreenSaver(self)
 
         saverEnabled = self.saver.screenSaverInhibited()
         self.saverInhibitedCheckBox.clicked.connect(self.setSaverEnabled)
@@ -300,7 +300,7 @@ class Dialog(QWidget, Ui_Dialog):
     def setSaverEnabled(self, b):
         if b:
             if not self.saver:
-                self.saver = SystemScreenSaver(self)
+                self.saver = QSystemScreenSaver(self)
             if self.saver.setScreenSaverInhibit():
                 pass
         else:
@@ -312,152 +312,152 @@ class Dialog(QWidget, Ui_Dialog):
         self.batteryLevelBar.setValue(level)
 
     def updatePowerState(self, newState):
-        if newState == SystemDeviceInfo.BatteryPower:
+        if newState == QSystemDeviceInfo.BatteryPower:
             self.radioButton_2.setChecked(True)
-        elif newState == SystemDeviceInfo.WallPower:
+        elif newState == QSystemDeviceInfo.WallPower:
             self.radioButton_3.setChecked(True)
-        elif newState == SystemDeviceInfo.WallPowerChargingBattery:
+        elif newState == QSystemDeviceInfo.WallPowerChargingBattery:
             self.radioButton_4.setChecked(True)
-        elif newState == SystemDeviceInfo.NoBatteryLevel:
+        elif newState == QSystemDeviceInfo.NoBatteryLevel:
             self.radioButton.setChecked(True);
 
     def displayBatteryStatus(self, status):
-        if status == SystemDeviceInfo.BatteryCritical:
+        if status == QSystemDeviceInfo.BatteryCritical:
             msg = " Battery is Critical (4% or less), please save your work or plug in the charger."
-            QMessageBox.critical(self, "SystemInfo", msg)
-        elif status == SystemDeviceInfo.BatteryVeryLow:
+            QMessageBox.critical(self, "QSystemInfo", msg)
+        elif status == QSystemDeviceInfo.BatteryVeryLow:
             msg = "Battery is Very Low (10%), please plug in the charger soon"
-            QMessageBox.warning(self, "SystemInfo", msg);
-        elif status == SystemDeviceInfo.BatteryLow:
+            QMessageBox.warning(self, "QSystemInfo", msg);
+        elif status == QSystemDeviceInfo.BatteryLow:
             msg = "Battery is Low (40% or less)";
-            QMessageBox.information(self, "SystemInfo", msg)
-        elif status == SystemDeviceInfo.BatteryNormal:
+            QMessageBox.information(self, "QSystemInfo", msg)
+        elif status == QSystemDeviceInfo.BatteryNormal:
             msg = "Battery is Normal (greater than 40%)";
-            QMessageBox.information(self, "SystemInfo", msg)
+            QMessageBox.information(self, "QSystemInfo", msg)
 
     def networkSignalStrengthChanged(self, mode, strength):
-        if mode == SystemNetworkInfo.WlanMode:
+        if mode == QSystemNetworkInfo.WlanMode:
             if self.netStatusComboBox.currentText() == "Wlan":
                 self.signalLevelProgressBar.setValue(strength)
 
-        if mode == SystemNetworkInfo.EthernetMode:
+        if mode == QSystemNetworkInfo.EthernetMode:
             if self.netStatusComboBox.currentText() == "Ethernet":
                 self.signalLevelProgressBar.setValue(strength)
 
-        if mode == SystemNetworkInfo.GsmMode:
+        if mode == QSystemNetworkInfo.GsmMode:
             if self.netStatusComboBox.currentText() == "Gsm":
                 self.signalLevelProgressBar.setValue(strength)
 
-        if mode == SystemNetworkInfo.CdmaMode:
+        if mode == QSystemNetworkInfo.CdmaMode:
             if self.netStatusComboBox.currentText() == "Cdma":
                 self.signalLevelProgressBar.setValue(strength)
 
-        if mode == SystemNetworkInfo.WcdmaMode:
+        if mode == QSystemNetworkInfo.WcdmaMode:
             if self.netStatusComboBox.currentText() == "Wcdma":
                 self.signalLevelProgressBar.setValue(strength)
 
     def networkNameChanged(self, mode, text):
-        if mode == SystemNetworkInfo.WlanMode:
+        if mode == QSystemNetworkInfo.WlanMode:
             if self.netStatusComboBox.currentText() == "Wlan":
                 self.operatorNameLabel.setText(text);
 
-        if mode == SystemNetworkInfo.EthernetMode:
+        if mode == QSystemNetworkInfo.EthernetMode:
             if self.netStatusComboBox.currentText() == "Ethernet":
                 self.operatorNameLabel.setText(text)
 
-        if mode == SystemNetworkInfo.GsmMode:
+        if mode == QSystemNetworkInfo.GsmMode:
             if self.netStatusComboBox.currentText() == "Gsm":
                 self.operatorNameLabel.setText(text)
 
-        if mode == SystemNetworkInfo.CdmaMode:
+        if mode == QSystemNetworkInfo.CdmaMode:
             if self.netStatusComboBox.currentText() == "Cdma":
                 self.operatorNameLabel.setText(text)
 
-        if mode == SystemNetworkInfo.WcdmaMode:
+        if mode == QSystemNetworkInfo.WcdmaMode:
             if self.netStatusComboBox.currentText() == "Wcdma":
                 self.operatorNameLabel.setText(text)
 
 
     def networkStatusChanged(self, mode, status):
-        if mode == SystemNetworkInfo.WlanMode:
+        if mode == QSystemNetworkInfo.WlanMode:
             if self.netStatusComboBox.currentText() == "Wlan":
                 self.displayNetworkStatus(status)
 
-        if mode == SystemNetworkInfo.EthernetMode:
+        if mode == QSystemNetworkInfo.EthernetMode:
             if self.netStatusComboBox.currentText() == "Ethernet":
                 self.displayNetworkStatus(status)
 
-        if mode == SystemNetworkInfo.GsmMode:
+        if mode == QSystemNetworkInfo.GsmMode:
             if self.netStatusComboBox.currentText() == "Gsm":
                 self.displayNetworkStatus(status)
 
-        if mode == SystemNetworkInfo.CdmaMode:
+        if mode == QSystemNetworkInfo.CdmaMode:
             if self.netStatusComboBox.currentText() == "Cdma":
                 self.displayNetworkStatus(status)
 
-        if mode == SystemNetworkInfo.WcdmaMode:
+        if mode == QSystemNetworkInfo.WcdmaMode:
             if self.netStatusComboBox.currentText() == "Wcdma":
                 self.displayNetworkStatus(status)
 
     def networkModeChanged(self, mode):
-        if mode == SystemNetworkInfo.WlanMode:
+        if mode == QSystemNetworkInfo.WlanMode:
             self.primaryModeLabel.setText("Wlan")
 
-        if mode == SystemNetworkInfo.EthernetMode:
+        if mode == QSystemNetworkInfo.EthernetMode:
             self.primaryModeLabel.setText("Ethernet")
 
-        if mode == SystemNetworkInfo.GsmMode:
+        if mode == QSystemNetworkInfo.GsmMode:
             self.primaryModeLabel.setText("Gsm")
 
-        if mode == SystemNetworkInfo.CdmaMode:
+        if mode == QSystemNetworkInfo.CdmaMode:
             self.primaryModeLabel.setText("Cdma")
 
-        if mode == SystemNetworkInfo.WcdmaMode:
+        if mode == QSystemNetworkInfo.WcdmaMode:
             self.primaryModeLabel.setText("Wcdma")
 
-        if mode == SystemNetworkInfo.UnknownMode:
+        if mode == QSystemNetworkInfo.UnknownMode:
             self.primaryModeLabel.setText("None")
 
 
     def displayNetworkStatus(self, status):
-        if status == SystemNetworkInfo.UndefinedStatus:
+        if status == QSystemNetworkInfo.UndefinedStatus:
             stat = "Undefined"
-        if status == SystemNetworkInfo.NoNetworkAvailable:
+        if status == QSystemNetworkInfo.NoNetworkAvailable:
             stat = "No Network Available"
-        if status == SystemNetworkInfo.EmergencyOnly:
+        if status == QSystemNetworkInfo.EmergencyOnly:
             stat = "Emergency Only"
-        if status == SystemNetworkInfo.Searching:
+        if status == QSystemNetworkInfo.Searching:
             stat = "Searching or Connecting"
-        if status == SystemNetworkInfo.Busy:
+        if status == QSystemNetworkInfo.Busy:
             stat = "Busy"
-        if status == SystemNetworkInfo.Connected:
+        if status == QSystemNetworkInfo.Connected:
             stat = "Connected"
-        if status == SystemNetworkInfo.HomeNetwork:
+        if status == QSystemNetworkInfo.HomeNetwork:
             stat = "Home Network"
-        if status == SystemNetworkInfo.Denied:
+        if status == QSystemNetworkInfo.Denied:
             stat = "Denied"
-        if status == SystemNetworkInfo.Roaming:
+        if status == QSystemNetworkInfo.Roaming:
             stat = "Roaming"
         self.cellNetworkStatusLabel.setText(stat)
 
     def updateProfile(self):
         if self.di:
             current = self.di.currentProfile()
-            if current == SystemDeviceInfo.UnknownProfile:
+            if current == QSystemDeviceInfo.UnknownProfile:
                 profilestring = "Unknown"
-            elif current == SystemDeviceInfo.SilentProfile:
+            elif current == QSystemDeviceInfo.SilentProfile:
                 profilestring = "Silent"
-            elif current == SystemDeviceInfo.NormalProfile:
+            elif current == QSystemDeviceInfo.NormalProfile:
                 profilestring = "Normal"
-            elif current == SystemDeviceInfo.LoudProfile:
+            elif current == QSystemDeviceInfo.LoudProfile:
                 profilestring = "Loud"
-            elif current == SystemDeviceInfo.VibProfile:
+            elif current == QSystemDeviceInfo.VibProfile:
                 profilestring = "Vibrate"
-            elif current == SystemDeviceInfo.OfflineProfile:
+            elif current == QSystemDeviceInfo.OfflineProfile:
                 profilestring = "Offline";
-            elif current == SystemDeviceInfo.PowersaveProfile:
+            elif current == QSystemDeviceInfo.PowersaveProfile:
                 profilestring = "Powersave";
-            elif current ==  SystemDeviceInfo.CustomProfile:
+            elif current ==  QSystemDeviceInfo.CustomProfile:
                 profilestring = "custom";
 
         self.profileLabel.setText(profilestring);
@@ -465,13 +465,13 @@ class Dialog(QWidget, Ui_Dialog):
     def updateSimStatus(self):
         if self.di:
             status = self.di.simStatus()
-            if status == SystemDeviceInfo.SimLocked:
+            if status == QSystemDeviceInfo.SimLocked:
                 simstring = "Sim Locked";
-            elif status == SystemDeviceInfo.SimNotAvailable:
+            elif status == QSystemDeviceInfo.SimNotAvailable:
                 simstring = "Sim not available";
-            elif status == SystemDeviceInfo.SingleSimAvailable:
+            elif status == QSystemDeviceInfo.SingleSimAvailable:
                 simstring = "Single Sim Available";
-            elif status == SystemDeviceInfo.DualSimAvailable:
+            elif status == QSystemDeviceInfo.DualSimAvailable:
                 simstring = "Dual Sim available";
             else:
                 simstring = ""

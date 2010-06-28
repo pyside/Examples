@@ -1,5 +1,6 @@
 from QtMobility.Location import *
 from PySide.QtGui import *
+from PySide.QtCore import *
 
 class SatelliteWidget (QWidget):
     numBars = 32
@@ -9,14 +10,16 @@ class SatelliteWidget (QWidget):
     borderOffset = 4
     legendTextOffset = 5
 
-    def __init(self, parent, ordering, scaling):
+
+    def __init__(self, parent, ordering, scaling):
         QWidget.__init__(self, parent)
+
         self._ordering = ordering
         self._scaling = scaling
 
         painter = QPainter(self)
-        self.textHeight = painter.fontMetrics().height()
-        self.legendHeight = borderOffset + textHeight + 2
+        self.textHeight =  20 #painter.fontMetrics().height()
+        self.legendHeight = SatelliteWidget.borderOffset + self.textHeight + 2
 
         self.inViewColor = QColor(192, 192, 255);
         self.inUseColor = QColor(64, 64, 255);
@@ -24,8 +27,8 @@ class SatelliteWidget (QWidget):
         self.satellitesInUse = []
         self.satellites = []
 
-        self.ordering = property(getOrdering, setOrdering)
-        self.strengthScaling = property(getStrengthScaling, setStrengthScaling)
+        self.ordering = property(self.getOrdering, self.setOrdering)
+        self.strengthScaling = property(self.getStrengthScaling, self.setStrengthScaling)
 
     def getOrdering(self):
         return self._ordering
@@ -88,7 +91,7 @@ class SatelliteWidget (QWidget):
 
         update()
 
-    def paintEvent(self):
+    def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
 
@@ -129,14 +132,14 @@ class SatelliteWidget (QWidget):
             painter.setBrush(self.inUseColor)
 
         maximum = 100
-        if _scaling == SatelliteDialog.ScaleToMaxAvailable
+        if _scaling == SatelliteDialog.ScaleToMaxAvailable:
             maximum = self.maximumSignalStrength
 
         i = index;
         if m_ordering == SatelliteDialog.OrderByPrnNumber:
             i = satellites[index][0].prnNumber() - 1
 
-        height = (self.satellites[index][0].signalStrength() / (float)maximum) * bounds.height()
+        height = (self.satellites[index][0].signalStrength() / float(maximum)) * bounds.height()
 
         r = QRectF(bounds.x() + gapPixels + i * spanPixels, bounds.y() + bounds.height() - 1 - height, barPixels, height);
         painter.drawRect(r);
@@ -148,7 +151,7 @@ class SatelliteWidget (QWidget):
         textX = keyX + self.legendHeight + 2 + self.legendTextOffset
         y = bounds.y() + 1
         keyWidth = self.legendHeight - 2 - self.borderOffset
-        textWidth = self.halfWidth  - self.legendHeight - 3 - self.legendTextOffset
+        textWidth = halfWidth  - self.legendHeight - 3 - self.legendTextOffset
         height = self.legendHeight - 2 - self.borderOffset
 
         viewKeyRect = QRectF(keyX, y, keyWidth, height)
@@ -169,7 +172,7 @@ class SatelliteWidget (QWidget):
         painter.drawText(useTextRect, Qt.AlignLeft, self.tr("In Use"))
 
     def sizeHint(self):
-        return QSize(parentWidget().width(), parentWidget().width() / 2 + self.legendHeight);
+        return QSize(self.parentWidget().width(), self.parentWidget().width() / 2 + self.legendHeight);
 
 
 class SatelliteDialog(QDialog):
@@ -210,7 +213,7 @@ class SatelliteDialog(QDialog):
 
         mainLayout = QVBoxLayout()
         mainLayout.addWidget(titleLabel)
-        mainLayout.addWidget(satelliteWidget)
+        mainLayout.addWidget(self.satelliteWidget)
 
         switchAction = QAction(self.tr("Switch"), self)
         switchAction.setSoftKeyRole(QAction.PositiveSoftKey)
@@ -235,15 +238,16 @@ class SatelliteDialog(QDialog):
         self.setModal(True);
 
     def connectSources(self, posSource, satSource):
-        posSource.positionUpdated.connect(self.positionUpdated)
-        satSource.satellitesInViewUpdated.connect(self.satellitesInViewUpdated)
-        satSource.satellitesInUseUpdated.connect(self.satellitesInUseUpdated)
+        #posSource.connect(SIGNAL("positionUpdated(const QGeoPositionInfo &)"), self.positionUpdated)
+        #satSource.connect(SIGNAL("satellitesInViewUpdated(const QList<QGeoSatelliteInfo>&)"), self.satellitesInViewUpdated)
+	#satSource.connect(SIGNAL("satellitesInUseUpdated(const QList<QGeoSatelliteInfo>&)"), self.satellitesInUseUpdated)
+	pass
 
     def switchButtonClicked(self):
         o = self.ordering()
         if o == SatelliteDialog.OrderByPrnNumber:
             self.setOrdering(SatelliteDialog.OrderBySignalStrength)
-        elif (o == SatelliteDialog::OrderBySignalStrength):
+        elif (o == SatelliteDialog.OrderBySignalStrength):
             self.setOrdering(SatelliteDialog.OrderByPrnNumber)
 
     def ordering(self):
@@ -256,21 +260,21 @@ class SatelliteDialog(QDialog):
         return self.satelliteWidget.strengthScaling()
 
     def setStrengthScaling(self, scaling):
-        self.satelliteWidget->setStrengthScaling(scaling)
+        self.satelliteWidget.setStrengthScaling(scaling)
 
     def noSatelliteTimeout(self):
         self.satelliteWidget.clearSatellites()
 
-    def positionUpdated(self, pos)
+    def positionUpdated(self, pos):
         if self.exitBehaviour == SatelliteDialog.ExitOnFixOrCancel:
             accept()
 
-    def satellitesInViewUpdated(self, satellites)
+    def satellitesInViewUpdated(self, satellites):
         self.noSatelliteTimer.stop()
         self.satelliteWidget.satellitesInViewUpdated(satellites)
         self.noSatelliteTimer.start()
 
-    def satellitesInUseUpdated(satellites)
+    def satellitesInUseUpdated(self, satellites):
         self.noSatelliteTimer.stop();
         self.satelliteWidget.satellitesInUseUpdated(satellites)
         self.noSatelliteTimer.start()

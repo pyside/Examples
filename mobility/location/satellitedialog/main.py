@@ -4,31 +4,30 @@ import sys
 
 from satellitedialog import *
 
-if __file__ == 'main.py':
-    app = QApplication(sys.argv)
+app = QApplication(sys.argv)
 
-    dialog = SatelliteDialog(None,
-                            30,
-                            SatelliteDialog.ExitOnCancel,
-                            SatelliteDialog.OrderByPrnNumber,
-                            SatelliteDialog.ScaleToMaxPossible)
+dialog = SatelliteDialog(None,
+		    30,
+		    SatelliteDialog.ExitOnCancel,
+		    SatelliteDialog.OrderByPrnNumber,
+		    SatelliteDialog.ScaleToMaxPossible)
 
-    posSource = QGeoPositionInfoSource.createDefaultSource(None)
-    satSource = QGeoSatelliteInfoSource.createDefaultSource(None)
+posSource = QGeoPositionInfoSource.createDefaultSource(None)
+satSource = QGeoSatelliteInfoSource.createDefaultSource(None)
 
-    if posSource == None or satSource == None:
-        QMessageBox.critical(None, "SatelliteDialog", "This examples requires a valid location source and no valid location sources are available on this platform.")
-        sys.exit(-1)
+if posSource == None or satSource == None:
+	QMessageBox.critical(None, "SatelliteDialog", "This examples requires a valid location source and no valid location sources are available on this platform.")
+	sys.exit(-1)
 
-    posSource.setUpdateInterval(5000)
-    dialog.connectSources(posSource, satSource)
+posSource.setUpdateInterval(5000)
+dialog.connectSources(posSource, satSource)
 
-    posSource.startUpdates()
-    satSource.startUpdates()
+posSource.startUpdates()
+satSource.startUpdates()
 
-    dialog.show()
+dialog.show()
 
-    result = app.exec_()
+result = app.exec_()
 
-    posSource.stopUpdates();
-    satSource.stopUpdates();
+posSource.stopUpdates();
+satSource.stopUpdates();
