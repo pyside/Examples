@@ -37,36 +37,35 @@ from QtMobility.Sensors import *
 class AccelerometerFilter(QAccelerometerFilter):
     stamp = 0
 
-    def filter(reading):
+    def filter(self, reading):
         diff = reading.timestamp() - self.stamp
         self.stamp = reading.timestamp()
-        print "Acceleration: %.2f x" % reading.x(),
-              " %.2f y" % reading.y(),
-              " %.2f z m/s^2" % reading.z(),
-              " %.2f ms since last, " % diff / 1000,
-              " %.2f Hz" % 1000000.0 / diff
-        return false # don't store the reading in the sensor
+	if diff:
+            print "Acceleration: %.2f x" % reading.x(), " %.2f y" % reading.y(), " %.2f z m/s^2" % reading.z(), " %.2f ms since last, " % (diff / 1000), " %.2f Hz" % (1000000.0 / diff)
+        return False # don't store the reading in the sensor
 
 def main():
     app = QCoreApplication(sys.argv)
-    args = app.arguments()
-    rate_place = args.indexOf("-r")
+    if "-r" in  sys.argv:
+        rate_place = sys.argv.index("-r")
+    else:
+        rate_place = -1
     rate_val = 0
     if (rate_place != -1):
-        rate_val = args.at(rate_place + 1).toInt()
+        rate_val = int(sys.argv[rate_place + 1])
 
     sensor = QAccelerometer()
-    if (rate_val > 0)
+    if rate_val > 0:
         sensor.setDataRate(rate_val)
 
     filter = AccelerometerFilter()
     sensor.addFilter(filter)
     sensor.start()
-    if (!sensor.isActive())
+    if not sensor.isActive():
         qWarning("Accelerometersensor didn't start!")
         return 1
 
-    return app.exec_();
+    return app.exec_()
 
 if __name__ == "__main__":
     main()

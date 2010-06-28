@@ -43,47 +43,31 @@ from PySide.QtCore import *
 from QtMobility.Sensors import *
 
 class RotationFilter(QRotationFilter):
-    stamp = qtimestamp()
+    stamp = 0
 
     def filter(self, reading):
-        diff = ( reading.timestamp() - stamp )
+        diff = ( reading.timestamp() - self.stamp )
         stamp = reading.timestamp()
-        print "Rotation: %.2f x" % reading.x(),
-              " %.2f y" % reading.y(),
-              " %.2f z" % reading.z(),
-              " (%.2f ms since last, " % diff / 1000,
-              "%.2f Hz)" % 1000000.0 / diff
-
-        return true
+        print "Rotation: %.2f x" % reading.x(),  " %.2f y" % reading.y(),  " %.2f z" % reading.z(), " (%.2f ms since last, " % (diff / 1000),  "%.2f Hz)" % (1000000.0 / diff)
+        return True
 
 if __name__ == "__main__":
     app = QCoreApplication(sys.argv)
-    args = app.arguments()
-    rate_place = args.indexOf("-r")
-    rate_val = 0;
-
-    if (rate_place != -1):
-        rate_val = args.at(rate_place + 1).toInt()
-
     sensor = QRotationSensor()
-
-    if (rate_val > 0)
-        sensor.setDataRate(rate_val)
-
     filter = RotationFilter()
     sensor.addFilter(filter)
     sensor.start()
 
-    if (!sensor.isActive())
+    if not sensor.isActive():
         qWarning("Rotationsensor didn't start!")
-        return 1
+        exit()
 
-    if (sensor.property("hasZ").isValid()):
-        if (sensor.property("hasZ").toBool()):
+    if sensor.property("hasZ"):
+        if sensor.property("hasZ"):
             qDebug("Sensor hasZ is set")
         else:
             qDebug("Sensor hasZ is NOT set")
     else:
         qDebug("Sensor hasZ error: no value")
 
-    return app.exec_()
+    app.exec_()

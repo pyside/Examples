@@ -69,45 +69,35 @@ class TapSensorFilter(QTapFilter):
             output = "Z neg"
         elif tapdir == QTapReading.Undefined:
             output = "Undefined"
-        else
+        else:
             output = "Invalid enum value"
 
         print "Tap: "
-        if (reading.isDoubleTap())
+        if reading.isDoubleTap():
             print "Double "
-        else
+        else:
             print "Single "
-        print " (%.2f ms since last, " % diff / 1000,
-              "%.2f Hz)" % 1000000.0 / diff,
-        return false # don't store the reading in the sensor
+        print " (%.2f ms since last, " % (diff / 1000), "%.2f Hz)" % (1000000.0 / diff),
+        return False # don't store the reading in the sensor
 
 if __name__ == "__main__":
     app = QCoreApplication(sys.argv)
-    args = app.arguments()
-    rate_place = args.indexOf("-r")
-    rate_val = 0
-    if (rate_place != -1)
-        rate_val = args.at(rate_place + 1).toInt()
-
     doublesensor = QTapSensor()
-    if (rate_val > 0)
-        doublesensor.setDataRate(rate_val)
-
     filter = TapSensorFilter()
     doublesensor.addFilter(filter)
     doublesensor.start()
-    if (!doublesensor.isActive())
+    if not doublesensor.isActive():
         qWarning("Tapsensor (double) didn't start!")
-        return 1
+        exit()
 
     singlesensor = QTapSensor()
-    if (rate_val > 0)
+    if rate_val > 0:
         singlesensor.setDataRate(rate_val)
 
     singlesensor.addFilter(filter)
     singlesensor.start()
-    if (!singlesensor.isActive())
+    if not singlesensor.isActive():
         qWarning("Tapsensor (single) didn't start!")
-        return 1
+        exit()
 
-    return app.exec_()
+    app.exec_()

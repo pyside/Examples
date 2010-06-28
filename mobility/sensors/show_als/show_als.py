@@ -45,8 +45,8 @@ from QtMobility.Sensors import *
 class AmbientLightFilter(QAmbientLightFilter):
     stamp = 0
 
-    def filter(reading):
-        diff = reading.timestamp() - stamp
+    def filter(self, reading):
+        diff = reading.timestamp() - self.stamp
         stamp = reading.timestamp()
         lightlevel = reading.lightLevel()
         if lightlevel == QAmbientLightReading.Dark:
@@ -64,18 +64,19 @@ class AmbientLightFilter(QAmbientLightFilter):
         else:
             output = "Invalid enum value"
 
-        print "Ambient light level: ", output,
-              " (%.2f ms since last, " % diff / 1000,
-              "%.2f Hz)" % 1000000.0 / diff
-        return false # don't store the reading in the sensor
+	if diff:
+            print "Ambient light level: ", output, " (%.2f ms since last, " % (diff / 1000),  "%.2f Hz)" % (1000000.0 / diff)
+        return False # don't store the reading in the sensor
 
 if __name__ == "__main__":
     app = QCoreApplication(sys.argv)
-    args = app.arguments()
-    rate_place = args.indexOf("-r")
+    if "-r" in sys.argv:
+        rate_place = sys.argv.index("-r")
+    else:
+        rate_place = -1
     rate_val = 0
     if (rate_place != -1):
-        rate_val = args.at(rate_place + 1).toInt()
+        rate_val = int(sys.argv[rate_place + 1])
     sensor = QAmbientLightSensor()
     if (rate_val > 0):
         sensor.setDataRate(rate_val)
@@ -83,8 +84,7 @@ if __name__ == "__main__":
     filter = AmbientLightFilter()
     sensor.addFilter(filter)
     sensor.start()
-    if (!sensor.isActive()):
+    if not sensor.isActive():
         qWarning("Ambientlightsensor didn't start!")
-        return 1
-
-    return app.exec_()
+    else:
+        app.exec_()

@@ -45,62 +45,38 @@ from QtMobility.Sensors import *
 class MagGeoFilter(QMagnetometerFilter):
     stamp = 0
 
-    def filter(reading):
-        diff = reading.timestamp() - stamp
+    def filter(self, reading):
+        diff = reading.timestamp() - self.stamp
         stamp = reading.timestamp()
-        print "Geomagnetic flux density: %.2f x" % reading.x() * 1000000,
-              " %.2f y" % reading.y() * 1000000,
-              " %.2f z uT" % reading.z() * 1000000,
-              " calibration: %.2f" % reading.calibrationLevel()
-              " (%.2f ms since last, " % diff / 1000
-              "%.2f Hz)" % 1000000.0 / diff
-        return false
+        print "Geomagnetic flux density: %.2f x" % (reading.x() * 1000000), " %.2f y" % (reading.y() * 1000000),  " %.2f z uT" % (reading.z() * 1000000), " calibration: %.2f" % reading.calibrationLevel(), " (%.2f ms since last, " % (diff / 1000), "%.2f Hz)" % (1000000.0 / diff)
+        return False
 
 class MagRawFilter(QMagnetometerFilter):
-    stamp = qtimestamp()
+    stamp = 0
 
-    def filter(reading):
-        diff = ( reading->timestamp() - stamp )
-        stamp = reading->timestamp()
-        print "Raw magnetic flux density: %.2f x" % reading.x() * 1000000,
-              " %.2f y" % reading.y() * 1000000,
-              " %.2f z uT" % reading.z() * 1000000,
-              " calibration: %.2f" % reading.calibrationLevel(),
-              " (%1 ms since last, " % diff / 1000,
-              "%2 Hz)" % 1000000.0 / diff
-        return false
+    def filter(self, reading):
+        diff = ( reading.timestamp() - self.stamp )
+        stamp = reading.timestamp()
+        print "Raw magnetic flux density: %.2f x" % (reading.x() * 1000000),  " %.2f y" % (reading.y() * 1000000), " %.2f z uT" % (reading.z() * 1000000), " calibration: %.2f" % reading.calibrationLevel(),  " (%1 ms since last, " % (diff / 1000),  "%2 Hz)" % (1000000.0 / diff)
+        return False
 
 if __name__ == "__main__":
     app = QCoreApplication(sys.argv)
-    args = app.arguments()
-    rate_place = args.indexOf("-r")
-    rate_val = 0
-    if (rate_place != -1):
-        rate_val = args.at(rate_place + 1).toInt()
 
     geosensor = QMagnetometer()
-    if (rate_val > 0):
-        geosensor.setDataRate(rate_val)
-
     geofilter = MagGeoFilter()
-    geosensor.setProperty("returnGeoValues", true)
+    geosensor.setProperty("returnGeoValues", True)
     geosensor.addFilter(geofilter)
-    qDebug(geosensor.availableDataRates().size())
     geosensor.start()
-    if (!geosensor.isActive()):
+    if not geosensor.isActive():
         qWarning("Magnetometersensor (geo) didn't start!")
-        return 1
-
-    QMagnetometer rawsensor
-    if (rate_val > 0)
-        rawsensor.setDataRate(rate_val)
-
+        exit()
+    rawsensor = QMagnetometer()
     rawfileter = MagRawFilter()
     rawsensor.addFilter(rawfilter)
-    qDebug(rawsensor.availableDataRates().size())
     rawsensor.start()
-    if (!rawsensor.isActive()):
+    if not rawsensor.isActive():
         qWarning("Magnetometersensor (raw) didn't start!")
-        return 1
+        exit()
 
-    return app.exec_()
+    app.exec_()

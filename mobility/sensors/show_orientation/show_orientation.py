@@ -43,13 +43,12 @@ from PySide.QtCore import *
 from QtMobility.Sensors import *
 
 class OrientationSensorFilter(QOrientationFilter):
-    stamp = qtimestamp()
+    stamp = 0
 
-    def filter(reading):
-        int diff = ( reading->timestamp() - stamp )
-        stamp = reading->timestamp()
-        QString output
-        orientation = reading->orientation()
+    def filter(self, reading):
+        diff = ( reading.timestamp() - self.stamp )
+        stamp = reading.timestamp()
+        orientation = reading.orientation()
         if orientation == QOrientationReading.TopUp:
             output = "Top up   "
         elif orientation == QOrientationReading.TopDown:
@@ -67,30 +66,18 @@ class OrientationSensorFilter(QOrientationFilter):
         else:
             output = "Invalid enum value"
 
-        print "Orientation: ", output, " (%.2f ms since last, " % diff / 1000,
-              "%.2f Hz)" % 1000000.0 / diff
-        return false # don't store the reading in the sensor
+        print "Orientation: ", output, " (%.2f ms since last, " % (diff / 1000), "%.2f Hz)" % (1000000.0 / diff)
+        return False # don't store the reading in the sensor
 
 if __name__ == "__main__":
     app = QCoreApplication(sys.argv)
-    args = app.arguments()
-    rate_place = args.indexOf("-r")
-    rate_val = 0
-
-    if (rate_place != -1):
-        rate_val = args.at(rate_place + 1).toInt()
-
     sensor = QOrientationSensor()
-
-    if (rate_val > 0):
-        sensor.setDataRate(rate_val)
-
     filter = OrientationSensorFilter()
     sensor.addFilter(filter)
     sensor.start()
 
-    if (!sensor.isActive()):
+    if not sensor.isActive():
         qWarning("Orientationsensor didn't start!")
-        return 1
+        exit()
 
-    return app.exec_()
+    app.exec_()
