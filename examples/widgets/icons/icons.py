@@ -37,7 +37,7 @@ class IconSizeSpinBox(QtGui.QSpinBox):
             return 0
 
     def textFromValue(self, value):
-        return self.tr("%1 x %1").arg(value)
+        return self.tr("{0} x {0}").format(value)
 
 
 class ImageDelegate(QtGui.QItemDelegate):
@@ -60,8 +60,7 @@ class ImageDelegate(QtGui.QItemDelegate):
         if not comboBox:
             return
 
-        pos = comboBox.findText(index.model().data(index).toString(),
-                                QtCore.Qt.MatchExactly)
+        pos = comboBox.findText(index.model().data(index), QtCore.Qt.MatchExactly)
         comboBox.setCurrentIndex(pos)
 
     def setModelData(self, editor, model, index):
@@ -69,7 +68,7 @@ class ImageDelegate(QtGui.QItemDelegate):
         if not comboBox:
             return
 
-        model.setData(index, QtCore.QVariant(comboBox.currentText()))
+        model.setData(index, comboBox.currentText())
 
     def emitCommitData(self):
         self.emit(QtCore.SIGNAL("commitData(QWidget *)"), self.sender())
@@ -78,7 +77,7 @@ class ImageDelegate(QtGui.QItemDelegate):
 class IconPreviewArea(QtGui.QWidget):
     NumModes = 3
     NumStates = 2
-    
+
     def __init__(self, parent = None):
         QtGui.QWidget.__init__(self, parent)
 
@@ -119,7 +118,7 @@ class IconPreviewArea(QtGui.QWidget):
             self.updatePixmapLabels()
 
     def createHeaderLabel(self, text):
-        label = QtGui.QLabel(self.tr("<b>%1</b>").arg(text))
+        label = QtGui.QLabel(self.tr("<b>{0}</b>").format(text))
         label.setAlignment(QtCore.Qt.AlignCenter)
         return label
 
@@ -187,19 +186,19 @@ class MainWindow(QtGui.QMainWindow):
             return
 
         action = self.sender()
-        style = QtGui.QStyleFactory.create(action.data().toString())
+        style = QtGui.QStyleFactory.create(action.data())
         QtGui.QApplication.setStyle(style)
 
-        self.smallRadioButton.setText(self.tr("Small (%1 x %1)")
-                .arg(style.pixelMetric(QtGui.QStyle.PM_SmallIconSize)))
-        self.largeRadioButton.setText(self.tr("Large (%1 x %1)")
-                .arg(style.pixelMetric(QtGui.QStyle.PM_LargeIconSize)))
-        self.toolBarRadioButton.setText(self.tr("Toolbars (%1 x %1)")
-                .arg(style.pixelMetric(QtGui.QStyle.PM_ToolBarIconSize)))
-        self.listViewRadioButton.setText(self.tr("List views (%1 x %1)")
-                .arg(style.pixelMetric(QtGui.QStyle.PM_ListViewIconSize)))
-        self.iconViewRadioButton.setText(self.tr("Icon views (%1 x %1)")
-                .arg(style.pixelMetric(QtGui.QStyle.PM_IconViewIconSize)))
+        self.smallRadioButton.setText(self.tr("Small ({0} x {0})")
+                .format(style.pixelMetric(QtGui.QStyle.PM_SmallIconSize)))
+        self.largeRadioButton.setText(self.tr("Large ({0} x {0})")
+                .format(style.pixelMetric(QtGui.QStyle.PM_LargeIconSize)))
+        self.toolBarRadioButton.setText(self.tr("Toolbars ({0} x {0})")
+                .format(style.pixelMetric(QtGui.QStyle.PM_ToolBarIconSize)))
+        self.listViewRadioButton.setText(self.tr("List views ({0} x {0})")
+                .format(style.pixelMetric(QtGui.QStyle.PM_ListViewIconSize)))
+        self.iconViewRadioButton.setText(self.tr("Icon views ({0} x {0})")
+                .format(style.pixelMetric(QtGui.QStyle.PM_IconViewIconSize)))
 
         self.changeSize()
 
@@ -244,7 +243,7 @@ class MainWindow(QtGui.QMainWindow):
                 else:
                     state = QtGui.QIcon.Off
 
-                fileName = item0.data(QtCore.Qt.UserRole).toString()
+                fileName = item0.data(QtCore.Qt.UserRole)
                 image = QtGui.QImage(fileName)
                 if not image.isNull():
                     icon.addPixmap(QtGui.QPixmap.fromImage(image), mode, state)
@@ -252,30 +251,30 @@ class MainWindow(QtGui.QMainWindow):
         self.previewArea.setIcon(icon)
 
     def addImage(self):
-        fileNames = QtGui.QFileDialog.getOpenFileNames(
+        fileNames, filter = QtGui.QFileDialog.getOpenFileNames(
                         self, self.tr("Open Images"), "",
                         self.tr("Images (*.png *.xpm *.jpg);;All Files (*)"))
 
-        if not fileNames.isEmpty():
+        if len(fileNames):
             for fileName in fileNames:
                 row = self.imagesTable.rowCount()
                 self.imagesTable.setRowCount(row + 1)
 
                 imageName = QtCore.QFileInfo(fileName).baseName()
                 item0 = QtGui.QTableWidgetItem(imageName)
-                item0.setData(QtCore.Qt.UserRole, QtCore.QVariant(fileName))
+                item0.setData(QtCore.Qt.UserRole, fileName)
                 item0.setFlags(item0.flags() & ~QtCore.Qt.ItemIsEditable)
 
                 item1 = QtGui.QTableWidgetItem(self.tr("Normal"))
                 item2 = QtGui.QTableWidgetItem(self.tr("Off"))
 
                 if self.guessModeStateAct.isChecked():
-                    if fileName.contains("_act"):
+                    if "_act" in fileName:
                         item1.setText(self.tr("Active"))
-                    elif fileName.contains("_dis"):
+                    elif "_dis" in fileName:
                         item1.setText(self.tr("Disabled"))
 
-                    if fileName.contains("_on"):
+                    if "_on" in fileName:
                         item2.setText(self.tr("On"))
 
                 self.imagesTable.setItem(row, 0, item0)
@@ -304,8 +303,7 @@ class MainWindow(QtGui.QMainWindow):
         self.imagesGroupBox.setSizePolicy(QtGui.QSizePolicy.Expanding,
                                           QtGui.QSizePolicy.Expanding)
 
-        labels = QtCore.QStringList()
-        labels << self.tr("Image") << self.tr("Mode") << self.tr("State")
+        labels = [self.tr("Image"), self.tr("Mode"), self.tr("State")]
 
         self.imagesTable = QtGui.QTableWidget()
         self.imagesTable.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Ignored)
@@ -387,8 +385,8 @@ class MainWindow(QtGui.QMainWindow):
         self.styleActionGroup = QtGui.QActionGroup(self)
         for styleName in QtGui.QStyleFactory.keys():
             action = QtGui.QAction(self.styleActionGroup)
-            action.setText(self.tr("%1 Style").arg(styleName))
-            action.setData(QtCore.QVariant(styleName))
+            action.setText(self.tr("{0} Style").format(styleName))
+            action.setData(styleName)
             action.setCheckable(True)
             self.connect(action, QtCore.SIGNAL("triggered(bool)"), self.changeStyle)
 
@@ -429,7 +427,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def checkCurrentStyle(self):
         for action in self.styleActionGroup.actions():
-            styleName = action.data().toString()
+            styleName = action.data()
             candidate = QtGui.QStyleFactory.create(styleName)
 
             if candidate.metaObject().className() == QtGui.QApplication.style().metaObject().className():

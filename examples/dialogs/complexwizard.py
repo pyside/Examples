@@ -15,10 +15,10 @@ class ComplexWizard(QtGui.QDialog):
         self.nextButton = QtGui.QPushButton(self.tr("Next >"))
         self.finishButton = QtGui.QPushButton(self.tr("&Finish"))
 
-        self.connect(self.cancelButton, QtCore.SIGNAL("clicked()"), self.reject)
-        self.connect(self.backButton, QtCore.SIGNAL("clicked()"), self.backButtonClicked)
-        self.connect(self.nextButton, QtCore.SIGNAL("clicked()"), self.nextButtonClicked)
-        self.connect(self.finishButton, QtCore.SIGNAL("clicked()"), self.accept)
+        self.cancelButton.clicked.connect(self.reject)
+        self.backButton.clicked.connect(self.backButtonClicked)
+        self.nextButton.clicked.connect(self.nextButtonClicked)
+        self.finishButton.clicked.connect(self.accept)
 
         buttonLayout = QtGui.QHBoxLayout()
         buttonLayout.addStretch(1)
@@ -64,6 +64,7 @@ class ComplexWizard(QtGui.QDialog):
             self.mainLayout.removeWidget(oldPage)
             self.disconnect(oldPage, QtCore.SIGNAL("completeStateChanged()"),
                             self.completeStateChanged)
+            #oldPage.completeStateChanged.disconnect(self.completeStateChanged)
 
         newpage = self.history[-1]
         self.mainLayout.insertWidget(0, newpage)
@@ -201,7 +202,7 @@ class EvaluatePage(LicenseWizardPage):
         return self.wizard.finishPage
 
     def isComplete(self):
-        return ( not self.nameLineEdit.text().isEmpty() and not self.emailLineEdit.text().isEmpty() )
+        return ( len(self.nameLineEdit.text()) and len(self.emailLineEdit.text()) )
 
 
 class RegisterPage(LicenseWizardPage):
@@ -245,13 +246,13 @@ class RegisterPage(LicenseWizardPage):
         self.upgradeKeyLineEdit.clear()
 
     def nextPage(self):
-        if self.upgradeKeyLineEdit.text().isEmpty():
+        if len(self.upgradeKeyLineEdit.text()) == 0:
             return self.wizard.detailsPage
         else:
             return self.wizard.finishPage
 
     def isComplete(self):
-        return ( not self.nameLineEdit.text().isEmpty() )
+        return ( len(self.nameLineEdit.text()) )
 
 
 class DetailsPage(LicenseWizardPage):
@@ -301,9 +302,9 @@ class DetailsPage(LicenseWizardPage):
         return self.wizard.finishPage
 
     def isComplete(self):
-        return (not self.companyLineEdit.text().isEmpty() and
-                not self.emailLineEdit.text().isEmpty() and
-                not self.postalLineEdit.text().isEmpty())
+        return (len(self.companyLineEdit.text()) and
+                len(self.emailLineEdit.text()) and
+                len(self.postalLineEdit.text()))
 
 
 class FinishPage(LicenseWizardPage):

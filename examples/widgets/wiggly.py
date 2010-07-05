@@ -31,19 +31,19 @@ from PySide import QtCore, QtGui
 class WigglyWidget(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        
+
         self.setBackgroundRole(QtGui.QPalette.Midlight)
-        
+
         newFont = self.font()
         newFont.setPointSize(newFont.pointSize() + 20)
         self.setFont(newFont)
 
         self.timer = QtCore.QBasicTimer()
-        self.text = QtCore.QString("Hello World !")
-        
+        self.text = "Hello World !"
+
         self.step = 0;
-        self.timer.start(60, self)   
-        
+        self.timer.start(60, self)
+
     def paintEvent(self, event):
         sineTable = [0, 38, 71, 92, 100, 92, 71, 38, 0, -38, -71, -92, -100, -92, -71, -38]
 
@@ -53,16 +53,16 @@ class WigglyWidget(QtGui.QWidget):
         color = QtGui.QColor()
 
         painter = QtGui.QPainter(self)
-        
-        for i in xrange(self.text.size()):
+
+        for i in xrange(len(self.text)):
             index = (self.step + i) % 16
             color.setHsv((15 - index) * 16, 255, 191)
             painter.setPen(color)
-            painter.drawText(x, y - ((sineTable[index] * metrics.height()) / 400), QtCore.QString(self.text[i]))
+            painter.drawText(x, y - ((sineTable[index] * metrics.height()) / 400), self.text[i])
             x += metrics.width(self.text[i])
-    
+
     def setText(self, newText):
-        self.text = QtCore.QString(newText)
+        self.text = newText
 
     def timerEvent(self, event):
         if (event.timerId() == self.timer.timerId()):
@@ -75,7 +75,7 @@ class WigglyWidget(QtGui.QWidget):
 class Dialog(QtGui.QDialog):
     def __init__(self, parent=None):
         QtGui.QDialog.__init__(self, parent)
-        
+
         wigglyWidget = WigglyWidget()
         lineEdit = QtGui.QLineEdit()
 
@@ -84,8 +84,7 @@ class Dialog(QtGui.QDialog):
         layout.addWidget(lineEdit)
         self.setLayout(layout)
 
-        self.connect(lineEdit, QtCore.SIGNAL("textChanged(QString)"), wigglyWidget.setText)
-
+        lineEdit.textChanged.connect(wigglyWidget.setText)
         lineEdit.setText(self.tr("Hello world!"))
 
         self.setWindowTitle(self.tr("Wiggly"))
@@ -96,4 +95,4 @@ if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     dialog = Dialog()
     dialog.show();
-    sys.exit(dialog.exec_())    
+    sys.exit(dialog.exec_())

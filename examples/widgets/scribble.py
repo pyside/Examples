@@ -164,8 +164,8 @@ class MainWindow(QtGui.QMainWindow):
             fileName = QtGui.QFileDialog.getOpenFileName(self,
                                                          self.tr("Open File"),
                                                          QtCore.QDir.currentPath())
-            if not fileName.isEmpty():
-                self.scribbleArea.openImage(fileName)
+            if len(fileName[0]):
+                self.scribbleArea.openImage(fileName[0])
 
     def save(self):
         action = self.sender()
@@ -205,10 +205,10 @@ class MainWindow(QtGui.QMainWindow):
         self.connect(self.openAct, QtCore.SIGNAL("triggered()"), self.open)
 
         for format in QtGui.QImageWriter.supportedImageFormats():
-            text = self.tr("%1...").arg(QtCore.QString(format).toUpper())
+            text = self.tr("{0}...").format(str(format).upper())
 
             action = QtGui.QAction(text, self)
-            action.setData(QtCore.QVariant(format))
+            action.setData(format)
             self.connect(action, QtCore.SIGNAL("triggered()"), self.save)
             self.saveAsActs.append(action)
 
@@ -281,10 +281,9 @@ class MainWindow(QtGui.QMainWindow):
 
         fileName = QtGui.QFileDialog.getSaveFileName(self, self.tr("Save As"),
                                     initialPath,
-                                    self.tr("%1 Files (*.%2);;All Files (*)")
-                                    .arg(QtCore.QString(fileFormat.toUpper()))
-                                    .arg(QtCore.QString(fileFormat)))
-        if fileName.isEmpty():
+                                    self.tr("{0} Files (*.{1});;All Files (*)")
+                                    .format(fileFormat.upper(), fileFormat))
+        if len(fileName):
             return False
         else:
             return self.scribbleArea.saveImage(fileName, fileFormat)

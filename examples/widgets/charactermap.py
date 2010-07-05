@@ -23,11 +23,14 @@
 ##
 #############################################################################
 
-import sys
+import sys, unicodedata
 from PySide import QtCore, QtGui
 
 
 class CharacterWidget(QtGui.QWidget):
+
+    characterSelected = QtCore.Signal(unicode)
+
     def __init__(self, parent = None):
         QtGui.QWidget.__init__(self, parent)
 
@@ -53,13 +56,13 @@ class CharacterWidget(QtGui.QWidget):
     def mouseMoveEvent(self, event):
         widgetPosition = self.mapFromGlobal(event.globalPos())
         key = (widgetPosition.y()/24)*32 + widgetPosition.x()/24
-        QtGui.QToolTip.showText(event.globalPos(), QtCore.QString.number(key), self)
+        QtGui.QToolTip.showText(event.globalPos(), str(key), self)
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton:
             self.lastKey = (event.y()/24)*32 + event.x()/24
-            if QtCore.QChar(self.lastKey).category() != QtCore.QChar.NoCategory:
-                self.emit(QtCore.SIGNAL("characterSelected(const QString &)"), QtCore.QString(QtCore.QChar(self.lastKey)))
+            if unicodedata.category(unichr(self.lastKey)) != "Cn":
+                self.characterSelected.emit(unichr(self.lastKey))
             self.update()
         else:
             QtGui.QWidget.mousePressEvent(self, event)
@@ -91,9 +94,9 @@ class CharacterWidget(QtGui.QWidget):
                 if key == self.lastKey:
                     painter.fillRect(column*24, row*24, 24, 24, QtCore.Qt.red)
 
-                painter.drawText(column*24 + 12 - fontMetrics.width(QtCore.QChar(key))/2,
+                painter.drawText(column*24 + 12 - fontMetrics.width(unichr(key))/2,
                                  row*24 + 4 + fontMetrics.ascent(),
-                                 QtCore.QString(QtCore.QChar(key)))
+                                 unichr(key))
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -119,15 +122,11 @@ class MainWindow(QtGui.QMainWindow):
 
         self.clipboard = QtGui.QApplication.clipboard()
 
-        self.connect(self.fontCombo, QtCore.SIGNAL("activated(const QString &)"),
-                     self.findStyles)
-        self.connect(self.fontCombo, QtCore.SIGNAL("activated(const QString &)"),
-                     self.characterWidget.updateFont)
-        self.connect(self.styleCombo, QtCore.SIGNAL("activated(const QString &)"),
-                     self.characterWidget.updateStyle)
-        self.connect(self.characterWidget, QtCore.SIGNAL("characterSelected(const QString &)"),
-                     self.insertCharacter)
-        self.connect(clipboardButton, QtCore.SIGNAL("clicked()"), self.updateClipboard)
+        self.fontCombo.activated.connect(self.findStyles)
+        self.fontCombo.activated.connect(self.characterWidget.updateFont)
+        self.styleCombo.activated.connect(self.characterWidget.updateStyle)
+        self.characterWidget.characterSelected.connect(self.insertCharacter)
+        clipboardButton.clicked.connect(self.updateClipboard)
 
         controlsLayout = QtGui.QHBoxLayout()
         controlsLayout.addWidget(fontLabel)

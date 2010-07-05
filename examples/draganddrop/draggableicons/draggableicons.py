@@ -126,10 +126,10 @@ if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     mainWidget = QtGui.QWidget()
     horizontalLayout = QtGui.QHBoxLayout()
+    mainWidget.setLayout(horizontalLayout)
     horizontalLayout.addWidget(DragWidget())
     horizontalLayout.addWidget(DragWidget())
 
-    mainWidget.setLayout(horizontalLayout)
     mainWidget.setWindowTitle(QtCore.QObject.tr(mainWidget, "Draggable Icons"))
     mainWidget.show()
     sys.exit(app.exec_())

@@ -80,21 +80,21 @@ class Dialog(QtGui.QDialog):
         self.errorLabel.setFrameStyle(frameStyle)
         self.errorButton = QtGui.QPushButton(self.tr("QErrorMessage.show&M&essage()"))
 
-        self.connect(self.integerButton, QtCore.SIGNAL("clicked()"), self.setInteger)
-        self.connect(self.doubleButton, QtCore.SIGNAL("clicked()"), self.setDouble)
-        self.connect(self.itemButton, QtCore.SIGNAL("clicked()"), self.setItem)
-        self.connect(self.textButton, QtCore.SIGNAL("clicked()"), self.setText)
-        self.connect(self.colorButton, QtCore.SIGNAL("clicked()"), self.setColor)
-        self.connect(self.fontButton, QtCore.SIGNAL("clicked()"), self.setFont)
-        self.connect(self.directoryButton, QtCore.SIGNAL("clicked()"), self.setExistingDirectory)
-        self.connect(self.openFileNameButton, QtCore.SIGNAL("clicked()"), self.setOpenFileName)
-        self.connect(self.openFileNamesButton, QtCore.SIGNAL("clicked()"), self.setOpenFileNames)
-        self.connect(self.saveFileNameButton, QtCore.SIGNAL("clicked()"), self.setSaveFileName)
-        self.connect(self.criticalButton, QtCore.SIGNAL("clicked()"), self.criticalMessage)
-        self.connect(self.informationButton, QtCore.SIGNAL("clicked()"), self.informationMessage)
-        self.connect(self.questionButton, QtCore.SIGNAL("clicked()"), self.questionMessage)
-        self.connect(self.warningButton, QtCore.SIGNAL("clicked()"), self.warningMessage)
-        self.connect(self.errorButton, QtCore.SIGNAL("clicked()"), self.errorMessage)
+        self.integerButton.clicked.connect(self.setInteger)
+        self.doubleButton.clicked.connect(self.setDouble)
+        self.itemButton.clicked.connect(self.setItem)
+        self.textButton.clicked.connect(self.setText)
+        self.colorButton.clicked.connect(self.setColor)
+        self.fontButton.clicked.connect(self.setFont)
+        self.directoryButton.clicked.connect(self.setExistingDirectory)
+        self.openFileNameButton.clicked.connect(self.setOpenFileName)
+        self.openFileNamesButton.clicked.connect(self.setOpenFileNames)
+        self.saveFileNameButton.clicked.connect(self.setSaveFileName)
+        self.criticalButton.clicked.connect(self.criticalMessage)
+        self.informationButton.clicked.connect(self.informationMessage)
+        self.questionButton.clicked.connect(self.questionMessage)
+        self.warningButton.clicked.connect(self.warningMessage)
+        self.errorButton.clicked.connect(self.errorMessage)
 
         layout = QtGui.QGridLayout()
         layout.setColumnStretch(1, 1)
@@ -137,28 +137,27 @@ class Dialog(QtGui.QDialog):
         i, ok = QtGui.QInputDialog.getInteger(self, self.tr("QInputDialog.getInteger()"),
                                               self.tr("Percentage:"), 25, 0, 100, 1)
         if ok:
-            self.integerLabel.setText(self.tr("%1%").arg(i))
+            self.integerLabel.setText(self.tr("{0}%").format(i))
 
     def setDouble(self):
         d, ok = QtGui.QInputDialog.getDouble(self, self.tr("QInputDialog.getDouble()"),
                                              self.tr("Amount:"), 37.56, -10000, 10000, 2)
-        #if ok:
-        #    self.doubleLabel.setText(QtCore.QString("$%1").arg(d))
+        if ok:
+           self.doubleLabel.setText(("${0}").format(d))
 
     def setItem(self):
-        items = []#QtCore.QStringList()
-        items << self.tr("Spring") << self.tr("Summer") << self.tr("Fall") << self.tr("Winter")
+        items = [self.tr("Spring"), self.tr("Summer"), self.tr("Fall"), self.tr("Winter")]
 
         item, ok = QtGui.QInputDialog.getItem(self, self.tr("QInputDialog.getItem()"),
                                               self.tr("Season:"), items, 0, False)
-        if ok and not item.isEmpty():
+        if ok and len(item):
             self.itemLabel.setText(item)
 
     def setText(self):
         text, ok = QtGui.QInputDialog.getText(self, self.tr("QInputDialog.getText()"),
                                               self.tr("User name:"), QtGui.QLineEdit.Normal,
                                               QtCore.QDir.home().dirName())
-        if ok and not text.isEmpty():
+        if ok and len(text):
             self.textLabel.setText(text)
 
     def setColor(self):
@@ -177,33 +176,32 @@ class Dialog(QtGui.QDialog):
                                           self.tr("QFileDialog.getExistingDirectory()"),
                                           self.directoryLabel.text(),
                                           QtGui.QFileDialog.DontResolveSymlinks | QtGui.QFileDialog.ShowDirsOnly)
-        if not directory.isEmpty():
+        if len(directory):
             self.directoryLabel.setText(directory)
 
     def setOpenFileName(self):
-        fileName, filte = QtGui.QFileDialog.getOpenFileName()#self,
-                                         #self.tr("QFileDialog.getOpenFileName()"),
-                                         #self.openFileNameLabel.text(),
-                                         #self.tr("All Files (*);;Text Files (*.txt)"))
-        print "Imprimiu: ",fileName, filte
-        if not fileName.isEmpty():
+        fileName, filter = QtGui.QFileDialog.getOpenFileName(self,
+                                         self.tr("QFileDialog.getOpenFileName()"),
+                                         self.openFileNameLabel.text(),
+                                         self.tr("All Files (*);;Text Files (*.txt)"))
+        if len(fileName):
             self.openFileNameLabel.setText(fileName)
 
     def setOpenFileNames(self):
-        files = QtGui.QFileDialog.getOpenFileNames(self,
+        files, filter = QtGui.QFileDialog.getOpenFileNames(self,
                                       self.tr("QFileDialog.getOpenFileNames()"),
                                       self.openFilesPath,
                                       self.tr("All Files (*);;Text Files (*.txt)"))
-        if files.count():
+        if len(files):
             self.openFilesPath = files[0]
-            #self.openFileNamesLabel.setText(QtCore.QString("[%1]").arg(files.join(", ")))
+            self.openFileNamesLabel.setText("[{0}]".format(", ".join(files)))
 
     def setSaveFileName(self):
-        fileName = QtGui.QFileDialog.getSaveFileName(self,
+        fileName, filter = QtGui.QFileDialog.getSaveFileName(self,
                                          self.tr("QFileDialog.getSaveFileName()"),
                                          self.saveFileNameLabel.text(),
                                          self.tr("All Files (*);;Text Files (*.txt)"))
-        if not fileName.isEmpty():
+        if len(fileName):
             self.saveFileNameLabel.setText(fileName)
 
     def criticalMessage(self):

@@ -36,13 +36,13 @@ class SlidersGroup(QtGui.QGroupBox):
         self.slider.setTickPosition(QtGui.QSlider.TicksBothSides)
         self.slider.setTickInterval(10)
         self.slider.setSingleStep(1)
-    
+
         self.scrollBar = QtGui.QScrollBar(orientation)
         self.scrollBar.setFocusPolicy(QtCore.Qt.StrongFocus)
-    
+
         self.dial = QtGui.QDial()
         self.dial.setFocusPolicy(QtCore.Qt.StrongFocus)
-    
+
         self.connect(self.slider, QtCore.SIGNAL("valueChanged(int)"),
                      self.scrollBar, QtCore.SLOT("setValue(int)"))
         self.connect(self.scrollBar, QtCore.SIGNAL("valueChanged(int)"),
@@ -51,36 +51,36 @@ class SlidersGroup(QtGui.QGroupBox):
                      self.slider, QtCore.SLOT("setValue(int)"))
         self.connect(self.dial, QtCore.SIGNAL("valueChanged(int)"),
                      self, QtCore.SIGNAL("valueChanged(int)"))
-    
+
         if orientation == QtCore.Qt.Horizontal:
             direction = QtGui.QBoxLayout.TopToBottom
         else:
             direction = QtGui.QBoxLayout.LeftToRight
-    
+
         slidersLayout = QtGui.QBoxLayout(direction)
         slidersLayout.addWidget(self.slider)
         slidersLayout.addWidget(self.scrollBar)
         slidersLayout.addWidget(self.dial)
-        self.setLayout(slidersLayout)    
-    
-    def setValue(self, value):    
-        self.slider.setValue(value)    
-    
-    def setMinimum(self, value):    
+        self.setLayout(slidersLayout)
+
+    def setValue(self, value):
+        self.slider.setValue(value)
+
+    def setMinimum(self, value):
         self.slider.setMinimum(value)
         self.scrollBar.setMinimum(value)
-        self.dial.setMinimum(value)    
-    
-    def setMaximum(self, value):    
+        self.dial.setMinimum(value)
+
+    def setMaximum(self, value):
         self.slider.setMaximum(value)
         self.scrollBar.setMaximum(value)
-        self.dial.setMaximum(value)    
-    
+        self.dial.setMaximum(value)
+
     def invertAppearance(self, invert):
         self.slider.setInvertedAppearance(invert)
         self.scrollBar.setInvertedAppearance(invert)
-        self.dial.setInvertedAppearance(invert)    
-    
+        self.dial.setInvertedAppearance(invert)
+
     def invertKeyBindings(self, invert):
         self.slider.setInvertedControls(invert)
         self.scrollBar.setInvertedControls(invert)
@@ -90,60 +90,60 @@ class SlidersGroup(QtGui.QGroupBox):
 class Sliders(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        
-        self.horizontalSliders = SlidersGroup(QtCore.Qt.Horizontal, QtCore.QString(self.tr("Horizontal")))
-        self.verticalSliders = SlidersGroup(QtCore.Qt.Vertical, QtCore.QString(self.tr("Vertical")))
+
+        self.horizontalSliders = SlidersGroup(QtCore.Qt.Horizontal, self.tr("Horizontal"))
+        self.verticalSliders = SlidersGroup(QtCore.Qt.Vertical, self.tr("Vertical"))
 
         self.stackedWidget = QtGui.QStackedWidget()
         self.stackedWidget.addWidget(self.horizontalSliders)
         self.stackedWidget.addWidget(self.verticalSliders)
-    
+
         self.createControls(self.tr("Controls"))
-    
+
         self.connect(self.horizontalSliders, QtCore.SIGNAL("valueChanged(int)"),
                      self.verticalSliders.setValue)
         self.connect(self.verticalSliders, QtCore.SIGNAL("valueChanged(int)"),
                      self.valueSpinBox, QtCore.SLOT("setValue(int)"))
         self.connect(self.valueSpinBox, QtCore.SIGNAL("valueChanged(int)"),
                      self.horizontalSliders.setValue)
-    
+
         layout = QtGui.QHBoxLayout()
         layout.addWidget(self.controlsGroup)
         layout.addWidget(self.stackedWidget)
         self.setLayout(layout)
-    
+
         self.minimumSpinBox.setValue(0)
         self.maximumSpinBox.setValue(20)
         self.valueSpinBox.setValue(5)
-    
+
         self.setWindowTitle(self.tr("Sliders"))
-    
+
     def createControls(self, title):
         self.controlsGroup = QtGui.QGroupBox(title)
-    
+
         minimumLabel = QtGui.QLabel(self.tr("Minimum value:"))
         maximumLabel = QtGui.QLabel(self.tr("Maximum value:"))
         valueLabel = QtGui.QLabel(self.tr("Current value:"))
-    
+
         invertedAppearance = QtGui.QCheckBox(self.tr("Inverted appearance"))
         invertedKeyBindings = QtGui.QCheckBox(self.tr("Inverted key bindings"))
-    
+
         self.minimumSpinBox = QtGui.QSpinBox()
         self.minimumSpinBox.setRange(-100, 100)
         self.minimumSpinBox.setSingleStep(1)
-    
+
         self.maximumSpinBox = QtGui.QSpinBox()
         self.maximumSpinBox.setRange(-100, 100)
         self.maximumSpinBox.setSingleStep(1)
-    
+
         self.valueSpinBox = QtGui.QSpinBox()
         self.valueSpinBox.setRange(-100, 100)
         self.valueSpinBox.setSingleStep(1)
-    
+
         orientationCombo = QtGui.QComboBox()
         orientationCombo.addItem(self.tr("Horizontal slider-like widgets"))
         orientationCombo.addItem(self.tr("Vertical slider-like widgets"))
-    
+
         self.connect(orientationCombo, QtCore.SIGNAL("activated(int)"),
                      self.stackedWidget, QtCore.SLOT("setCurrentIndex(int)"))
         self.connect(self.minimumSpinBox, QtCore.SIGNAL("valueChanged(int)"),

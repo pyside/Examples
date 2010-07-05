@@ -12,24 +12,24 @@ class SimpleWizard(QtGui.QDialog):
 
         self.history = []
         self.numPages = 0
-        
+
         self.cancelButton = QtGui.QPushButton(self.tr("Cancel"))
         self.backButton = QtGui.QPushButton(self.tr("< &Back"))
         self.nextButton = QtGui.QPushButton(self.tr("Next >"))
         self.finishButton = QtGui.QPushButton(self.tr("&Finish"))
-    
+
         self.connect(self.cancelButton, QtCore.SIGNAL("clicked()"), self, QtCore.SLOT("reject()"))
         self.connect(self.backButton, QtCore.SIGNAL("clicked()"), self.backButtonClicked)
         self.connect(self.nextButton, QtCore.SIGNAL("clicked()"), self.nextButtonClicked)
         self.connect(self.finishButton, QtCore.SIGNAL("clicked()"), self, QtCore.SLOT("accept()"))
-    
+
         buttonLayout = QtGui.QHBoxLayout()
         buttonLayout.addStretch(1)
         buttonLayout.addWidget(self.cancelButton)
         buttonLayout.addWidget(self.backButton)
         buttonLayout.addWidget(self.nextButton)
         buttonLayout.addWidget(self.finishButton)
-    
+
         self.mainLayout = QtGui.QVBoxLayout()
         self.mainLayout.addLayout(buttonLayout)
         self.setLayout(self.mainLayout)
@@ -48,7 +48,7 @@ class SimpleWizard(QtGui.QDialog):
     def backButtonClicked(self):
         self.nextButton.setEnabled(True)
         self.finishButton.setEnabled(True)
-    
+
         oldPage = self.history.pop()
         self.switchPage(oldPage)
         del oldPage
@@ -56,7 +56,7 @@ class SimpleWizard(QtGui.QDialog):
     def nextButtonClicked(self):
         self.nextButton.setEnabled(True)
         self.finishButton.setEnabled(len(self.history) == self.numPages - 1)
-    
+
         oldPage = self.history[-1]
         self.history.append(self.createPage(len(self.history)))
         self.switchPage(oldPage)
@@ -70,7 +70,7 @@ class SimpleWizard(QtGui.QDialog):
         self.mainLayout.insertWidget(0, newPage)
         newPage.show()
         newPage.setFocus()
-    
+
         self.backButton.setEnabled(len(self.history) != 1)
         if len(self.history) == self.numPages:
             self.nextButton.setEnabled(False)
@@ -79,9 +79,9 @@ class SimpleWizard(QtGui.QDialog):
             self.nextButton.setDefault(True)
             self.finishButton.setEnabled(False)
 
-        self.setWindowTitle(self.tr("Simple Wizard - Step %1 of %2")
-                                    .arg(len(self.history)).arg(self.numPages))
-                       
+        self.setWindowTitle(self.tr("Simple Wizard - Step {0} of {1}")
+                                    .format(len(self.history), self.numPages))
+
 
 class ClassWizard(SimpleWizard):
     def __init__(self, parent=None):
@@ -110,19 +110,19 @@ class ClassWizard(SimpleWizard):
         qwidgetCtor = self.firstPage.qwidgetCtorRadioButton.isChecked()
         defaultCtor = self.firstPage.defaultCtorRadioButton.isChecked()
         copyCtor = self.firstPage.copyCtorCheckBox.isChecked()
-    
+
         comment = self.secondPage.commentCheckBox.isChecked()
         protect = self.secondPage.protectCheckBox.isChecked()
         macroName = self.secondPage.macroNameLineEdit.text().toAscii()
         includeBase = self.secondPage.includeBaseCheckBox.isChecked()
         baseInclude = self.secondPage.baseIncludeLineEdit.text().toAscii()
-    
-        outputDir = QtCore.QString(self.thirdPage.outputDirLineEdit.text())
-        header = QtCore.QString(self.thirdPage.headerLineEdit.text())
-        implementation = QtCore.QString(self.thirdPage.implementationLineEdit.text())
-    
+
+        outputDir = self.thirdPage.outputDirLineEdit.text()
+        header = self.thirdPage.headerLineEdit.text()
+        implementation = self.thirdPage.implementationLineEdit.text()
+
         block = QtCore.QByteArray()
-    
+
         if comment:
             block += "/*\n"
             block += "    " + header.toAscii() + "\n"
@@ -139,19 +139,19 @@ class ClassWizard(SimpleWizard):
             block += "\n"
 
         block += "class " + className
-        if  not baseClass.isEmpty():
+        if  len(baseClass):
             block += " : public " + baseClass
         block += "\n"
         block += "{\n"
-    
+
         # qmake ignore Q_OBJECT
-    
+
         if qobjectMacro:
             block += "    Q_OBJECT\n"
             block += "\n"
 
         block += "public:\n"
-    
+
         if qobjectCtor:
             block += "    " + className + "(QObject *parent);\n"
         elif qwidgetCtor:
@@ -164,7 +164,7 @@ class ClassWizard(SimpleWizard):
                 block += "    " + className + " &operator=" + "(const " + className + " &other);\n"
 
         block += "};\n"
-    
+
         if protect:
             block += "\n"
             block += "#endif\n"
@@ -172,15 +172,15 @@ class ClassWizard(SimpleWizard):
         headerFile = QtCore.QFile(outputDir + "/" + header)
         if  not headerFile.open(QtCore.QFile.WriteOnly | QtCore.QFile.Text):
             QtGui.QMessageBox.warning(self, self.tr("Simple Wizard"),
-                                      self.tr("Cannot write file %1:\n%2")
-                                              .arg(headerFile.fileName())
-                                              .arg(headerFile.errorString()))
+                                      self.tr("Cannot write file {0}:\n{1}")
+                                              .format(headerFile.fileName(),
+                                                      headerFile.errorString()))
             return
 
         headerFile.write(block)
-    
+
         block.clear()
-    
+
         if comment:
             block += "/*\n"
             block += "    " + implementation.toAscii() + "\n"
@@ -189,7 +189,7 @@ class ClassWizard(SimpleWizard):
 
         block += "#include \"" + header.toAscii() + "\"\n"
         block += "\n"
-    
+
         if qobjectCtor:
             block += className + "::" + className + "(QObject *parent)\n"
             block += "    : " + baseClass + "(parent)\n"
@@ -205,7 +205,7 @@ class ClassWizard(SimpleWizard):
             block += "{\n"
             block += "    // missing code\n"
             block += "}\n"
-    
+
             if copyCtor:
                 block += "\n"
                 block += className + "::" + className + "(const " + className + " &other)\n"
@@ -215,7 +215,7 @@ class ClassWizard(SimpleWizard):
                 block += "\n"
                 block += className + " &" + className + "::operator=(const " + className + " &other)\n"
                 block += "{\n"
-                if  not baseClass.isEmpty():
+                if  len(baseClass):
                     block += "    " + baseClass + "::operator=(other);\n"
                 block += "    // missing code\n"
                 block += "    return *this;\n"
@@ -224,15 +224,15 @@ class ClassWizard(SimpleWizard):
         implementationFile = QtCore.QFile(outputDir + "/" + implementation)
         if  not implementationFile.open(QtCore.QFile.WriteOnly | QtCore.QFile.Text):
             QtGui.QMessageBox.warning(self, self.tr("Simple Wizard"),
-                                      self.tr("Cannot write file %1:\n%2")
-                                              .arg(implementationFile.fileName())
-                                              .arg(implementationFile.errorString()))
+                                      self.tr("Cannot write file {0}:\n{1}")
+                                              .format(implementationFile.fileName(),
+                                                      implementationFile.errorString()))
             return
 
         implementationFile.write(block)
-    
+
         QtGui.QDialog.accept(self)
-        
+
 
 class FirstPage(QtGui.QWidget):
     def __init__(self, parent):
@@ -242,42 +242,42 @@ class FirstPage(QtGui.QWidget):
                                              "<p>This wizard will generate a skeleton class "
                                              "definition and member function definitions."))
         self.topLabel.setWordWrap(False)
-    
+
         self.classNameLabel = QtGui.QLabel(self.tr("Class &name:"))
         self.classNameLineEdit = QtGui.QLineEdit()
         self.classNameLabel.setBuddy(self.classNameLineEdit)
         self.setFocusProxy(self.classNameLineEdit)
-    
+
         self.baseClassLabel = QtGui.QLabel(self.tr("&Base class:"))
         self.baseClassLineEdit = QtGui.QLineEdit()
         self.baseClassLabel.setBuddy(self.baseClassLineEdit)
-    
+
         self.qobjectMacroCheckBox = QtGui.QCheckBox(self.tr("&Generate Q_OBJECT macro"))
-    
+
         self.groupBox = QtGui.QGroupBox(self.tr("&Constructor"))
-    
+
         self.qobjectCtorRadioButton = QtGui.QRadioButton(self.tr("&QObject-style constructor"))
         self.qwidgetCtorRadioButton = QtGui.QRadioButton(self.tr("Q&Widget-style constructor"))
         self.defaultCtorRadioButton = QtGui.QRadioButton(self.tr("&Default constructor"))
         self.copyCtorCheckBox = QtGui.QCheckBox(self.tr("&Also generate copy constructor "
                                                         "and assignment operator"))
-    
+
         self.defaultCtorRadioButton.setChecked(True)
-    
+
         self.connect(self.classNameLineEdit, QtCore.SIGNAL("textChanged(const QString &)"),
                 self.classNameChanged)
         self.connect(self.defaultCtorRadioButton, QtCore.SIGNAL("toggled(bool)"),
                 self.copyCtorCheckBox, QtCore.SLOT("setEnabled(bool)"))
-    
+
         parent.setButtonEnabled(False)
-    
+
         groupBoxLayout = QtGui.QVBoxLayout()
         groupBoxLayout.addWidget(self.qobjectCtorRadioButton)
         groupBoxLayout.addWidget(self.qwidgetCtorRadioButton)
         groupBoxLayout.addWidget(self.defaultCtorRadioButton)
         groupBoxLayout.addWidget(self.copyCtorCheckBox)
         self.groupBox.setLayout(groupBoxLayout)
-    
+
         layout = QtGui.QGridLayout()
         layout.addWidget(self.topLabel, 0, 0, 1, 2)
         layout.setRowMinimumHeight(1, 10)
@@ -292,37 +292,37 @@ class FirstPage(QtGui.QWidget):
 
     def classNameChanged(self):
         wizard = self.parent()
-        wizard.setButtonEnabled(not self.classNameLineEdit.text().isEmpty())
+        wizard.setButtonEnabled(len(self.classNameLineEdit.text()))
 
-        
+
 class SecondPage(QtGui.QWidget):
     def __init__(self, parent):
         QtGui.QWidget.__init__(self, parent)
 
         self.topLabel = QtGui.QLabel(self.tr("<center><b>Code style options</b></center>"))
-    
+
         self.commentCheckBox = QtGui.QCheckBox(self.tr("&Start generated files with a comment"))
         self.commentCheckBox.setChecked(True)
         self.setFocusProxy(self.commentCheckBox)
-    
+
         self.protectCheckBox = QtGui.QCheckBox(self.tr("&Protect header file against "
                                                        "multiple inclusions"))
         self.protectCheckBox.setChecked(True)
-    
+
         self.macroNameLabel = QtGui.QLabel(self.tr("&Macro name:"))
         self.macroNameLineEdit = QtGui.QLineEdit()
         self.macroNameLabel.setBuddy(self.macroNameLineEdit)
-    
+
         self.includeBaseCheckBox = QtGui.QCheckBox(self.tr("&Include base class definition"))
         self.baseIncludeLabel = QtGui.QLabel(self.tr("Base class include:"))
         self.baseIncludeLineEdit = QtGui.QLineEdit()
         self.baseIncludeLabel.setBuddy(self.baseIncludeLineEdit)
-    
-        className = QtCore.QString(parent.firstPage.classNameLineEdit.text())
+
+        className = parent.firstPage.classNameLineEdit.text()
         self.macroNameLineEdit.setText(className.toUpper() + "_H")
-    
-        baseClass = QtCore.QString(parent.firstPage.baseClassLineEdit.text())
-        if baseClass.isEmpty():
+
+        baseClass = parent.firstPage.baseClassLineEdit.text()
+        if len(baseClass) == 0:
             self.includeBaseCheckBox.setEnabled(False)
             self.baseIncludeLabel.setEnabled(False)
             self.baseIncludeLineEdit.setEnabled(False)
@@ -341,7 +341,7 @@ class SecondPage(QtGui.QWidget):
                 self.baseIncludeLabel, QtCore.SLOT("setEnabled(bool)"))
         self.connect(self.includeBaseCheckBox, QtCore.SIGNAL("toggled(bool)"),
                 self.baseIncludeLineEdit, QtCore.SLOT("setEnabled(bool)"))
-    
+
         layout = QtGui.QGridLayout()
         layout.setColumnMinimumWidth(0, 20)
         layout.addWidget(self.topLabel, 0, 0, 1, 3)
@@ -356,31 +356,31 @@ class SecondPage(QtGui.QWidget):
         layout.setRowStretch(7, 1)
         self.setLayout(layout)
 
-        
+
 class ThirdPage(QtGui.QWidget):
     def __init__(self, parent):
         QtGui.QWidget.__init__(self, parent)
-        
+
         self.topLabel = QtGui.QLabel(self.tr("<center><b>Output files</b></center>"))
-    
+
         self.outputDirLabel = QtGui.QLabel(self.tr("&Output directory:"))
         self.outputDirLineEdit = QtGui.QLineEdit()
         self.outputDirLabel.setBuddy(self.outputDirLineEdit)
         self.setFocusProxy(self.outputDirLineEdit)
-    
+
         self.headerLabel = QtGui.QLabel(self.tr("&Header file name:"))
         self.headerLineEdit = QtGui.QLineEdit()
         self.headerLabel.setBuddy(self.headerLineEdit)
-    
+
         self.implementationLabel = QtGui.QLabel(self.tr("&Implementation file name:"))
         self.implementationLineEdit = QtGui.QLineEdit()
         self.implementationLabel.setBuddy(self.implementationLineEdit)
-    
-        className = QtCore.QString(parent.firstPage.classNameLineEdit.text())
+
+        className = parent.firstPage.classNameLineEdit.text()
         self.headerLineEdit.setText(className.toLower() + ".h")
         self.implementationLineEdit.setText(className.toLower() + ".cpp")
         self.outputDirLineEdit.setText(QtCore.QDir.convertSeparators(QtCore.QDir.homePath()))
-    
+
         layout = QtGui.QGridLayout()
         layout.addWidget(self.topLabel, 0, 0, 1, 2)
         layout.setRowMinimumHeight(1, 10)
@@ -392,7 +392,7 @@ class ThirdPage(QtGui.QWidget):
         layout.addWidget(self.implementationLineEdit, 4, 1)
         layout.setRowStretch(5, 1)
         self.setLayout(layout)
-        
+
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

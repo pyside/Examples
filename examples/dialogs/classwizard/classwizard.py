@@ -23,17 +23,18 @@ class ClassWizard(QtGui.QWizard):
         self.setWindowTitle(self.tr("Class Wizard"))
 
     def accept(self):
-        className = self.field("className").toByteArray()
-        baseClass = self.field("baseClass").toByteArray()
-        macroName = self.field("macroName").toByteArray()
-        baseInclude = self.field("baseInclude").toByteArray()
+        className = self.field("className")
+        baseClass = self.field("baseClass")
+        macroName = self.field("macroName")
+        baseInclude = self.field("baseInclude")
 
-        outputDir = self.field("outputDir").toString()
-        header = self.field("header").toString()
-        implementation = self.field("implementation").toString()
+        outputDir = self.field("outputDir")
+        header = self.field("header")
+        implementation = self.field("implementation")
 
         block = QtCore.QByteArray()
 
+        print self.field("comment")
         if self.field("comment").toBool():
             block += "/*\n"
             block += "    " + header.toAscii() + "\n"
@@ -50,7 +51,7 @@ class ClassWizard(QtGui.QWizard):
             block += "\n"
 
         block += "class " + className
-        if not baseClass.isEmpty():
+        if len(baseClass):
             block += " : public " + baseClass
 
         block += "\n"
@@ -84,7 +85,7 @@ class ClassWizard(QtGui.QWizard):
 
         if not headerFile.open(QtCore.QFile.WriteOnly | QtCore.QFile.Text):
             QtGui.QMessageBox.warning(None, self.tr("Class Wizard"),
-                    self.tr("Cannot write file %1:\n%2").arg(headerFile.fileName()).arg(headerFile.errorString()));
+                    self.tr("Cannot write file {0}:\n{1}").format(headerFile.fileName(), headerFile.errorString()))
             return
 
         headerFile.write(block)
@@ -126,7 +127,7 @@ class ClassWizard(QtGui.QWizard):
                 block += className + " &" + className + "::operator=(const " + className + " &other)\n"
                 block += "{\n"
 
-                if not baseClass.isEmpty():
+                if len(baseClass):
                     block += "    " + baseClass + "::operator=(other);\n"
 
                 block += "    // missing code\n"
@@ -280,17 +281,17 @@ class CodeStylePage(QtGui.QWizardPage):
 
         baseClass = self.field("baseClass").toString()
 
-        self.includeBaseCheckBox.setChecked(not baseClass.isEmpty())
-        self.includeBaseCheckBox.setEnabled(not baseClass.isEmpty())
-        self.baseIncludeLabel.setEnabled(not baseClass.isEmpty())
-        self.baseIncludeLineEdit.setEnabled(not baseClass.isEmpty())
+        self.includeBaseCheckBox.setChecked(len(baseClass))
+        self.includeBaseCheckBox.setEnabled(len(baseClass))
+        self.baseIncludeLabel.setEnabled(len(baseClass))
+        self.baseIncludeLineEdit.setEnabled(len(baseClass))
 
-        if baseClass.isEmpty():
+        if len(baseClass) == 0.:
             self.baseIncludeLineEdit.clear()
         elif QtCore.QRegExp("Q[A-Z].*").exactMatch(baseClass):
             self.baseIncludeLineEdit.setText("<" + baseClass + ">")
         else:
-            self.baseIncludeLineEdit.setText("\"" + baseClass.toLower() + ".h\"")
+            self.baseIncludeLineEdit.setText("\"" + baseClass.lower() + ".h\"")
 
 
 class OutputFilesPage(QtGui.QWizardPage):

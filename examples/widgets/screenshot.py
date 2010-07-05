@@ -66,16 +66,14 @@ class Screenshot(QtGui.QWidget):
         QtCore.QTimer.singleShot(self.delaySpinBox.value() * 1000, self.shootScreen)
 
     def saveScreenshot(self):
-        format = QtCore.QString("png")
+        format = "png"
         initialPath = QtCore.QDir.currentPath() + self.tr("/untitled.") + format
 
-        fileName = QtGui.QFileDialog.getSaveFileName(self, self.tr("Save As"),
+        fileName, filter = QtGui.QFileDialog.getSaveFileName(self, self.tr("Save As"),
                                initialPath,
-                               self.tr("%1 Files (*.%2);;All Files (*)")
-                                   .arg(format.toUpper())
-                                   .arg(format))
-        if not fileName.isEmpty():
-            self.originalPixmap.save(fileName, str(format))
+                               self.tr("{0} Files (*.{1});;All Files (*)").format(format.upper(), format))
+        if len(fileName):
+            self.originalPixmap.save(fileName, format)
 
     def shootScreen(self):
         if self.delaySpinBox.value() != 0:
