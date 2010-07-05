@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<service>
+    <name>LandlineDialer</name>
+    <filepath>serviceframework_landlinedialerservice</filepath>
+    <description>Landline Dialer</description>
+    <interface>
+        <name>com.nokia.qt.examples.Dialer</name>
+        <version>1.0</version>
+        <description>Landline based implementation of Dialer</description>
+    </interface>
+    <interface>
+        <name>com.nokia.qt.examples.Dialer</name>
+        <version>2.0</version>
+        <description>Landline based implementation of Dialer</description>
+        <capabilities>encrypted</capabilities>
+    </interface>
+</service>

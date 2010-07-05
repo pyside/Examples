@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<service>
+    <name>VoipDialer</name>
+    <filepath>serviceframework_voipdialerservice</filepath>
+    <description>Voip Dialer</description>
+    <interface>
+        <name>com.nokia.qt.examples.Dialer</name>
+        <version>1.0</version>
+        <description>VoIP based implementation Dialer</description>
+    </interface>
+</service>

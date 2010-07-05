@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<service>
+    <name>BluetoothTransferService</name>
+    <filepath>serviceframework_bluetoothtransferplugin</filepath>
+    <description>Example Bluetooth transfer service</description>
+    <interface>
+        <name>com.nokia.qt.examples.FileTransfer</name>
+        <version>1.0</version>
+        <description>Implementation of FileTransferInterface</description>
+    </interface>
+</service>

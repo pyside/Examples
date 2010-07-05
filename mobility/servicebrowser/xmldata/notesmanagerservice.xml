@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<service>
+    <name>NotesManagerService</name>
+    <filepath>serviceframework_notesmanagerplugin</filepath>
+    <description>Notes Manager Service</description>
+    <interface>
+        <name>com.nokia.qt.examples.NotesManager</name>
+        <version>1.0</version>
+        <description>Notes Management Interface</description>
+        <capabilities></capabilities>
+    </interface>
+</service>
