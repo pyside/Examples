@@ -1,0 +1,6 @@
+Run the publisher:
+$ cd battery-publisher
+$ python main.py
+
+And the subscriber:
+$ qmlviewer battery-subscriber.qml
