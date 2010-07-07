@@ -43,6 +43,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 
 from QtMobility.Contacts import *
+from QtMobility.Versit import *
 
 MAX_AVATAR_DISPLAY_SIZE = 120;
 
@@ -97,6 +98,22 @@ class ContactListPage(QWidget):
         bookLayout.addLayout(btnLayout1)
 
         self.setLayout(bookLayout)
+
+        if mainWindow:
+            optionsMenu = QMenu("&Contacts", self)
+            mainWindow.menuBar().addMenu(optionsMenu)
+
+            importAction = QAction("&Import contacts...", self)
+            importAction.triggered.connect(self.importClicked)
+            optionsMenu.addAction(importAction)
+            exportAction = QAction("Ex&port contacts...", self)
+            exportAction.triggered.connect(self.exportClicked)
+            optionsMenu.addAction(exportAction)
+            optionsMenu.addSeparator()
+
+            exitAction = QAction("E&xit", self);
+            exitAction.triggered.connect(qApp.quit)
+            optionsMenu.addAction(exitAction)
 
         # force update to backend.
         QTimer.singleShot(0, self.backendSelected)
@@ -173,6 +190,46 @@ class ContactListPage(QWidget):
             del item
         else:
             QMessageBox.information(self, "Failed!", "Failed to delete contact!")
+
+    def importClicked(self):
+        if not self.manager:
+            qWarning() << "No manager selected; cannot import"
+            return
+
+        fileName = QFileDialog.getOpenFileName(self, "Select vCard file", ".", "vCard files (*.vcf)")
+        openfile = QFile(fileName[0])
+        openfile.open(QIODevice.ReadOnly)
+        if openfile.isReadable():
+            reader = QVersitReader()
+            reader.setDevice(openfile)
+            if reader.startReading() and reader.waitForFinished():
+                importer = QVersitContactImporter()
+                if importer.importDocuments(reader.results()):
+                    contacts = importer.contacts()
+                    #it = contacts.begin()
+                    #while it != contacts.end():
+                    prunedcontacts = []
+                    for it in contacts:
+                        prunedcontacts.append(self.manager.compatibleContact(it))
+                    self.manager.saveContacts(prunedcontacts)
+                    self.rebuildList()
+
+    def exportClicked(self):
+        if not self.manager:
+            qWarning() << "No manager selected; cannot export"
+            return
+
+        fileName = QFileDialog.getSaveFileName(self, "Save vCard", "./contacts.vcf", "vCards (*.vcf)")
+        openfile = QFile(fileName[0])
+        openfile.open(QIODevice.WriteOnly)
+        if openfile.isWritable():
+            exporter = QVersitContactExporter()
+            if exporter.exportContacts(self.contacts, QVersitDocument.VCard30Type):
+                documents = exporter.documents()
+                writer = QVersitWriter()
+                writer.setDevice(openfile)
+                writer.startWriting(documents)
+                writer.waitForFinished()
 
 class ContactEditor(QWidget):
     showListPage = Signal()
@@ -436,7 +493,7 @@ class PhoneBook(QMainWindow):
         self.editorPage = ContactEditor(centralWidget)
         self.editorPage.showListPage.connect(self.activateList)
 
-        self.listPage = ContactListPage(centralWidget)
+        self.listPage = ContactListPage(self, centralWidget)
         self.listPage.showEditorPage.connect(self.activateEditor)
         self.listPage.managerChanged.connect(self.managerChanged)
 
