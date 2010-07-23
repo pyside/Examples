@@ -64,12 +64,12 @@ class ColorItem(QtGui.QGraphicsItem):
         ColorItem.n += 1
         if (ColorItem.n > 2) and ((QtCore.qrand()%3) == 0):
             image = QtGui.QImage(":/images/head.png")
-            mime.setImageData(QtCore.QVariant(image))
+            mime.setImageData(image)
             drag.setPixmap(QtGui.QPixmap.fromImage(image).scaled(30,40))
             drag.setHotSpot(QtCore.QPoint(15, 30))
         else:
             c = self.color
-            mime.setColorData(QtCore.QVariant(c))
+            mime.setColorData(c)
             mime.setText("#%02x%02x%02x" % (c.red(), c.green(), c.blue()))
 
             pixmap = QtGui.QPixmap(34, 34)
