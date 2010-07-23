@@ -208,7 +208,7 @@ class DiagramItem(QtGui.QGraphicsPolygonItem):
         if change == QtGui.QGraphicsItem.ItemPositionChange:
             for arrow in self.arrows:
                 arrow.updatePosition()
-        return QtCore.QVariant(value)
+        return value
 
 
 class DiagramScene(QtGui.QGraphicsScene):
@@ -509,7 +509,7 @@ class MainWindow(QtGui.QMainWindow):
         font = item.font()
         color = item.defaultTextColor()
         self.fontCombo.setCurrentFont(font)
-        self.fontSizeCombo.setEditText(QString.number(font.pointSize()))
+        self.fontSizeCombo.setEditText(str(font.pointSize()))
         self.boldAction.setChecked(font.weight() == QtGui.QFont.Bold)
         self.italicAction.setChecked(font.italic())
         self.underlineAction.setChecked(font.underline())
@@ -668,7 +668,7 @@ class MainWindow(QtGui.QMainWindow):
         fontSizeCombo = QtGui.QComboBox()
         fontSizeCombo.setEditable(True)
         for i in range(8, 30, 2):
-            fontSizeCombo.addItem(QtCore.QString().setNum(i))
+            fontSizeCombo.addItem(str(i))
         validator = QtGui.QIntValidator(2, 64, self)
         fontSizeCombo.setValidator(validator)
         self.connect(fontSizeCombo, QtCore.SIGNAL("currentIndexChanged(const QString &)"),
@@ -800,7 +800,7 @@ class MainWindow(QtGui.QMainWindow):
             action = QtGui.QAction(name, self)
             #need to specifically create a QColor from "color", since the "color" is a GlobalColor
             # and not a QColor object
-            action.setData(QtCore.QVariant(QtGui.QColor(color)))
+            action.setData(QtGui.QColor(color))
             action.setIcon(self.createColorIcon(color))
             self.connect(action, QtCore.SIGNAL("triggered()"), slot)
             colorMenu.addAction(action)
