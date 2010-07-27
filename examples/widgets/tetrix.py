@@ -1,66 +1,63 @@
 #!/usr/bin/env python
 
-"""PySide port of the widgets/tetrix example from Qt v4.x"""
+"""PyQt4 port of the widgets/tetrix example from Qt v4.x"""
 
-import sys
 import random
+
 from PySide import QtCore, QtGui
+
+
+NoShape, ZShape, SShape, LineShape, TShape, SquareShape, LShape, MirroredLShape = range(8)
 
 
 class TetrixWindow(QtGui.QWidget):
     def __init__(self):
-        QtGui.QWidget.__init__(self)
+        super(TetrixWindow, self).__init__()
 
-        self.board = TetrixBoard(self)
+        self.board = TetrixBoard()
 
-        self.nextPieceLabel = QtGui.QLabel()
-        self.nextPieceLabel.setFrameStyle(QtGui.QFrame.Box | QtGui.QFrame.Raised)
-        self.nextPieceLabel.setAlignment(QtCore.Qt.AlignCenter)
-        self.board.setNextPieceLabel(self.nextPieceLabel)
+        nextPieceLabel = QtGui.QLabel()
+        nextPieceLabel.setFrameStyle(QtGui.QFrame.Box | QtGui.QFrame.Raised)
+        nextPieceLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.board.setNextPieceLabel(nextPieceLabel)
 
-        self.scoreLcd = QtGui.QLCDNumber(5)
-        self.scoreLcd.setSegmentStyle(QtGui.QLCDNumber.Filled)
-        self.levelLcd = QtGui.QLCDNumber(2)
-        self.levelLcd.setSegmentStyle(QtGui.QLCDNumber.Filled)
-        self.linesLcd = QtGui.QLCDNumber(5)
-        self.linesLcd.setSegmentStyle(QtGui.QLCDNumber.Filled)
+        scoreLcd = QtGui.QLCDNumber(5)
+        scoreLcd.setSegmentStyle(QtGui.QLCDNumber.Filled)
+        levelLcd = QtGui.QLCDNumber(2)
+        levelLcd.setSegmentStyle(QtGui.QLCDNumber.Filled)
+        linesLcd = QtGui.QLCDNumber(5)
+        linesLcd.setSegmentStyle(QtGui.QLCDNumber.Filled)
 
-        self.startButton = QtGui.QPushButton(self.tr("&Start"))
-        self.startButton.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.quitButton = QtGui.QPushButton(self.tr("&Quit"))
-        self.quitButton.setFocusPolicy(QtCore.Qt.NoFocus)
-        self.pauseButton = QtGui.QPushButton(self.tr("&Pause"))
-        self.pauseButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        startButton = QtGui.QPushButton("&Start")
+        startButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        quitButton = QtGui.QPushButton("&Quit")
+        quitButton.setFocusPolicy(QtCore.Qt.NoFocus)
+        pauseButton = QtGui.QPushButton("&Pause")
+        pauseButton.setFocusPolicy(QtCore.Qt.NoFocus)
 
-        self.connect(self.startButton, QtCore.SIGNAL("clicked()"),
-                     self.board.start)
-        self.connect(self.pauseButton, QtCore.SIGNAL("clicked()"),
-                     self.board.pause)
-        self.connect(self.quitButton, QtCore.SIGNAL("clicked()"),
-                     QtGui.qApp, QtCore.SLOT("quit()"))
-        self.connect(self.board, QtCore.SIGNAL("scoreChanged(int)"),
-                     self.scoreLcd, QtCore.SLOT("display(int)"))
-        self.connect(self.board, QtCore.SIGNAL("levelChanged(int)"),
-                     self.levelLcd, QtCore.SLOT("display(int)"))
-        self.connect(self.board, QtCore.SIGNAL("linesRemovedChanged(int)"),
-                     self.linesLcd, QtCore.SLOT("display(int)"))
+        startButton.clicked.connect(self.board.start)
+        pauseButton.clicked.connect(self.board.pause)
+        quitButton.clicked.connect(QtGui.qApp.quit)
+        self.board.scoreChanged.connect(scoreLcd.display)
+        self.board.levelChanged.connect(levelLcd.display)
+        self.board.linesRemovedChanged.connect(linesLcd.display)
 
         layout = QtGui.QGridLayout()
-        layout.addWidget(self.createLabel(self.tr("NEXT")), 0, 0)
-        layout.addWidget(self.nextPieceLabel, 1, 0)
-        layout.addWidget(self.createLabel(self.tr("LEVEL")), 2, 0)
-        layout.addWidget(self.levelLcd, 3, 0)
-        layout.addWidget(self.startButton, 4, 0)
+        layout.addWidget(self.createLabel("NEXT"), 0, 0)
+        layout.addWidget(nextPieceLabel, 1, 0)
+        layout.addWidget(self.createLabel("LEVEL"), 2, 0)
+        layout.addWidget(levelLcd, 3, 0)
+        layout.addWidget(startButton, 4, 0)
         layout.addWidget(self.board, 0, 1, 6, 1)
-        layout.addWidget(self.createLabel(self.tr("SCORE")), 0, 2)
-        layout.addWidget(self.scoreLcd, 1, 2)
-        layout.addWidget(self.createLabel(self.tr("LINES REMOVED")), 2, 2)
-        layout.addWidget(self.linesLcd, 3, 2)
-        layout.addWidget(self.quitButton, 4, 2)
-        layout.addWidget(self.pauseButton, 5, 2)
+        layout.addWidget(self.createLabel("SCORE"), 0, 2)
+        layout.addWidget(scoreLcd, 1, 2)
+        layout.addWidget(self.createLabel("LINES REMOVED"), 2, 2)
+        layout.addWidget(linesLcd, 3, 2)
+        layout.addWidget(quitButton, 4, 2)
+        layout.addWidget(pauseButton, 5, 2)
         self.setLayout(layout)
 
-        self.setWindowTitle(self.tr("Tetrix"))
+        self.setWindowTitle("Tetrix")
         self.resize(550, 370)
 
     def createLabel(self, text):
@@ -73,16 +70,22 @@ class TetrixBoard(QtGui.QFrame):
     BoardWidth = 10
     BoardHeight = 22
 
-    def __init__(self, parent):
-        QtGui.QFrame.__init__(self, parent)
+    scoreChanged = QtCore.Signal(int)
+
+    levelChanged = QtCore.Signal(int)
+
+    linesRemovedChanged = QtCore.Signal(int)
+
+    def __init__(self, parent=None):
+        super(TetrixBoard, self).__init__(parent)
 
         self.timer = QtCore.QBasicTimer()
+        self.nextPieceLabel = None
         self.isWaitingAfterLine = False
         self.curPiece = TetrixPiece()
         self.nextPiece = TetrixPiece()
         self.curX = 0
         self.curY = 0
-        self.nextPieceLabel = None
         self.numLinesRemoved = 0
         self.numPiecesDropped = 0
         self.score = 0
@@ -117,11 +120,11 @@ class TetrixBoard(QtGui.QFrame):
 
     def sizeHint(self):
         return QtCore.QSize(TetrixBoard.BoardWidth * 15 + self.frameWidth() * 2,
-                            TetrixBoard.BoardHeight * 15 + self.frameWidth() * 2)
+                TetrixBoard.BoardHeight * 15 + self.frameWidth() * 2)
 
     def minimumSizeHint(self):
         return QtCore.QSize(TetrixBoard.BoardWidth * 5 + self.frameWidth() * 2,
-                            TetrixBoard.BoardHeight * 5 + self.frameWidth() * 2)
+                TetrixBoard.BoardHeight * 5 + self.frameWidth() * 2)
 
     def start(self):
         if self.isPaused:
@@ -135,9 +138,9 @@ class TetrixBoard(QtGui.QFrame):
         self.level = 1
         self.clearBoard()
 
-        self.emit(QtCore.SIGNAL("linesRemovedChanged(int)"), self.numLinesRemoved)
-        self.emit(QtCore.SIGNAL("scoreChanged(int)"), self.score)
-        self.emit(QtCore.SIGNAL("levelChanged(int)"), self.level)
+        self.linesRemovedChanged.emit(self.numLinesRemoved)
+        self.scoreChanged.emit(self.score)
+        self.levelChanged.emit(self.level)
 
         self.newPiece()
         self.timer.start(self.timeoutTime(), self)
@@ -155,13 +158,13 @@ class TetrixBoard(QtGui.QFrame):
         self.update()
 
     def paintEvent(self, event):
+        super(TetrixBoard, self).paintEvent(event)
+
         painter = QtGui.QPainter(self)
         rect = self.contentsRect()
 
-        self.drawFrame(painter)
-
         if self.isPaused:
-            painter.drawText(rect, QtCore.Qt.AlignCenter, self.tr("Pause"))
+            painter.drawText(rect, QtCore.Qt.AlignCenter, "Pause")
             return
 
         boardTop = rect.bottom() - TetrixBoard.BoardHeight * self.squareHeight()
@@ -169,24 +172,22 @@ class TetrixBoard(QtGui.QFrame):
         for i in range(TetrixBoard.BoardHeight):
             for j in range(TetrixBoard.BoardWidth):
                 shape = self.shapeAt(j, TetrixBoard.BoardHeight - i - 1)
-                if shape != TetrixShape.NoShape:
+                if shape != NoShape:
                     self.drawSquare(painter,
-                                    rect.left() + j * self.squareWidth(),
-                                    boardTop + i * self.squareHeight(), shape)
+                            rect.left() + j * self.squareWidth(),
+                            boardTop + i * self.squareHeight(), shape)
 
-        if self.curPiece.shape() != TetrixShape.NoShape:
+        if self.curPiece.shape() != NoShape:
             for i in range(4):
                 x = self.curX + self.curPiece.x(i)
                 y = self.curY - self.curPiece.y(i)
-                self.drawSquare(painter,
-                                rect.left() + x * self.squareWidth(),
-                                boardTop + (TetrixBoard.BoardHeight - y - 1) * self.squareHeight(),
-                                self.curPiece.shape())
-
+                self.drawSquare(painter, rect.left() + x * self.squareWidth(),
+                        boardTop + (TetrixBoard.BoardHeight - y - 1) * self.squareHeight(),
+                        self.curPiece.shape())
 
     def keyPressEvent(self, event):
-        if not self.isStarted or self.isPaused or self.curPiece.shape() == TetrixShape.NoShape:
-            QtGui.QWidget.keyPressEvent(self, event)
+        if not self.isStarted or self.isPaused or self.curPiece.shape() == NoShape:
+            super(TetrixBoard, self).keyPressEvent(event)
             return
 
         key = event.key()
@@ -203,7 +204,7 @@ class TetrixBoard(QtGui.QFrame):
         elif key == QtCore.Qt.Key_D:
             self.oneLineDown()
         else:
-            QtGui.QWidget.keyPressEvent(self, event)
+            super(TetrixBoard, self).keyPressEvent(event)
 
     def timerEvent(self, event):
         if event.timerId() == self.timer.timerId():
@@ -214,10 +215,10 @@ class TetrixBoard(QtGui.QFrame):
             else:
                 self.oneLineDown()
         else:
-            QtGui.QFrame.timerEvent(self, event)
+            super(TetrixBoard, self).timerEvent(event)
 
     def clearBoard(self):
-        self.board = [TetrixShape.NoShape for i in range(TetrixBoard.BoardHeight * TetrixBoard.BoardWidth)]
+        self.board = [NoShape for i in range(TetrixBoard.BoardHeight * TetrixBoard.BoardWidth)]
 
     def dropDown(self):
         dropHeight = 0
@@ -244,10 +245,10 @@ class TetrixBoard(QtGui.QFrame):
         if self.numPiecesDropped % 25 == 0:
             self.level += 1
             self.timer.start(self.timeoutTime(), self)
-            self.emit(QtCore.SIGNAL("levelChanged(int)"), self.level)
+            self.levelChanged.emit(self.level)
 
         self.score += dropHeight + 7
-        self.emit(QtCore.SIGNAL("scoreChanged(int)"), self.score)
+        self.scoreChanged.emit(self.score)
         self.removeFullLines()
 
         if not self.isWaitingAfterLine:
@@ -260,7 +261,7 @@ class TetrixBoard(QtGui.QFrame):
             lineIsFull = True
 
             for j in range(TetrixBoard.BoardWidth):
-                if self.shapeAt(j, i) == TetrixShape.NoShape:
+                if self.shapeAt(j, i) == NoShape:
                     lineIsFull = False
                     break
 
@@ -271,28 +272,28 @@ class TetrixBoard(QtGui.QFrame):
                         self.setShapeAt(j, k, self.shapeAt(j, k + 1))
 
                 for j in range(TetrixBoard.BoardWidth):
-                    self.setShapeAt(j, TetrixBoard.BoardHeight - 1, TetrixShape.NoShape)
+                    self.setShapeAt(j, TetrixBoard.BoardHeight - 1, NoShape)
 
         if numFullLines > 0:
             self.numLinesRemoved += numFullLines
             self.score += 10 * numFullLines
-            self.emit(QtCore.SIGNAL("linesRemovedChanged(int)"), self.numLinesRemoved)
-            self.emit(QtCore.SIGNAL("scoreChanged(int)"), self.score)
+            self.linesRemovedChanged.emit(self.numLinesRemoved)
+            self.scoreChanged.emit(self.score)
 
             self.timer.start(500, self)
             self.isWaitingAfterLine = True
-            self.curPiece.setShape(TetrixShape.NoShape)
+            self.curPiece.setShape(NoShape)
             self.update()
 
     def newPiece(self):
         self.curPiece = self.nextPiece
         self.nextPiece.setRandomShape()
         self.showNextPiece()
-        self.curX = TetrixBoard.BoardWidth / 2 + 1
+        self.curX = TetrixBoard.BoardWidth // 2 + 1
         self.curY = TetrixBoard.BoardHeight - 1 + self.curPiece.minY()
 
         if not self.tryMove(self.curPiece, self.curX, self.curY):
-            self.curPiece.setShape(TetrixShape.NoShape)
+            self.curPiece.setShape(NoShape)
             self.timer.stop()
             self.isStarted = False
 
@@ -311,7 +312,7 @@ class TetrixBoard(QtGui.QFrame):
             x = self.nextPiece.x(i) - self.nextPiece.minX()
             y = self.nextPiece.y(i) - self.nextPiece.minY()
             self.drawSquare(painter, x * self.squareWidth(),
-                            y * self.squareHeight(), self.nextPiece.shape())
+                    y * self.squareHeight(), self.nextPiece.shape())
 
         self.nextPieceLabel.setPixmap(pixmap)
 
@@ -321,7 +322,7 @@ class TetrixBoard(QtGui.QFrame):
             y = newY - newPiece.y(i)
             if x < 0 or x >= TetrixBoard.BoardWidth or y < 0 or y >= TetrixBoard.BoardHeight:
                 return False
-            if self.shapeAt(x, y) != TetrixShape.NoShape:
+            if self.shapeAt(x, y) != NoShape:
                 return False
 
         self.curPiece = newPiece
@@ -335,9 +336,8 @@ class TetrixBoard(QtGui.QFrame):
                       0xCCCC66, 0xCC66CC, 0x66CCCC, 0xDAAA00]
 
         color = QtGui.QColor(colorTable[shape])
-        painter.fillRect(x + 1, y + 1,
-                         self.squareWidth() - 2, self.squareHeight() - 2,
-                         color)
+        painter.fillRect(x + 1, y + 1, self.squareWidth() - 2,
+                self.squareHeight() - 2, color)
 
         painter.setPen(color.lighter())
         painter.drawLine(x, y + self.squareHeight() - 1, x, y)
@@ -345,20 +345,9 @@ class TetrixBoard(QtGui.QFrame):
 
         painter.setPen(color.darker())
         painter.drawLine(x + 1, y + self.squareHeight() - 1,
-                         x + self.squareWidth() - 1, y + self.squareHeight() - 1)
-        painter.drawLine(x + self.squareWidth() - 1, y + self.squareHeight() - 1,
-                         x + self.squareWidth() - 1, y + 1)
-
-
-class TetrixShape(object):
-    NoShape = 0
-    ZShape = 1
-    SShape = 2
-    LineShape = 3
-    TShape = 4
-    SquareShape = 5
-    LShape = 6
-    MirroredLShape = 7
+                x + self.squareWidth() - 1, y + self.squareHeight() - 1)
+        painter.drawLine(x + self.squareWidth() - 1,
+                y + self.squareHeight() - 1, x + self.squareWidth() - 1, y + 1)
 
 
 class TetrixPiece(object):
@@ -375,9 +364,9 @@ class TetrixPiece(object):
 
     def __init__(self):
         self.coords = [[0,0] for _ in range(4)]
-        self.pieceShape = TetrixShape.NoShape
+        self.pieceShape = NoShape
 
-        self.setShape(TetrixShape.NoShape)
+        self.setShape(NoShape)
 
     def shape(self):
         return self.pieceShape
@@ -434,7 +423,7 @@ class TetrixPiece(object):
         return m
 
     def rotatedLeft(self):
-        if self.pieceShape == TetrixShape.SquareShape:
+        if self.pieceShape == SquareShape:
             return self
 
         result = TetrixPiece()
@@ -446,7 +435,7 @@ class TetrixPiece(object):
         return result
 
     def rotatedRight(self):
-        if self.pieceShape == TetrixShape.SquareShape:
+        if self.pieceShape == SquareShape:
             return self
 
         result = TetrixPiece()
@@ -459,6 +448,9 @@ class TetrixPiece(object):
 
 
 if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     window = TetrixWindow()
     window.show()

@@ -23,13 +23,15 @@
 ##
 #############################################################################
 
-import sys
 from PySide import QtCore, QtGui
 
 
 class SlidersGroup(QtGui.QGroupBox):
+
+    valueChanged = QtCore.Signal(int)
+
     def __init__(self, orientation, title, parent=None):
-        QtGui.QGroupBox.__init__(self, title, parent)
+        super(SlidersGroup, self).__init__(title, parent)
 
         self.slider = QtGui.QSlider(orientation)
         self.slider.setFocusPolicy(QtCore.Qt.StrongFocus)
@@ -43,14 +45,10 @@ class SlidersGroup(QtGui.QGroupBox):
         self.dial = QtGui.QDial()
         self.dial.setFocusPolicy(QtCore.Qt.StrongFocus)
 
-        self.connect(self.slider, QtCore.SIGNAL("valueChanged(int)"),
-                     self.scrollBar, QtCore.SLOT("setValue(int)"))
-        self.connect(self.scrollBar, QtCore.SIGNAL("valueChanged(int)"),
-                     self.dial, QtCore.SLOT("setValue(int)"))
-        self.connect(self.dial, QtCore.SIGNAL("valueChanged(int)"),
-                     self.slider, QtCore.SLOT("setValue(int)"))
-        self.connect(self.dial, QtCore.SIGNAL("valueChanged(int)"),
-                     self, QtCore.SIGNAL("valueChanged(int)"))
+        self.slider.valueChanged.connect(self.scrollBar.setValue)
+        self.scrollBar.valueChanged.connect(self.dial.setValue)
+        self.dial.valueChanged.connect(self.slider.setValue)
+        self.dial.valueChanged.connect(self.valueChanged)
 
         if orientation == QtCore.Qt.Horizontal:
             direction = QtGui.QBoxLayout.TopToBottom
@@ -61,25 +59,25 @@ class SlidersGroup(QtGui.QGroupBox):
         slidersLayout.addWidget(self.slider)
         slidersLayout.addWidget(self.scrollBar)
         slidersLayout.addWidget(self.dial)
-        self.setLayout(slidersLayout)
+        self.setLayout(slidersLayout)    
 
-    def setValue(self, value):
-        self.slider.setValue(value)
+    def setValue(self, value):    
+        self.slider.setValue(value)    
 
-    def setMinimum(self, value):
+    def setMinimum(self, value):    
         self.slider.setMinimum(value)
         self.scrollBar.setMinimum(value)
-        self.dial.setMinimum(value)
+        self.dial.setMinimum(value)    
 
-    def setMaximum(self, value):
+    def setMaximum(self, value):    
         self.slider.setMaximum(value)
         self.scrollBar.setMaximum(value)
-        self.dial.setMaximum(value)
+        self.dial.setMaximum(value)    
 
     def invertAppearance(self, invert):
         self.slider.setInvertedAppearance(invert)
         self.scrollBar.setInvertedAppearance(invert)
-        self.dial.setInvertedAppearance(invert)
+        self.dial.setInvertedAppearance(invert)    
 
     def invertKeyBindings(self, invert):
         self.slider.setInvertedControls(invert)
@@ -87,25 +85,23 @@ class SlidersGroup(QtGui.QGroupBox):
         self.dial.setInvertedControls(invert)
 
 
-class Sliders(QtGui.QWidget):
-    def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+class Window(QtGui.QWidget):
+    def __init__(self):
+        super(Window, self).__init__()
 
-        self.horizontalSliders = SlidersGroup(QtCore.Qt.Horizontal, self.tr("Horizontal"))
-        self.verticalSliders = SlidersGroup(QtCore.Qt.Vertical, self.tr("Vertical"))
+        self.horizontalSliders = SlidersGroup(QtCore.Qt.Horizontal,
+                "Horizontal")
+        self.verticalSliders = SlidersGroup(QtCore.Qt.Vertical, "Vertical")
 
         self.stackedWidget = QtGui.QStackedWidget()
         self.stackedWidget.addWidget(self.horizontalSliders)
         self.stackedWidget.addWidget(self.verticalSliders)
 
-        self.createControls(self.tr("Controls"))
+        self.createControls("Controls")
 
-        self.connect(self.horizontalSliders, QtCore.SIGNAL("valueChanged(int)"),
-                     self.verticalSliders.setValue)
-        self.connect(self.verticalSliders, QtCore.SIGNAL("valueChanged(int)"),
-                     self.valueSpinBox, QtCore.SLOT("setValue(int)"))
-        self.connect(self.valueSpinBox, QtCore.SIGNAL("valueChanged(int)"),
-                     self.horizontalSliders.setValue)
+        self.horizontalSliders.valueChanged.connect(self.verticalSliders.setValue)
+        self.verticalSliders.valueChanged.connect(self.valueSpinBox.setValue)
+        self.valueSpinBox.valueChanged.connect(self.horizontalSliders.setValue)
 
         layout = QtGui.QHBoxLayout()
         layout.addWidget(self.controlsGroup)
@@ -116,17 +112,17 @@ class Sliders(QtGui.QWidget):
         self.maximumSpinBox.setValue(20)
         self.valueSpinBox.setValue(5)
 
-        self.setWindowTitle(self.tr("Sliders"))
+        self.setWindowTitle("Sliders")
 
     def createControls(self, title):
         self.controlsGroup = QtGui.QGroupBox(title)
 
-        minimumLabel = QtGui.QLabel(self.tr("Minimum value:"))
-        maximumLabel = QtGui.QLabel(self.tr("Maximum value:"))
-        valueLabel = QtGui.QLabel(self.tr("Current value:"))
+        minimumLabel = QtGui.QLabel("Minimum value:")
+        maximumLabel = QtGui.QLabel("Maximum value:")
+        valueLabel = QtGui.QLabel("Current value:")
 
-        invertedAppearance = QtGui.QCheckBox(self.tr("Inverted appearance"))
-        invertedKeyBindings = QtGui.QCheckBox(self.tr("Inverted key bindings"))
+        invertedAppearance = QtGui.QCheckBox("Inverted appearance")
+        invertedKeyBindings = QtGui.QCheckBox("Inverted key bindings")
 
         self.minimumSpinBox = QtGui.QSpinBox()
         self.minimumSpinBox.setRange(-100, 100)
@@ -141,27 +137,18 @@ class Sliders(QtGui.QWidget):
         self.valueSpinBox.setSingleStep(1)
 
         orientationCombo = QtGui.QComboBox()
-        orientationCombo.addItem(self.tr("Horizontal slider-like widgets"))
-        orientationCombo.addItem(self.tr("Vertical slider-like widgets"))
+        orientationCombo.addItem("Horizontal slider-like widgets")
+        orientationCombo.addItem("Vertical slider-like widgets")
 
-        self.connect(orientationCombo, QtCore.SIGNAL("activated(int)"),
-                     self.stackedWidget, QtCore.SLOT("setCurrentIndex(int)"))
-        self.connect(self.minimumSpinBox, QtCore.SIGNAL("valueChanged(int)"),
-                     self.horizontalSliders.setMinimum)
-        self.connect(self.minimumSpinBox, QtCore.SIGNAL("valueChanged(int)"),
-                     self.verticalSliders.setMinimum)
-        self.connect(self.maximumSpinBox, QtCore.SIGNAL("valueChanged(int)"),
-                     self.horizontalSliders.setMaximum)
-        self.connect(self.maximumSpinBox, QtCore.SIGNAL("valueChanged(int)"),
-                     self.verticalSliders.setMaximum)
-        self.connect(invertedAppearance, QtCore.SIGNAL("toggled(bool)"),
-                     self.horizontalSliders.invertAppearance)
-        self.connect(invertedAppearance, QtCore.SIGNAL("toggled(bool)"),
-                     self.verticalSliders.invertAppearance)
-        self.connect(invertedKeyBindings, QtCore.SIGNAL("toggled(bool)"),
-                     self.horizontalSliders.invertKeyBindings)
-        self.connect(invertedKeyBindings, QtCore.SIGNAL("toggled(bool)"),
-                     self.verticalSliders.invertKeyBindings)
+        orientationCombo.activated[int].connect(self.stackedWidget.setCurrentIndex)
+        self.minimumSpinBox.valueChanged.connect(self.horizontalSliders.setMinimum)
+        self.minimumSpinBox.valueChanged.connect(self.verticalSliders.setMinimum)
+        self.maximumSpinBox.valueChanged.connect(self.horizontalSliders.setMaximum)
+        self.maximumSpinBox.valueChanged.connect(self.verticalSliders.setMaximum)
+        invertedAppearance.toggled.connect(self.horizontalSliders.invertAppearance)
+        invertedAppearance.toggled.connect(self.verticalSliders.invertAppearance)
+        invertedKeyBindings.toggled.connect(self.horizontalSliders.invertKeyBindings)
+        invertedKeyBindings.toggled.connect(self.verticalSliders.invertKeyBindings)
 
         controlsLayout = QtGui.QGridLayout()
         controlsLayout.addWidget(minimumLabel, 0, 0)
@@ -176,8 +163,11 @@ class Sliders(QtGui.QWidget):
         self.controlsGroup.setLayout(controlsLayout)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
-    sliders = Sliders()
-    sliders.show()
+    window = Window()
+    window.show()
     sys.exit(app.exec_())

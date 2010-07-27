@@ -23,7 +23,6 @@
 ##
 #############################################################################
 
-import sys
 from PySide import QtCore, QtGui
 
 
@@ -43,14 +42,14 @@ class AnalogClock(QtGui.QWidget):
     hourColor = QtGui.QColor(127, 0, 127)
     minuteColor = QtGui.QColor(0, 127, 127, 191)
 
-    def __init__(self, parent = None):
-        QtGui.QWidget.__init__(self, parent)
+    def __init__(self, parent=None):
+        super(AnalogClock, self).__init__(parent)
 
         timer = QtCore.QTimer(self)
-        self.connect(timer, QtCore.SIGNAL("timeout()"), self, QtCore.SLOT("update()"))
+        timer.timeout.connect(self.update)
         timer.start(1000)
 
-        self.setWindowTitle(self.tr("Analog Clock"))
+        self.setWindowTitle("Analog Clock")
         self.resize(200, 200)
 
     def paintEvent(self, event):
@@ -92,7 +91,10 @@ class AnalogClock(QtGui.QWidget):
             painter.rotate(6.0)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     clock = AnalogClock()
     clock.show()

@@ -23,26 +23,25 @@
 ##
 #############################################################################
 
-import sys
 from PySide import QtCore, QtGui
 
 
-class WidgetGallery(QtGui.QWidget):
+class WidgetGallery(QtGui.QDialog):
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        super(WidgetGallery, self).__init__(parent)
 
         self.originalPalette = QtGui.QApplication.palette()
 
         styleComboBox = QtGui.QComboBox()
         styleComboBox.addItems(QtGui.QStyleFactory.keys())
 
-        styleLabel = QtGui.QLabel(self.tr("&Style:"))
+        styleLabel = QtGui.QLabel("&Style:")
         styleLabel.setBuddy(styleComboBox)
 
-        self.useStylePaletteCheckBox = QtGui.QCheckBox(self.tr("&Use style's standard palette"))
+        self.useStylePaletteCheckBox = QtGui.QCheckBox("&Use style's standard palette")
         self.useStylePaletteCheckBox.setChecked(True)
 
-        disableWidgetsCheckBox = QtGui.QCheckBox(self.tr("&Disable widgets"))
+        disableWidgetsCheckBox = QtGui.QCheckBox("&Disable widgets")
 
         self.createTopLeftGroupBox()
         self.createTopRightGroupBox()
@@ -50,12 +49,12 @@ class WidgetGallery(QtGui.QWidget):
         self.createBottomRightGroupBox()
         self.createProgressBar()
 
-        self.connect(styleComboBox, QtCore.SIGNAL("activated(const QString &)"), self.changeStyle)
-        self.connect(self.useStylePaletteCheckBox, QtCore.SIGNAL("toggled(bool)"), self.changePalette)
-        self.connect(disableWidgetsCheckBox, QtCore.SIGNAL("toggled(bool)"), self.topLeftGroupBox, QtCore.SLOT("setDisabled(bool)"))
-        self.connect(disableWidgetsCheckBox, QtCore.SIGNAL("toggled(bool)"), self.topRightGroupBox, QtCore.SLOT("setDisabled(bool)"))
-        self.connect(disableWidgetsCheckBox, QtCore.SIGNAL("toggled(bool)"), self.bottomLeftTabWidget, QtCore.SLOT("setDisabled(bool)"))
-        self.connect(disableWidgetsCheckBox, QtCore.SIGNAL("toggled(bool)"), self.bottomRightGroupBox, QtCore.SLOT("setDisabled(bool)"))
+        styleComboBox.activated["QString"].connect(self.changeStyle)
+        self.useStylePaletteCheckBox.toggled.connect(self.changePalette)
+        disableWidgetsCheckBox.toggled.connect(self.topLeftGroupBox.setDisabled)
+        disableWidgetsCheckBox.toggled.connect(self.topRightGroupBox.setDisabled)
+        disableWidgetsCheckBox.toggled.connect(self.bottomLeftTabWidget.setDisabled)
+        disableWidgetsCheckBox.toggled.connect(self.bottomRightGroupBox.setDisabled)
 
         topLayout = QtGui.QHBoxLayout()
         topLayout.addWidget(styleLabel)
@@ -77,8 +76,8 @@ class WidgetGallery(QtGui.QWidget):
         mainLayout.setColumnStretch(1, 1)
         self.setLayout(mainLayout)
 
-        self.setWindowTitle(self.tr("Styles"))
-        self.changeStyle("Windows")
+        self.setWindowTitle("Styles")
+        self.changeStyle('Windows')
 
     def changeStyle(self, styleName):
         QtGui.QApplication.setStyle(QtGui.QStyleFactory.create(styleName))
@@ -96,14 +95,14 @@ class WidgetGallery(QtGui.QWidget):
         self.progressBar.setValue(curVal + (maxVal - curVal) / 100)
 
     def createTopLeftGroupBox(self):
-        self.topLeftGroupBox = QtGui.QGroupBox(self.tr("Group 1"))
+        self.topLeftGroupBox = QtGui.QGroupBox("Group 1")
 
-        radioButton1 = QtGui.QRadioButton(self.tr("Radio button 1"))
-        radioButton2 = QtGui.QRadioButton(self.tr("Radio button 2"))
-        radioButton3 = QtGui.QRadioButton(self.tr("Radio button 3"))
+        radioButton1 = QtGui.QRadioButton("Radio button 1")
+        radioButton2 = QtGui.QRadioButton("Radio button 2")
+        radioButton3 = QtGui.QRadioButton("Radio button 3")
         radioButton1.setChecked(True)
 
-        checkBox = QtGui.QCheckBox(self.tr("Tri-state check box"))
+        checkBox = QtGui.QCheckBox("Tri-state check box")
         checkBox.setTristate(True)
         checkBox.setCheckState(QtCore.Qt.PartiallyChecked)
 
@@ -113,19 +112,19 @@ class WidgetGallery(QtGui.QWidget):
         layout.addWidget(radioButton3)
         layout.addWidget(checkBox)
         layout.addStretch(1)
-        self.topLeftGroupBox.setLayout(layout)
+        self.topLeftGroupBox.setLayout(layout)    
 
     def createTopRightGroupBox(self):
-        self.topRightGroupBox = QtGui.QGroupBox(self.tr("Group 2"))
+        self.topRightGroupBox = QtGui.QGroupBox("Group 2")
 
-        defaultPushButton = QtGui.QPushButton(self.tr("Default Push Button"))
+        defaultPushButton = QtGui.QPushButton("Default Push Button")
         defaultPushButton.setDefault(True)
 
-        togglePushButton = QtGui.QPushButton(self.tr("Toggle Push Button"))
+        togglePushButton = QtGui.QPushButton("Toggle Push Button")
         togglePushButton.setCheckable(True)
         togglePushButton.setChecked(True)
 
-        flatPushButton = QtGui.QPushButton(self.tr("Flat Push Button"))
+        flatPushButton = QtGui.QPushButton("Flat Push Button")
         flatPushButton.setFlat(True)
 
         layout = QtGui.QVBoxLayout()
@@ -151,27 +150,27 @@ class WidgetGallery(QtGui.QWidget):
         tab2 = QtGui.QWidget()
         textEdit = QtGui.QTextEdit()
 
-        textEdit.setPlainText(self.tr("Twinkle, twinkle, little star,\n"
-                                      "How I wonder what you are.\n"
-                                      "Up above the world so high,\n"
-                                      "Like a diamond in the sky.\n"
-                                      "Twinkle, twinkle, little star,\n"
-                                      "How I wonder what you are!\n"))
+        textEdit.setPlainText("Twinkle, twinkle, little star,\n"
+                              "How I wonder what you are.\n" 
+                              "Up above the world so high,\n"
+                              "Like a diamond in the sky.\n"
+                              "Twinkle, twinkle, little star,\n" 
+                              "How I wonder what you are!\n")
 
         tab2hbox = QtGui.QHBoxLayout()
-        tab2.setLayout(tab2hbox)
         tab2hbox.setMargin(5)
         tab2hbox.addWidget(textEdit)
+        tab2.setLayout(tab2hbox)
 
-        self.bottomLeftTabWidget.addTab(tab1, self.tr("&Table"))
-        self.bottomLeftTabWidget.addTab(tab2, self.tr("Text &Edit"))
+        self.bottomLeftTabWidget.addTab(tab1, "&Table")
+        self.bottomLeftTabWidget.addTab(tab2, "Text &Edit")
 
     def createBottomRightGroupBox(self):
-        self.bottomRightGroupBox = QtGui.QGroupBox(self.tr("Group 3"))
+        self.bottomRightGroupBox = QtGui.QGroupBox("Group 3")
         self.bottomRightGroupBox.setCheckable(True)
         self.bottomRightGroupBox.setChecked(True)
 
-        lineEdit = QtGui.QLineEdit("s3cRe7")
+        lineEdit = QtGui.QLineEdit('s3cRe7')
         lineEdit.setEchoMode(QtGui.QLineEdit.Password)
 
         spinBox = QtGui.QSpinBox(self.bottomRightGroupBox)
@@ -183,7 +182,8 @@ class WidgetGallery(QtGui.QWidget):
         slider = QtGui.QSlider(QtCore.Qt.Horizontal, self.bottomRightGroupBox)
         slider.setValue(40)
 
-        scrollBar = QtGui.QScrollBar(QtCore.Qt.Horizontal, self.bottomRightGroupBox)
+        scrollBar = QtGui.QScrollBar(QtCore.Qt.Horizontal,
+                self.bottomRightGroupBox)
         scrollBar.setValue(60)
 
         dial = QtGui.QDial(self.bottomRightGroupBox)
@@ -206,12 +206,15 @@ class WidgetGallery(QtGui.QWidget):
         self.progressBar.setValue(0)
 
         timer = QtCore.QTimer(self)
-        self.connect(timer, QtCore.SIGNAL("timeout()"), self.advanceProgressBar)
+        timer.timeout.connect(self.advanceProgressBar)
         timer.start(1000)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     gallery = WidgetGallery()
     gallery.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec_()) 

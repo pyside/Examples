@@ -23,13 +23,12 @@
 ##
 #############################################################################
 
-import sys
 from PySide import QtCore, QtGui
 
 
 class Window(QtGui.QWidget):
-    def __init__(self, parent = None):
-        QtGui.QWidget.__init__(self, parent)
+    def __init__(self, parent=None):
+        super(Window, self).__init__(parent)
 
         grid = QtGui.QGridLayout()
         grid.addWidget(self.createFirstExclusiveGroup(), 0, 0)
@@ -38,15 +37,15 @@ class Window(QtGui.QWidget):
         grid.addWidget(self.createPushButtonGroup(), 1, 1)
         self.setLayout(grid)
 
-        self.setWindowTitle(self.tr("Group Box"))
+        self.setWindowTitle("Group Box")
         self.resize(480, 320)
 
     def createFirstExclusiveGroup(self):
-        groupBox = QtGui.QGroupBox(self.tr("Exclusive Radio Buttons"))
+        groupBox = QtGui.QGroupBox("Exclusive Radio Buttons")
 
-        radio1 = QtGui.QRadioButton(self.tr("&Radio button 1"))
-        radio2 = QtGui.QRadioButton(self.tr("R&adio button 2"))
-        radio3 = QtGui.QRadioButton(self.tr("Ra&dio button 3"))
+        radio1 = QtGui.QRadioButton("&Radio button 1")
+        radio2 = QtGui.QRadioButton("R&adio button 2")
+        radio3 = QtGui.QRadioButton("Ra&dio button 3")
 
         radio1.setChecked(True)
 
@@ -60,15 +59,15 @@ class Window(QtGui.QWidget):
         return groupBox
 
     def createSecondExclusiveGroup(self):
-        groupBox = QtGui.QGroupBox(self.tr("E&xclusive Radio Buttons"))
+        groupBox = QtGui.QGroupBox("E&xclusive Radio Buttons")
         groupBox.setCheckable(True)
         groupBox.setChecked(False)
 
-        radio1 = QtGui.QRadioButton(self.tr("Rad&io button 1"))
-        radio2 = QtGui.QRadioButton(self.tr("Radi&o button 2"))
-        radio3 = QtGui.QRadioButton(self.tr("Radio &button 3"))
+        radio1 = QtGui.QRadioButton("Rad&io button 1")
+        radio2 = QtGui.QRadioButton("Radi&o button 2")
+        radio3 = QtGui.QRadioButton("Radio &button 3")
         radio1.setChecked(True)
-        checkBox = QtGui.QCheckBox(self.tr("Ind&ependent checkbox"))
+        checkBox = QtGui.QCheckBox("Ind&ependent checkbox")
         checkBox.setChecked(True)
 
         vbox = QtGui.QVBoxLayout()
@@ -82,13 +81,13 @@ class Window(QtGui.QWidget):
         return groupBox
 
     def createNonExclusiveGroup(self):
-        groupBox = QtGui.QGroupBox(self.tr("Non-Exclusive Checkboxes"))
+        groupBox = QtGui.QGroupBox("Non-Exclusive Checkboxes")
         groupBox.setFlat(True)
 
-        checkBox1 = QtGui.QCheckBox(self.tr("&Checkbox 1"))
-        checkBox2 = QtGui.QCheckBox(self.tr("C&heckbox 2"))
+        checkBox1 = QtGui.QCheckBox("&Checkbox 1")
+        checkBox2 = QtGui.QCheckBox("C&heckbox 2")
         checkBox2.setChecked(True)
-        tristateBox = QtGui.QCheckBox(self.tr("Tri-&state button"))
+        tristateBox = QtGui.QCheckBox("Tri-&state button")
         tristateBox.setTristate(True)
         tristateBox.setCheckState(QtCore.Qt.PartiallyChecked)
 
@@ -102,24 +101,31 @@ class Window(QtGui.QWidget):
         return groupBox
 
     def createPushButtonGroup(self):
-        groupBox = QtGui.QGroupBox(self.tr("&Push Buttons"))
+        groupBox = QtGui.QGroupBox("&Push Buttons")
         groupBox.setCheckable(True)
         groupBox.setChecked(True)
 
-        pushButton = QtGui.QPushButton(self.tr("&Normal Button"))
-        toggleButton = QtGui.QPushButton(self.tr("&Toggle Button"))
+        pushButton = QtGui.QPushButton("&Normal Button")
+        toggleButton = QtGui.QPushButton("&Toggle Button")
         toggleButton.setCheckable(True)
         toggleButton.setChecked(True)
-        flatButton = QtGui.QPushButton(self.tr("&Flat Button"))
+        flatButton = QtGui.QPushButton("&Flat Button")
         flatButton.setFlat(True)
 
-        popupButton = QtGui.QPushButton(self.tr("Pop&up Button"))
+        popupButton = QtGui.QPushButton("Pop&up Button")
         menu = QtGui.QMenu(self)
-        menu.addAction(self.tr("&First Item"))
-        menu.addAction(self.tr("&Second Item"))
-        menu.addAction(self.tr("&Third Item"))
-        menu.addAction(self.tr("F&ourth Item"))
+        menu.addAction("&First Item")
+        menu.addAction("&Second Item")
+        menu.addAction("&Third Item")
+        menu.addAction("F&ourth Item")
         popupButton.setMenu(menu)
+
+        newAction = menu.addAction("Submenu")
+        subMenu = QtGui.QMenu("Popup Submenu", self)
+        subMenu.addAction("Item 1")
+        subMenu.addAction("Item 2")
+        subMenu.addAction("Item 3")
+        newAction.setMenu(subMenu)
 
         vbox = QtGui.QVBoxLayout()
         vbox.addWidget(pushButton)
@@ -132,7 +138,10 @@ class Window(QtGui.QWidget):
         return groupBox
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     clock = Window()
     clock.show()

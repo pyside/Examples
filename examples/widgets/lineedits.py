@@ -23,75 +23,70 @@
 ##
 #############################################################################
 
-import sys
 from PySide import QtCore, QtGui
 
 
 class Window(QtGui.QWidget):
-    def __init__(self, parent = None):
-        QtGui.QWidget.__init__(self, parent)
+    def __init__(self):
+        super(Window, self).__init__()
 
-        echoGroup = QtGui.QGroupBox(self.tr("Echo"))
+        echoGroup = QtGui.QGroupBox("Echo")
 
-        echoLabel = QtGui.QLabel(self.tr("Mode:"))
+        echoLabel = QtGui.QLabel("Mode:")
         echoComboBox = QtGui.QComboBox()
-        echoComboBox.addItem(self.tr("Normal"))
-        echoComboBox.addItem(self.tr("Password"))
-        echoComboBox.addItem(self.tr("No Echo"))
+        echoComboBox.addItem("Normal")
+        echoComboBox.addItem("Password")
+        echoComboBox.addItem("PasswordEchoOnEdit")
+        echoComboBox.addItem("No Echo")
 
         self.echoLineEdit = QtGui.QLineEdit()
         self.echoLineEdit.setFocus()
 
-        validatorGroup = QtGui.QGroupBox(self.tr("Validator"))
+        validatorGroup = QtGui.QGroupBox("Validator")
 
-        validatorLabel = QtGui.QLabel(self.tr("Type:"))
+        validatorLabel = QtGui.QLabel("Type:")
         validatorComboBox = QtGui.QComboBox()
-        validatorComboBox.addItem(self.tr("No validator"))
-        validatorComboBox.addItem(self.tr("Integer validator"))
-        validatorComboBox.addItem(self.tr("Double validator"))
+        validatorComboBox.addItem("No validator")
+        validatorComboBox.addItem("Integer validator")
+        validatorComboBox.addItem("Double validator")
 
         self.validatorLineEdit = QtGui.QLineEdit()
 
-        alignmentGroup = QtGui.QGroupBox(self.tr("Alignment"))
+        alignmentGroup = QtGui.QGroupBox("Alignment")
 
-        alignmentLabel = QtGui.QLabel(self.tr("Type:"))
+        alignmentLabel = QtGui.QLabel("Type:")
         alignmentComboBox = QtGui.QComboBox()
-        alignmentComboBox.addItem(self.tr("Left"))
-        alignmentComboBox.addItem(self.tr("Centered"))
-        alignmentComboBox.addItem(self.tr("Right"))
+        alignmentComboBox.addItem("Left")
+        alignmentComboBox.addItem("Centered")
+        alignmentComboBox.addItem("Right")
 
         self.alignmentLineEdit = QtGui.QLineEdit()
 
-        inputMaskGroup = QtGui.QGroupBox(self.tr("Input mask"))
+        inputMaskGroup = QtGui.QGroupBox("Input mask")
 
-        inputMaskLabel = QtGui.QLabel(self.tr("Type:"))
+        inputMaskLabel = QtGui.QLabel("Type:")
         inputMaskComboBox = QtGui.QComboBox()
-        inputMaskComboBox.addItem(self.tr("No mask"))
-        inputMaskComboBox.addItem(self.tr("Phone number"))
-        inputMaskComboBox.addItem(self.tr("ISO date"))
-        inputMaskComboBox.addItem(self.tr("License key"))
+        inputMaskComboBox.addItem("No mask")
+        inputMaskComboBox.addItem("Phone number")
+        inputMaskComboBox.addItem("ISO date")
+        inputMaskComboBox.addItem("License key")
 
         self.inputMaskLineEdit = QtGui.QLineEdit()
 
-        accessGroup = QtGui.QGroupBox(self.tr("Access"))
+        accessGroup = QtGui.QGroupBox("Access")
 
-        accessLabel = QtGui.QLabel(self.tr("Read-only:"))
+        accessLabel = QtGui.QLabel("Read-only:")
         accessComboBox = QtGui.QComboBox()
-        accessComboBox.addItem(self.tr("False"))
-        accessComboBox.addItem(self.tr("True"))
+        accessComboBox.addItem("False")
+        accessComboBox.addItem("True")
 
         self.accessLineEdit = QtGui.QLineEdit()
 
-        self.connect(echoComboBox, QtCore.SIGNAL("activated(int)"),
-                     self.slotEchoChanged)
-        self.connect(validatorComboBox, QtCore.SIGNAL("activated(int)"),
-                     self.slotValidatorChanged)
-        self.connect(alignmentComboBox, QtCore.SIGNAL("activated(int)"),
-                     self.slotAlignmentChanged)
-        self.connect(inputMaskComboBox, QtCore.SIGNAL("activated(int)"),
-                     self.slotInputMaskChanged)
-        self.connect(accessComboBox, QtCore.SIGNAL("activated(int)"),
-                     self.slotAccessChanged)
+        echoComboBox.activated[int].connect(self.echoChanged)
+        validatorComboBox.activated[int].connect(self.validatorChanged)
+        alignmentComboBox.activated[int].connect(self.alignmentChanged)
+        inputMaskComboBox.activated[int].connect(self.inputMaskChanged)
+        accessComboBox.activated[int].connect(self.accessChanged)
 
         echoLayout = QtGui.QGridLayout()
         echoLayout.addWidget(echoLabel, 0, 0)
@@ -123,25 +118,27 @@ class Window(QtGui.QWidget):
         accessLayout.addWidget(self.accessLineEdit, 1, 0, 1, 2)
         accessGroup.setLayout(accessLayout)
 
-        layout = QtGui.QVBoxLayout()
-        layout.addWidget(echoGroup)
-        layout.addWidget(validatorGroup)
-        layout.addWidget(alignmentGroup)
-        layout.addWidget(inputMaskGroup)
-        layout.addWidget(accessGroup)
+        layout = QtGui.QGridLayout()
+        layout.addWidget(echoGroup, 0, 0)
+        layout.addWidget(validatorGroup, 1, 0)
+        layout.addWidget(alignmentGroup, 2, 0)
+        layout.addWidget(inputMaskGroup, 0, 1)
+        layout.addWidget(accessGroup, 1, 1)
         self.setLayout(layout)
 
-        self.setWindowTitle(self.tr("Line Edits"))
+        self.setWindowTitle("Line Edits")
 
-    def slotEchoChanged(self, index):
+    def echoChanged(self, index):
         if index == 0:
             self.echoLineEdit.setEchoMode(QtGui.QLineEdit.Normal)
         elif index == 1:
             self.echoLineEdit.setEchoMode(QtGui.QLineEdit.Password)
         elif index == 2:
+            self.echoLineEdit.setEchoMode(QtGui.QLineEdit.PasswordEchoOnEdit)
+        elif index == 3:
     	    self.echoLineEdit.setEchoMode(QtGui.QLineEdit.NoEcho)
 
-    def slotValidatorChanged(self, index):
+    def validatorChanged(self, index):
         if index == 0:
             self.validatorLineEdit.setValidator(0)
         elif index == 1:
@@ -149,9 +146,9 @@ class Window(QtGui.QWidget):
         elif index == 2:
             self.validatorLineEdit.setValidator(QtGui.QDoubleValidator(-999.0, 999.0, 2, self.validatorLineEdit))
 
-        self.validatorLineEdit.setText("")
+        self.validatorLineEdit.clear()
 
-    def slotAlignmentChanged(self, index):
+    def alignmentChanged(self, index):
         if index == 0:
             self.alignmentLineEdit.setAlignment(QtCore.Qt.AlignLeft)
         elif index == 1:
@@ -159,26 +156,29 @@ class Window(QtGui.QWidget):
         elif index == 2:
     	    self.alignmentLineEdit.setAlignment(QtCore.Qt.AlignRight)
 
-    def slotInputMaskChanged(self, index):
+    def inputMaskChanged(self, index):
         if index == 0:
-            self.inputMaskLineEdit.setInputMask(QtCore.QString())
+            self.inputMaskLineEdit.setInputMask('')
         elif index == 1:
-            self.inputMaskLineEdit.setInputMask("+99 99 99 99 99;_")
+            self.inputMaskLineEdit.setInputMask('+99 99 99 99 99;_')
         elif index == 2:
-            self.inputMaskLineEdit.setInputMask("0000-00-00")
-            self.inputMaskLineEdit.setText("00000000")
+            self.inputMaskLineEdit.setInputMask('0000-00-00')
+            self.inputMaskLineEdit.setText('00000000')
             self.inputMaskLineEdit.setCursorPosition(0)
         elif index == 3:
-            self.inputMaskLineEdit.setInputMask(">AAAAA-AAAAA-AAAAA-AAAAA-AAAAA;#")
+            self.inputMaskLineEdit.setInputMask('>AAAAA-AAAAA-AAAAA-AAAAA-AAAAA;#')
 
-    def slotAccessChanged(self, index):
+    def accessChanged(self, index):
         if index == 0:
             self.accessLineEdit.setReadOnly(False)
         elif index == 1:
             self.accessLineEdit.setReadOnly(True)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     window = Window()
     window.show()

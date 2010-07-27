@@ -23,165 +23,166 @@
 ##
 #############################################################################
 
-import sys
-from PySide import QtCore, QtGui
-
-import movie_rc
+from PyQt4 import QtCore, QtGui
 
 
 class MoviePlayer(QtGui.QWidget):
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        super(MoviePlayer, self).__init__(parent)
 
-        self.movieScreen = QtGui.QLabel()
-        self.movieScreen.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        self.movieScreen.setBackgroundRole(QtGui.QPalette.Base)
-        self.movieScreen.setText(self.tr("Use the Eject button to select a movie."))
-        self.movieScreen.setAlignment(QtCore.Qt.AlignCenter)
-        self.movieScreen.setWordWrap(True)
+        self.movie = QtGui.QMovie(self)
+        self.movie.setCacheMode(QtGui.QMovie.CacheAll)
 
-        self.currentMovieDirectory = "movies"
+        self.movieLabel = QtGui.QLabel("No movie loaded")
+        self.movieLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.movieLabel.setSizePolicy(QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
+        self.movieLabel.setBackgroundRole(QtGui.QPalette.Dark)
+        self.movieLabel.setAutoFillBackground(True)
 
-        self.createSliders()
-        self.createCheckBox()
+        self.currentMovieDirectory = 'movies'
+
+        self.createControls()
         self.createButtons()
 
+        self.movie.frameChanged.connect(self.updateFrameSlider)
+        self.movie.stateChanged.connect(self.updateButtons)
+        self.fitCheckBox.clicked.connect(self.fitToWindow)
+        self.frameSlider.valueChanged.connect(self.goToFrame)
+        self.speedSpinBox.valueChanged.connect(self.movie.setSpeed)
+
         mainLayout = QtGui.QVBoxLayout()
-        mainLayout.addWidget(self.movieScreen)
-        mainLayout.addWidget(self.scaleMovieCheckbox)
-        mainLayout.addLayout(self.slidersLayout)
+        mainLayout.addWidget(self.movieLabel)
+        mainLayout.addLayout(self.controlsLayout)
         mainLayout.addLayout(self.buttonsLayout)
         self.setLayout(mainLayout)
 
-        self.speedSlider.setDisabled(True)
-        self.scaleMovieCheckbox.setDisabled(True)
-        self.playButton.setDisabled(True)
-        self.stopButton.setDisabled(True)
+        self.updateFrameSlider()
+        self.updateButtons()
 
+        self.setWindowTitle("Movie Player")
         self.resize(400, 400)
-        self.setWindowTitle(self.tr("Movie Player"))
 
-    def browse(self):
-        fileName = QtGui.QFileDialog.getOpenFileName(self, self.tr("Select a Movie"), self.currentMovieDirectory, self.tr("Movies (*.gif *.mng)"))
+    def open(self):
+        fileName = QtGui.QFileDialog.getOpenFileName(self, "Open a Movie",
+                self.currentMovieDirectory)
 
-        if not fileName.isEmpty():
-            index = fileName.length() - fileName.lastIndexOf("/")
+        if fileName:
+            self.openFile(fileName)
 
-            if index >= 0:
-                currentMovieDirectory = fileName
-                currentMovieDirectory.chop(index)
+    def openFile(self, fileName):
+        self.currentMovieDirectory = QtCore.QFileInfo(fileName).path()
 
-            if self.movieScreen.movie() and self.movieScreen.movie().state() != QtGui.QMovie.NotRunning:
-                self.movieScreen.movie().stop()
+        self.movie.stop()
+        self.movieLabel.setMovie(self.movie)
+        self.movie.setFileName(fileName)
+        self.movie.start()
 
-            movie = QtGui.QMovie("trolltech.gif", QtCore.QByteArray(), self)
-            movie.setCacheMode(QtGui.QMovie.CacheAll)
-
-            movie.setSpeed(100)
-            self.speedSlider.setValue(100)
-            self.connect(self.speedSlider, QtCore.SIGNAL("valueChanged(int)"), movie, QtCore.SLOT("setSpeed(int)"))
-
-            self.movieScreen.setMovie(movie)
-
-            supportsFrames = (movie.frameCount() > 0)
-
-            if supportsFrames:
-                self.frameSlider.setMaximum(movie.frameCount()-1)
-                self.connect(movie, QtCore.SIGNAL("frameChanged(int)"), self.frameSlider, QtCore.SLOT("setValue(int)"))
-
-            self.frameSlider.setVisible(supportsFrames)
-            self.frameLabel.setVisible(supportsFrames)
-
-            self.speedSlider.setDisabled(False)
-            self.scaleMovieCheckbox.setDisabled(False)
-            self.playButton.setDisabled(False)
-            self.stopButton.setDisabled(False)
-
-            movie.start()
-
-    def start(self):
-        movie = self.movieScreen.movie()
-
-        if movie.state() == QtGui.QMovie.NotRunning:
-            movie.start()
-        else:
-            movie.setPaused(not (movie.state() == QtGui.QMovie.Paused))
-
-    def stop(self):
-        movie = self.movieScreen.movie()
-
-        if not (movie.state() == QtGui.QMovie.NotRunning):
-            movie.stop()
+        self.updateFrameSlider();
+        self.updateButtons();
 
     def goToFrame(self, frame):
-        self.movieScreen.movie().jumpToFrame(frame)
+        self.movie.jumpToFrame(frame)
 
-    def scaleMovie(self):
-        self.movieScreen.setScaledContents(self.scaleMovieCheckbox.isChecked())
+    def fitToWindow(self):
+        self.movieLabel.setScaledContents(self.fitCheckBox.isChecked())
 
-    def createSliders(self):
+    def updateFrameSlider(self):
+        hasFrames = (self.movie.currentFrameNumber() >= 0)
+
+        if hasFrames:
+            if self.movie.frameCount() > 0:
+                self.frameSlider.setMaximum(self.movie.frameCount() - 1)
+            elif self.movie.currentFrameNumber() > self.frameSlider.maximum():
+                self.frameSlider.setMaximum(self.movie.currentFrameNumber())
+
+            self.frameSlider.setValue(self.movie.currentFrameNumber())
+        else:
+            self.frameSlider.setMaximum(0)
+
+        self.frameLabel.setEnabled(hasFrames)
+        self.frameSlider.setEnabled(hasFrames)
+
+    def updateButtons(self):
+        state = self.movie.state()
+
+        self.playButton.setEnabled(self.movie.isValid() and
+                self.movie.frameCount() != 1 and
+                state == QtGui.QMovie.NotRunning)
+        self.pauseButton.setEnabled(state != QtGui.QMovie.NotRunning)
+        self.pauseButton.setChecked(state == QtGui.QMovie.Paused)
+        self.stopButton.setEnabled(state != QtGui.QMovie.NotRunning)
+
+    def createControls(self):
+        self.fitCheckBox = QtGui.QCheckBox("Fit to Window")
+
+        self.frameLabel = QtGui.QLabel("Current frame:")
+
         self.frameSlider = QtGui.QSlider(QtCore.Qt.Horizontal)
         self.frameSlider.setTickPosition(QtGui.QSlider.TicksBelow)
-        self.frameSlider.setTickInterval(1)
-        self.connect(self.frameSlider, QtCore.SIGNAL("valueChanged(int)"), self.goToFrame)
-        self.frameSlider.setVisible(False)
+        self.frameSlider.setTickInterval(10)
 
-        self.frameLabel = QtGui.QLabel(self.tr("Jump to frame"))
-        self.frameLabel.setVisible(False)
+        speedLabel = QtGui.QLabel("Speed:")
 
-        self.speedSlider = QtGui.QSlider(QtCore.Qt.Horizontal)
-        self.speedSlider.setMaximum(1000)
-        self.speedSlider.setTickInterval(50)
-        self.speedSlider.setTickPosition(QtGui.QSlider.TicksBelow)
-        self.speedSlider.setMinimum(50)
+        self.speedSpinBox = QtGui.QSpinBox()
+        self.speedSpinBox.setRange(1, 9999)
+        self.speedSpinBox.setValue(100)
+        self.speedSpinBox.setSuffix("%")
 
-        speedLabel = QtGui.QLabel(self.tr("Set speed"))
-
-        self.slidersLayout = QtGui.QGridLayout()
-        self.slidersLayout.addWidget(self.frameLabel, 0, 0)
-        self.slidersLayout.addWidget(self.frameSlider, 0, 1)
-        self.slidersLayout.addWidget(speedLabel, 1, 0)
-        self.slidersLayout.addWidget(self.speedSlider, 1, 1)
-
-    def createCheckBox(self):
-        self.scaleMovieCheckbox = QtGui.QCheckBox(self.tr("Scale movie"))
-        self.connect(self.scaleMovieCheckbox, QtCore.SIGNAL("clicked()"), self.scaleMovie)
+        self.controlsLayout = QtGui.QGridLayout()
+        self.controlsLayout.addWidget(self.fitCheckBox, 0, 0, 1, 2)
+        self.controlsLayout.addWidget(self.frameLabel, 1, 0)
+        self.controlsLayout.addWidget(self.frameSlider, 1, 1, 1, 2)
+        self.controlsLayout.addWidget(speedLabel, 2, 0)
+        self.controlsLayout.addWidget(self.speedSpinBox, 2, 1)
 
     def createButtons(self):
-        self.browseButton = QtGui.QToolButton()
-        self.browseButton.setToolTip(self.tr("Eject/Open File..."))
-        self.browseButton.setIcon(QtGui.QIcon(":/icons/eject.png"))
-        self.browseButton.setIconSize(QtCore.QSize(32, 32))
-        self.connect(self.browseButton, QtCore.SIGNAL("clicked()"), self.browse)
+        iconSize = QtCore.QSize(36, 36)
+
+        openButton = QtGui.QToolButton()
+        openButton.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogOpenButton))
+        openButton.setIconSize(iconSize)
+        openButton.setToolTip("Open File")
+        openButton.clicked.connect(self.open)
 
         self.playButton = QtGui.QToolButton()
-        self.playButton.setToolTip(self.tr("Play/Pause"))
-        self.playButton.setIcon(QtGui.QIcon(":/icons/play-pause.png"))
-        self.playButton.setIconSize(QtCore.QSize(49, 32))
-        self.connect(self.playButton, QtCore.SIGNAL("clicked()"), self.start)
+        self.playButton.setIcon(self.style().standardIcon(QtGui.QStyle.SP_MediaPlay))
+        self.playButton.setIconSize(iconSize)
+        self.playButton.setToolTip("Play")
+        self.playButton.clicked.connect(self.movie.start)
+
+        self.pauseButton = QtGui.QToolButton()
+        self.pauseButton.setCheckable(True)
+        self.pauseButton.setIcon(self.style().standardIcon(QtGui.QStyle.SP_MediaPause))
+        self.pauseButton.setIconSize(iconSize)
+        self.pauseButton.setToolTip("Pause")
+        self.pauseButton.clicked.connect(self.movie.setPaused)
 
         self.stopButton = QtGui.QToolButton()
-        self.stopButton.setToolTip(self.tr("Stop"))
-        self.stopButton.setIcon(QtGui.QIcon(":/icons/stop.png"))
-        self.stopButton.setIconSize(QtCore.QSize(32, 32))
-        self.connect(self.stopButton, QtCore.SIGNAL("clicked()"), self.stop)
+        self.stopButton.setIcon(self.style().standardIcon(QtGui.QStyle.SP_MediaStop))
+        self.stopButton.setIconSize(iconSize)
+        self.stopButton.setToolTip("Stop")
+        self.stopButton.clicked.connect(self.movie.stop)
 
-        self.quitButton = QtGui.QToolButton()
-        self.quitButton.setToolTip(self.tr("Quit"))
-        self.quitButton.setIcon(QtGui.QIcon(":/icons/quit.png"))
-        self.quitButton.setIconSize(QtCore.QSize(32, 32))
-        self.connect(self.quitButton, QtCore.SIGNAL("clicked()"), self, QtCore.SLOT("close()"))
+        quitButton = QtGui.QToolButton()
+        quitButton.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogCloseButton))
+        quitButton.setIconSize(iconSize)
+        quitButton.setToolTip("Quit")
+        quitButton.clicked.connect(self.close)
 
         self.buttonsLayout = QtGui.QHBoxLayout()
         self.buttonsLayout.addStretch()
+        self.buttonsLayout.addWidget(openButton)
         self.buttonsLayout.addWidget(self.playButton)
+        self.buttonsLayout.addWidget(self.pauseButton)
         self.buttonsLayout.addWidget(self.stopButton)
-        self.buttonsLayout.addWidget(self.browseButton)
-        self.buttonsLayout.addWidget(self.quitButton)
+        self.buttonsLayout.addWidget(quitButton)
         self.buttonsLayout.addStretch()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     player = MoviePlayer()
     player.show()

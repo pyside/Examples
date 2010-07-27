@@ -23,7 +23,6 @@
 ##
 #############################################################################
 
-import sys
 from PySide import QtCore, QtGui
 
 
@@ -44,14 +43,20 @@ class ShapedClock(QtGui.QWidget):
     minuteColor = QtGui.QColor(0, 127, 127, 191)
 
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        super(ShapedClock, self).__init__(parent,
+                QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowSystemMenuHint)
 
         timer = QtCore.QTimer(self)
-        self.connect(timer, QtCore.SIGNAL("timeout()"), self, QtCore.SLOT("update()"))
+        timer.timeout.connect(self.update)
         timer.start(1000)
 
-        self.setMouseTracking(True)
-        self.setWindowFlags(self.windowFlags() | QtCore.Qt.FramelessWindowHint)
+        quitAction = QtGui.QAction("E&xit", self, shortcut="Ctrl+Q",
+                triggered=QtGui.qApp.quit)
+        self.addAction(quitAction)
+
+        self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self.setToolTip("Drag the clock with the left mouse button.\n"
+                "Use the right mouse button to open a context menu.")
         self.setWindowTitle(self.tr("Shaped Analog Clock"))
 
     def mousePressEvent(self, event):
@@ -113,7 +118,10 @@ class ShapedClock(QtGui.QWidget):
         return QtCore.QSize(100, 100)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     clock = ShapedClock()
     clock.show()
