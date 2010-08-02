@@ -22,6 +22,7 @@
 #############################################################################
 
 import sys
+import weakref
 import math
 from PySide import QtCore, QtGui
 
@@ -39,34 +40,34 @@ class Edge(QtGui.QGraphicsItem):
         self.sourcePoint = QtCore.QPointF()
         self.destPoint = QtCore.QPointF()
         self.setAcceptedMouseButtons(QtCore.Qt.NoButton)
-        self.source = sourceNode
-        self.dest = destNode
-        self.source.addEdge(self)
-        self.dest.addEdge(self)
+        self.source = weakref.ref(sourceNode)
+        self.dest = weakref.ref(destNode)
+        self.source().addEdge(self)
+        self.dest().addEdge(self)
         self.adjust()
 
     def type(self):
         return Edge.Type
 
     def sourceNode(self):
-        return self.source
+        return self.source()
 
     def setSourceNode(self, node):
-        self.source = node
+        self.source = weakref.ref(node)
         self.adjust()
 
     def destNode(self):
-        return self.dest
+        return self.dest()
 
     def setDestNode(self, node):
-        self.dest = node
+        self.dest = weakref.ref(node)
         self.adjust()
 
     def adjust(self):
-        if not self.source or not self.dest:
+        if not self.source() or not self.dest():
             return
 
-        line = QtCore.QLineF(self.mapFromItem(self.source, 0, 0), self.mapFromItem(self.dest, 0, 0))
+        line = QtCore.QLineF(self.mapFromItem(self.source(), 0, 0), self.mapFromItem(self.dest(), 0, 0))
         length = line.length()
 
         if length == 0.0:
@@ -79,7 +80,7 @@ class Edge(QtGui.QGraphicsItem):
         self.destPoint = line.p2() - edgeOffset
 
     def boundingRect(self):
-        if not self.source or not self.dest:
+        if not self.source() or not self.dest():
             return QtCore.QRectF()
 
         penWidth = 1
@@ -90,7 +91,7 @@ class Edge(QtGui.QGraphicsItem):
                                            self.destPoint.y() - self.sourcePoint.y())).normalized().adjusted(-extra, -extra, extra, extra)
 
     def paint(self, painter, option, widget):
-        if not self.source or not self.dest:
+        if not self.source() or not self.dest():
             return
 
         # Draw the line itself.
@@ -127,7 +128,7 @@ class Node(QtGui.QGraphicsItem):
     def __init__(self, graphWidget):
         QtGui.QGraphicsItem.__init__(self)
 
-        self.graph = graphWidget
+        self.graph = weakref.ref(graphWidget)
         self.edgeList = []
         self.newPos = QtCore.QPointF()
         self.setFlag(QtGui.QGraphicsItem.ItemIsMovable)
@@ -139,7 +140,7 @@ class Node(QtGui.QGraphicsItem):
         return Node.Type
 
     def addEdge(self, edge):
-        self.edgeList.append(edge)
+        self.edgeList.append(weakref.ref(edge))
         edge.adjust()
 
     def edges(self):
@@ -168,10 +169,10 @@ class Node(QtGui.QGraphicsItem):
         # Now subtract all forces pulling items together.
         weight = (len(self.edgeList) + 1) * 10.0
         for edge in self.edgeList:
-            if edge.sourceNode() is self:
-                pos = self.mapFromItem(edge.destNode(), 0, 0)
+            if edge().sourceNode() is self:
+                pos = self.mapFromItem(edge().destNode(), 0, 0)
             else:
-                pos = self.mapFromItem(edge.sourceNode(), 0, 0)
+                pos = self.mapFromItem(edge().sourceNode(), 0, 0)
             xvel += pos.x() / weight
             yvel += pos.y() / weight
 
@@ -222,8 +223,8 @@ class Node(QtGui.QGraphicsItem):
     def itemChange(self, change, value):
         if change == QtGui.QGraphicsItem.ItemPositionChange:
             for edge in self.edgeList:
-                edge.adjust()
-            self.graph.itemMoved()
+                edge().adjust()
+            self.graph().itemMoved()
 
         return QtGui.QGraphicsItem.itemChange(self, change, value)
 
@@ -321,6 +322,7 @@ class GraphWidget(QtGui.QGraphicsView):
                     item.setPos(-150 + QtCore.qrand() % 300, -150 + QtCore.qrand() % 300)
         else:
             QtGui.QGraphicsView.keyPressEvent(self, event)
+
 
     def timerEvent(self, event):
         nodes = [item for item in self.scene().items() if isinstance(item, Node)]

@@ -129,6 +129,7 @@ class SubscriberDialog(QDialog):
             self.subscriber.setPath(self.ui.basePath.text())
 
         self.subscriber.contentsChanged.connect(self.subscriberChanged)
+        self.subscriber.connectNotify("contentsChanged()")
         self.subscriberChanged()
 
     def subscriberChanged(self):

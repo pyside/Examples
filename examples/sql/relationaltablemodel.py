@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 
 ############################################################################
 ##
@@ -23,7 +23,6 @@
 ##
 ############################################################################
 
-import sys
 from PySide import QtCore, QtGui, QtSql
 
 import connection
@@ -31,62 +30,63 @@ import connection
 
 def initializeModel(model):
     model.setTable("employee")
-    
+
     model.setEditStrategy(QtSql.QSqlTableModel.OnManualSubmit)
-    model.setRelation(2, QtSql.QSqlRelation("city", "id", "name"))
-    model.setRelation(3, QtSql.QSqlRelation("country", "id", "name"))
-    
-    model.setHeaderData(0, QtCore.Qt.Horizontal, 
-                        QtCore.QObject.tr(model, "ID"))
-    model.setHeaderData(1, QtCore.Qt.Horizontal, 
-                        QtCore.QObject.tr(model, "Name"))
-    model.setHeaderData(2, QtCore.Qt.Horizontal, 
-                        QtCore.QObject.tr(model, "City"))
-    model.setHeaderData(3, QtCore.Qt.Horizontal, 
-                        QtCore.QObject.tr(model, "Country"))
+    model.setRelation(2, QtSql.QSqlRelation('city', 'id', 'name'))
+    model.setRelation(3, QtSql.QSqlRelation('country', 'id', 'name'))
+
+    model.setHeaderData(0, QtCore.Qt.Horizontal, "ID")
+    model.setHeaderData(1, QtCore.Qt.Horizontal, "Name")
+    model.setHeaderData(2, QtCore.Qt.Horizontal, "City")
+    model.setHeaderData(3, QtCore.Qt.Horizontal, "Country")
+
     model.select()
 
-    
+
 def createView(title, model):
     view = QtGui.QTableView()
     view.setModel(model)
     view.setItemDelegate(QtSql.QSqlRelationalDelegate(view))
     view.setWindowTitle(title)
+
     return view
 
-    
+
 def createRelationalTables():
     query = QtSql.QSqlQuery()
-    
+
     query.exec_("create table employee(id int, name varchar(20), city int, country int)")
     query.exec_("insert into employee values(1, 'Espen', 5000, 47)")
     query.exec_("insert into employee values(2, 'Harald', 80000, 49)")
     query.exec_("insert into employee values(3, 'Sam', 100, 41)")
-    
+
     query.exec_("create table city(id int, name varchar(20))")
     query.exec_("insert into city values(100, 'San Jose')")
     query.exec_("insert into city values(5000, 'Oslo')")
     query.exec_("insert into city values(80000, 'Munich')")
-    
+
     query.exec_("create table country(id int, name varchar(20))")
     query.exec_("insert into country values(41, 'USA')")
     query.exec_("insert into country values(47, 'Norway')")
     query.exec_("insert into country values(49, 'Germany')")
 
-    
-if __name__ == "__main__":
+
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     if not connection.createConnection():
         sys.exit(1)
-    
+
     createRelationalTables()
-    
+
     model = QtSql.QSqlRelationalTableModel()
-    
+
     initializeModel(model)
-    
-    view = createView(model.tr("Relational Table Model"), model)
-    
+
+    view = createView("Relational Table Model", model)
+
     view.show()
-    
+
     sys.exit(app.exec_())

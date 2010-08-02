@@ -327,16 +327,12 @@ class GameBoard(QtGui.QWidget):
         hitsLabel = QtGui.QLabel("HITS")
         shotsLeftLabel = QtGui.QLabel("SHOTS LEFT")
 
-        print "AAAA"
         QtGui.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Enter),
                         self, self.fire)
-        print "AAA3"
         QtGui.QShortcut(QtGui.QKeySequence(QtCore.Qt.Key_Return),
                         self, self.fire)
-        print "AAAA2"
         QtGui.QShortcut(QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_Q),
                         self, QtCore.SLOT("close()"))
-        print "DUUUDASSDD"
 
         topLayout = QtGui.QHBoxLayout()
         topLayout.addWidget(shoot)

@@ -14,33 +14,40 @@ class MainWindow(QtGui.QMainWindow):
         self.setupEditor()
 
         self.setCentralWidget(self.editor)
-        self.setWindowTitle(self.tr("Syntax Highlighter"))
+        self.setWindowTitle("Syntax Highlighter")
 
     def about(self):
-        QtGui.QMessageBox.about(self, self.tr("About Syntax Highlighter"),
-                self.tr("<p>The <b>Syntax Highlighter</b> example shows how "
-                        "to perform simple syntax highlighting by subclassing "
-                        "the QSyntaxHighlighter class and describing "
-                        "highlighting rules using regular expressions.</p>"))
+        QtGui.QMessageBox.about(self, "About Syntax Highlighter",
+                "<p>The <b>Syntax Highlighter</b> example shows how to " \
+                "perform simple syntax highlighting by subclassing the " \
+                "QSyntaxHighlighter class and describing highlighting " \
+                "rules using regular expressions.</p>")
 
     def newFile(self):
         self.editor.clear()
 
-    def openFile(self, path=QtCore.QString()):
-        fileName = QtCore.QString(path)
+    def openFile(self, path=None):
+        if not path:
+            path = QtGui.QFileDialog.getOpenFileName(self, "Open File",
+                    '', "C++ Files (*.cpp *.h)")
 
-        if fileName.isNull():
-            fileName = QtGui.QFileDialog.getOpenFileName(self,
-                    self.tr("Open File"), "", "C++ Files (*.cpp *.h)")
-
-        if not fileName.isEmpty():
-            inFile = QtCore.QFile(fileName)
+        if path:
+            inFile = QtCore.QFile(path[0])
             if inFile.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
-                self.editor.setPlainText(QtCore.QString(inFile.readAll()))
+                text = inFile.readAll()
+
+                try:
+                    # Python v3.
+                    text = str(text, encoding='ascii')
+                except TypeError:
+                    # Python v2.
+                    text = str(text)
+
+                self.editor.setPlainText(text)
 
     def setupEditor(self):
         font = QtGui.QFont()
-        font.setFamily("Courier")
+        font.setFamily('Courier')
         font.setFixedPitch(True)
         font.setPointSize(10)
 
@@ -50,22 +57,19 @@ class MainWindow(QtGui.QMainWindow):
         self.highlighter = Highlighter(self.editor.document())
 
     def setupFileMenu(self):
-        fileMenu = QtGui.QMenu(self.tr("&File"), self)
+        fileMenu = QtGui.QMenu("&File", self)
         self.menuBar().addMenu(fileMenu)
 
-        fileMenu.addAction(self.tr("&New..."), self.newFile,
-                QtGui.QKeySequence(self.tr("Ctrl+N", "File|New")))
-        fileMenu.addAction(self.tr("&Open..."), self.openFile,
-                QtGui.QKeySequence(self.tr("Ctrl+O", "File|Open")))
-        fileMenu.addAction(self.tr("E&xit"), QtGui.qApp.quit,
-                QtGui.QKeySequence(self.tr("Ctrl+Q", "File|Exit")))
+        fileMenu.addAction("&New...", self.newFile, "Ctrl+N")
+        fileMenu.addAction("&Open...", self.openFile, "Ctrl+O")
+        fileMenu.addAction("E&xit", QtGui.qApp.quit, "Ctrl+Q")
 
     def setupHelpMenu(self):
-        helpMenu = QtGui.QMenu(self.tr("&Help"), self)
+        helpMenu = QtGui.QMenu("&Help", self)
         self.menuBar().addMenu(helpMenu)
 
-        helpMenu.addAction(self.tr("&About"), self.about)
-        helpMenu.addAction(self.tr("About &Qt"), QtGui.qApp.aboutQt)
+        helpMenu.addAction("&About", self.about)
+        helpMenu.addAction("About &Qt", QtGui.qApp.aboutQt)
 
 
 class Highlighter(QtGui.QSyntaxHighlighter):
@@ -137,7 +141,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
             if endIndex == -1:
                 self.setCurrentBlockState(1)
-                commentLength = text.length() - startIndex
+                commentLength = len(text) - startIndex
             else:
                 commentLength = endIndex - startIndex + self.commentEndExpression.matchedLength()
 
