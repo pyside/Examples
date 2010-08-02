@@ -48,7 +48,7 @@ class Screenshot(QtGui.QWidget):
         self.shootScreen()
         self.delaySpinBox.setValue(5)
 
-        self.setWindowTitle(self.tr("Screenshot"))
+        self.setWindowTitle("Screenshot")
         self.resize(300, 200)
 
     def resizeEvent(self, event):
@@ -66,13 +66,13 @@ class Screenshot(QtGui.QWidget):
                 self.shootScreen)
 
     def saveScreenshot(self):
-        format = "png"
-        initialPath = QtCore.QDir.currentPath() + self.tr("/untitled.") + format
+        format = 'png'
+        initialPath = QtCore.QDir.currentPath() + "/untitled." + format
 
-        fileName = QtGui.QFileDialog.getSaveFileName(self, self.tr("Save As"),
+        fileName = QtGui.QFileDialog.getSaveFileName(self, "Save As",
                 initialPath,
-                self.tr("%1 Files (*.%2);;All Files (*)").arg(format.upper()).arg(format))
-        if not fileName.isEmpty():
+                "%s Files (*.%s);;All Files (*)" % (format.upper(), format))
+        if fileName:
             self.originalPixmap.save(fileName, format)
 
     def shootScreen(self):
@@ -95,16 +95,16 @@ class Screenshot(QtGui.QWidget):
             self.hideThisWindowCheckBox.setDisabled(False)
 
     def createOptionsGroupBox(self):
-        self.optionsGroupBox = QtGui.QGroupBox(self.tr("Options"))
+        self.optionsGroupBox = QtGui.QGroupBox("Options")
 
         self.delaySpinBox = QtGui.QSpinBox()
-        self.delaySpinBox.setSuffix(self.tr(" s"))
+        self.delaySpinBox.setSuffix(" s")
         self.delaySpinBox.setMaximum(60)
-        self.delaySpinBox.connect(QtCore.SIGNAL("valueChanged()"), self.updateCheckBox)
+        self.delaySpinBox.valueChanged.connect(self.updateCheckBox)
 
-        self.delaySpinBoxLabel = QtGui.QLabel(self.tr("Screenshot Delay:"))
+        self.delaySpinBoxLabel = QtGui.QLabel("Screenshot Delay:")
 
-        self.hideThisWindowCheckBox = QtGui.QCheckBox(self.tr("Hide This Window"))
+        self.hideThisWindowCheckBox = QtGui.QCheckBox("Hide This Window")
 
         optionsGroupBoxLayout = QtGui.QGridLayout()
         optionsGroupBoxLayout.addWidget(self.delaySpinBoxLabel, 0, 0)
@@ -113,14 +113,13 @@ class Screenshot(QtGui.QWidget):
         self.optionsGroupBox.setLayout(optionsGroupBoxLayout)
 
     def createButtonsLayout(self):
-        self.newScreenshotButton = self.createButton(self.tr("New Screenshot"),
+        self.newScreenshotButton = self.createButton("New Screenshot",
                 self.newScreenshot)
 
-        self.saveScreenshotButton = self.createButton(self.tr("Save Screenshot"),
+        self.saveScreenshotButton = self.createButton("Save Screenshot",
                 self.saveScreenshot)
 
-        self.quitScreenshotButton = self.createButton(self.tr("Quit"),
-                self.closeme)
+        self.quitScreenshotButton = self.createButton("Quit", self.close)
 
         self.buttonsLayout = QtGui.QHBoxLayout()
         self.buttonsLayout.addStretch()
@@ -130,18 +129,16 @@ class Screenshot(QtGui.QWidget):
 
     def createButton(self, text, member):
         button = QtGui.QPushButton(text)
-        button.connect(QtCore.SIGNAL("clicked()"), member)
+        button.clicked.connect(member)
         return button
 
     def updateScreenshotLabel(self):
         self.screenshotLabel.setPixmap(self.originalPixmap.scaled(
                 self.screenshotLabel.size(), QtCore.Qt.KeepAspectRatio,
                 QtCore.Qt.SmoothTransformation))
-    
-    def closeme(self):
-        self.close()
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
 
     import sys
 
