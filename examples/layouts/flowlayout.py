@@ -1,35 +1,40 @@
 #!/usr/bin/env python
 
-"""PySide port of the layouts/flowlayout example from Qt v4.x"""
+"""PyQt4 port of the layouts/flowlayout example from Qt v4.x"""
 
-import sys
 from PySide import QtCore, QtGui
 
 
 class Window(QtGui.QWidget):
-    def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+    def __init__(self):
+        super(Window, self).__init__()
 
         flowLayout = FlowLayout()
-        flowLayout.addWidget(QtGui.QPushButton(self.tr("Short")))
-        flowLayout.addWidget(QtGui.QPushButton(self.tr("Longer")))
-        flowLayout.addWidget(QtGui.QPushButton(self.tr("Different text")))
-        flowLayout.addWidget(QtGui.QPushButton(self.tr("More text")))
-        flowLayout.addWidget(QtGui.QPushButton(self.tr("Even longer button text")))
+        flowLayout.addWidget(QtGui.QPushButton("Short"))
+        flowLayout.addWidget(QtGui.QPushButton("Longer"))
+        flowLayout.addWidget(QtGui.QPushButton("Different text"))
+        flowLayout.addWidget(QtGui.QPushButton("More text"))
+        flowLayout.addWidget(QtGui.QPushButton("Even longer button text"))
         self.setLayout(flowLayout)
 
-        self.setWindowTitle(self.tr("Flow Layout"))
+        self.setWindowTitle("Flow Layout")
 
 
 class FlowLayout(QtGui.QLayout):
     def __init__(self, parent=None, margin=0, spacing=-1):
-        QtGui.QLayout.__init__(self, parent)
+        super(FlowLayout, self).__init__(parent)
 
         if parent is not None:
             self.setMargin(margin)
+
         self.setSpacing(spacing)
 
         self.itemList = []
+
+    def __del__(self):
+        item = self.takeAt(0)
+        while item:
+            item = self.takeAt(0)
 
     def addItem(self, item):
         self.itemList.append(item)
@@ -41,9 +46,13 @@ class FlowLayout(QtGui.QLayout):
         if index >= 0 and index < len(self.itemList):
             return self.itemList[index]
 
+        return None
+
     def takeAt(self, index):
         if index >= 0 and index < len(self.itemList):
             return self.itemList.pop(index)
+
+        return None
 
     def expandingDirections(self):
         return QtCore.Qt.Orientations(QtCore.Qt.Orientation(0))
@@ -56,7 +65,7 @@ class FlowLayout(QtGui.QLayout):
         return height
 
     def setGeometry(self, rect):
-        QtGui.QLayout.setGeometry(self, rect)
+        super(FlowLayout, self).setGeometry(rect)
         self.doLayout(rect, False)
 
     def sizeHint(self):
@@ -77,11 +86,14 @@ class FlowLayout(QtGui.QLayout):
         lineHeight = 0
 
         for item in self.itemList:
-            nextX = x + item.sizeHint().width() + self.spacing()
-            if nextX - self.spacing() > rect.right() and lineHeight > 0:
+            wid = item.widget()
+            spaceX = self.spacing() + wid.style().layoutSpacing(QtGui.QSizePolicy.PushButton, QtGui.QSizePolicy.PushButton, QtCore.Qt.Horizontal)
+            spaceY = self.spacing() + wid.style().layoutSpacing(QtGui.QSizePolicy.PushButton, QtGui.QSizePolicy.PushButton, QtCore.Qt.Vertical)
+            nextX = x + item.sizeHint().width() + spaceX
+            if nextX - spaceX > rect.right() and lineHeight > 0:
                 x = rect.x()
-                y = y + lineHeight + self.spacing()
-                nextX = x + item.sizeHint().width() + self.spacing()
+                y = y + lineHeight + spaceY
+                nextX = x + item.sizeHint().width() + spaceX
                 lineHeight = 0
 
             if not testOnly:
@@ -93,7 +105,10 @@ class FlowLayout(QtGui.QLayout):
         return y + lineHeight - rect.y()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     mainWin = Window()
     mainWin.show()

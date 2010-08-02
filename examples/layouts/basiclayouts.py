@@ -18,14 +18,13 @@ class Dialog(QtGui.QDialog):
         self.createFormGroupBox()
 
         bigEditor = QtGui.QTextEdit()
-        bigEditor.setPlainText(self.tr("This widget takes up all the "
-                                       "remaining space in the top-level "
-                                       "layout."))
+        bigEditor.setPlainText("This widget takes up all the remaining space "
+                "in the top-level layout.")
 
         buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
 
-        self.connect(buttonBox, QtCore.SIGNAL("accepted()"),self.accept)
-        self.connect(buttonBox, QtCore.SIGNAL("rejected()"), self.reject)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
 
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.setMenuBar(self.menuBar)
@@ -36,40 +35,40 @@ class Dialog(QtGui.QDialog):
         mainLayout.addWidget(buttonBox)
         self.setLayout(mainLayout)
 
-        self.setWindowTitle(self.tr("Basic Layouts"))
+        self.setWindowTitle("Basic Layouts")
 
     def createMenu(self):
         self.menuBar = QtGui.QMenuBar()
 
-        self.fileMenu = QtGui.QMenu(self.tr("&File"), self)
-        self.exitAction = self.fileMenu.addAction(self.tr("E&xit"))
+        self.fileMenu = QtGui.QMenu("&File", self)
+        self.exitAction = self.fileMenu.addAction("E&xit")
         self.menuBar.addMenu(self.fileMenu)
 
-        self.connect(self.exitAction, QtCore.SIGNAL("triggered()"),self.accept)
+        self.exitAction.triggered.connect(self.accept)
 
     def createHorizontalGroupBox(self):
-        self.horizontalGroupBox = QtGui.QGroupBox(self.tr("Horizontal layout"))
+        self.horizontalGroupBox = QtGui.QGroupBox("Horizontal layout")
         layout = QtGui.QHBoxLayout()
 
         for i in range(Dialog.NumButtons):
-            button = QtGui.QPushButton(self.tr("Button %1").arg(i + 1))
+            button = QtGui.QPushButton("Button %d" % (i + 1))
             layout.addWidget(button)
 
         self.horizontalGroupBox.setLayout(layout)
 
     def createGridGroupBox(self):
-        self.gridGroupBox = QtGui.QGroupBox(self.tr("Grid layout"))
+        self.gridGroupBox = QtGui.QGroupBox("Grid layout")
         layout = QtGui.QGridLayout()
 
         for i in range(Dialog.NumGridRows):
-            label = QtGui.QLabel(self.tr("Line %1:").arg(i + 1))
+            label = QtGui.QLabel("Line %d:" % (i + 1))
             lineEdit = QtGui.QLineEdit()
             layout.addWidget(label, i + 1, 0)
             layout.addWidget(lineEdit, i + 1, 1)
 
         self.smallEditor = QtGui.QTextEdit()
-        self.smallEditor.setPlainText(self.tr("This widget takes up about two "
-                                              "thirds of the grid layout."))
+        self.smallEditor.setPlainText("This widget takes up about two thirds "
+                "of the grid layout.")
 
         layout.addWidget(self.smallEditor, 0, 2, 4, 1)
 
@@ -78,12 +77,11 @@ class Dialog(QtGui.QDialog):
         self.gridGroupBox.setLayout(layout)
 
     def createFormGroupBox(self):
-        self.formGroupBox = QtGui.QGroupBox(self.tr("Form layout"))
+        self.formGroupBox = QtGui.QGroupBox("Form layout")
         layout = QtGui.QFormLayout()
-        layout.addRow(QtGui.QLabel(self.tr("Line 1:")), QtGui.QLineEdit())
-        layout.addRow(QtGui.QLabel(self.tr("Line 2, long text:")),
-                QtGui.QComboBox())
-        layout.addRow(QtGui.QLabel(self.tr("Line 3:")), QtGui.QSpinBox())
+        layout.addRow(QtGui.QLabel("Line 1:"), QtGui.QLineEdit())
+        layout.addRow(QtGui.QLabel("Line 2, long text:"), QtGui.QComboBox())
+        layout.addRow(QtGui.QLabel("Line 3:"), QtGui.QSpinBox())
         self.formGroupBox.setLayout(layout)
 
 
