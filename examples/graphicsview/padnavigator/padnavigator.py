@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""PySide port of the examples/graphicsview/padnavigator example from Qt v4.x"""
+"""PyQt4 port of the examples/graphicsview/padnavigator example from Qt v4.x"""
 
 import math
 
