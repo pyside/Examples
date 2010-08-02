@@ -1,4 +1,3 @@
-import PySide
 from colors import Colors
 
 

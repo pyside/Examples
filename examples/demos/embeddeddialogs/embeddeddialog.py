@@ -3,7 +3,7 @@
 # Form implementation generated from reading ui file 'embeddeddialog.ui'
 #
 # Created: Wed May 28 15:07:08 2008
-#      by: PySide UI code generator 4.4.3-snapshot-20080526
+#      by: PyQt4 UI code generator 4.4.3-snapshot-20080526
 #
 # WARNING! All changes made in this file will be lost!
 

@@ -53,11 +53,12 @@ class ExampleContent(DemoItem):
         return Colors.contentColor + description
 
     def isSummary(self, text):
-        return (not text.contains('[') and
-            text.indexOf(QtCore.QRegExp(QtCore.QString("(In )?((The|This) )?(%1 )?.*(tutorial|example|demo|application)").arg(self.name), QtCore.Qt.CaseInsensitive)) != -1)
+        re = QtCore.QRegExp("(In )?((The|This) )?(%s )?.*(tutorial|example|demo|application)" % self.name, QtCore.Qt.CaseInsensitive)
+
+        return ('[' not in text) and (re.indexIn(text) >= 0)
 
     def extractTextFromParagraph(self, parentNode):
-        description = QtCore.QString()
+        description = ''
         node = parentNode.firstChild()
 
         while not node.isNull():

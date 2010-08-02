@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
-"""PySide port of the demos/embeddeddialogs example from Qt v4.x"""
+"""PyQt4 port of the demos/embeddeddialogs example from Qt v4.x"""
 
-import sys
+# This is only needed for Python v2 but is harmless for Python v3.
+#import sip
+#sip.setapi('QString', 2)
+
 from PySide import QtCore, QtGui
 
 from embeddeddialog import Ui_embeddedDialog
@@ -11,12 +14,12 @@ from embeddeddialogs_rc import *
 
 class CustomProxy(QtGui.QGraphicsProxyWidget):
     def __init__(self, parent=None, wFlags=0):
-        QtGui.QGraphicsProxyWidget.__init__(self, parent, wFlags)
+        super(CustomProxy, self).__init__(parent, wFlags)
 
         self.popupShown = False
         self.timeLine = QtCore.QTimeLine(250, self)
-        self.connect(self.timeLine, QtCore.SIGNAL("valueChanged(qreal)"), self.updateStep)
-        self.connect(self.timeLine, QtCore.SIGNAL("stateChanged(QTimeLine::State)"), self.stateChanged)
+        self.timeLine.valueChanged.connect(self.updateStep)
+        self.timeLine.stateChanged.connect(self.stateChanged)
 
     def boundingRect(self):
         return QtGui.QGraphicsProxyWidget.boundingRect(self).adjusted(0, 0, 10, 10)
@@ -41,19 +44,19 @@ class CustomProxy(QtGui.QGraphicsProxyWidget):
         elif intersectsRight:
             painter.fillRect(right, color)
 
-        QtGui.QGraphicsProxyWidget.paintWindowFrame(self, painter, option, widget)
+        super(CustomProxy, self).paintWindowFrame(painter, option, widget)
 
     def hoverEnterEvent(self, event):
-        QtGui.QGraphicsProxyWidget.hoverEnterEvent(self, event)
+        super(CustomProxy, self).hoverEnterEvent(event)
 
         self.scene().setActiveWindow(self)
         if self.timeLine.currentValue != 1:
             self.zoomIn()
 
     def hoverLeaveEvent(self, event):
-        QtGui.QGraphicsProxyWidget.hoverLeaveEvent(self, event)
+        super(CustomProxy, self).hoverLeaveEvent(event)
 
-        if not self.popupShown and (self.timeLine.direction() != QtCore.QTimeLine.Backward or self.timeLine.currentValue() != 0 ):
+        if not self.popupShown and (self.timeLine.direction() != QtCore.QTimeLine.Backward or self.timeLine.currentValue() != 0):
             self.zoomOut()
 
     def sceneEventFilter(self, watched, event):
@@ -62,7 +65,7 @@ class CustomProxy(QtGui.QGraphicsProxyWidget):
             if not self.popupShown and not self.isUnderMouse():
                 self.zoomOut()
 
-        return QtGui.QGraphicsProxyWidget.sceneEventFilter(self, watched, event)
+        return super(CustomProxy, self).sceneEventFilter(watched, event)
 
     def itemChange(self, change, value):
         if change == self.ItemChildAddedChange or change == self.ItemChildRemovedChange :
@@ -77,7 +80,7 @@ class CustomProxy(QtGui.QGraphicsProxyWidget):
             except:
                 pass
 
-        return QtGui.QGraphicsProxyWidget.itemChange(self, change, value)
+        return super(CustomProxy, self).itemChange(change, value)
 
     def updateStep(self, step):
         r=self.boundingRect()
@@ -112,20 +115,21 @@ class CustomProxy(QtGui.QGraphicsProxyWidget):
 
 class EmbeddedDialog(QtGui.QDialog):
     def __init__(self, parent=None):
-        QtGui.QDialog.__init__(self, parent)
+        super(EmbeddedDialog, self).__init__(parent)
 
         self.ui = Ui_embeddedDialog()
         self.ui.setupUi(self)
         self.ui.layoutDirection.setCurrentIndex(self.layoutDirection() != QtCore.Qt.LeftToRight)
+
         for styleName in QtGui.QStyleFactory.keys():
             self.ui.style.addItem(styleName)
-            if self.style().objectName().toLower() == styleName.toLower():
+            if self.style().objectName().lower() == styleName.lower():
                 self.ui.style.setCurrentIndex(self.ui.style.count() -1)
 
-        self.connect(self.ui.layoutDirection, QtCore.SIGNAL("activated(int)"), self.layoutDirectionChanged)
-        self.connect(self.ui.spacing, QtCore.SIGNAL("valueChanged(int)"), self.spacingChanged)
-        self.connect(self.ui.fontComboBox, QtCore.SIGNAL("currentFontChanged(QFont)"), self.fontChanged)
-        self.connect(self.ui.style, QtCore.SIGNAL("activated(QString)"), self.styleChanged)
+        self.ui.layoutDirection.activated.connect(self.layoutDirectionChanged)
+        self.ui.spacing.valueChanged.connect(self.spacingChanged)
+        self.ui.fontComboBox.currentFontChanged.connect(self.fontChanged)
+        self.ui.style.activated["QString"].connect(self.styleChanged)
 
     def layoutDirectionChanged(self, index):
         if index == 0:
@@ -156,7 +160,10 @@ class EmbeddedDialog(QtGui.QDialog):
         self._style = style
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     scene = QtGui.QGraphicsScene()
     for y in range(10):
@@ -174,8 +181,8 @@ if __name__ == "__main__":
 
     view = QtGui.QGraphicsView(scene)
     view.scale(0.5, 0.5)
-    view.setRenderHints(QtGui.QPainter.Antialiasing  | QtGui.QPainter.SmoothPixmapTransform)
-    view.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap(":/No-Ones-Laughing-3.jpg")))
+    view.setRenderHints(view.renderHints() | QtGui.QPainter.Antialiasing  | QtGui.QPainter.SmoothPixmapTransform)
+    view.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap(':/No-Ones-Laughing-3.jpg')))
     view.setCacheMode(QtGui.QGraphicsView.CacheBackground)
     view.setViewportUpdateMode(QtGui.QGraphicsView.BoundingRectViewportUpdate)
     view.show()

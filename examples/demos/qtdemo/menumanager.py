@@ -11,7 +11,6 @@ from menucontent import MenuContentItem
 from score import Score
 from textbutton import TextButton
 
-
 class MenuManager(QtCore.QObject):
     ROOT, MENU1, MENU2, LAUNCH, DOCUMENTATION, QUIT, FULLSCREEN, UP, DOWN, \
             BACK = range(10)
@@ -67,9 +66,9 @@ class MenuManager(QtCore.QObject):
                 self.contentsDoc.setContent(xml_file, True)
 
         if not statusOK:
-            QtGui.QMessageBox.critical(None, self.tr("DOM Parser"),
-                    self.tr("Could not read or find the contents document. "
-                            "Error at line %1, column %2:\n%3").arg(errorLine).arg(errorColumn).arg(errorStr))
+            QtGui.QMessageBox.critical(None, "DOM Parser",
+                    "Could not read or find the contents document. Error at "
+                    "line %d, column %d:\n%s" % (errorLine, errorColumn, errorStr))
             sys.exit(-1)
 
     def initHelpEngine(self):
@@ -92,7 +91,7 @@ class MenuManager(QtCore.QObject):
 
         qchFiles = ['/qt.qch', '/designer.qch', '/linguist.qch']
 
-        oldDir = self.helpEngine.customValue('docDir', QtCore.QVariant('')).toString()
+        oldDir = self.helpEngine.customValue('docDir', '')
         if oldDir != qtDocRoot:
             for qchFile in qchFiles:
                 self.helpEngine.unregisterDocumentation(QtHelp.QHelpEngineCore.namespaceName(qtDocRoot + qchFile))
@@ -102,7 +101,7 @@ class MenuManager(QtCore.QObject):
         for qchFile in qchFiles:
             self.helpEngine.registerDocumentation(qtDocRoot + qchFile)
 
-        self.helpEngine.setCustomValue('docDir', QtCore.QVariant(qtDocRoot))
+        self.helpEngine.setCustomValue('docDir', qtDocRoot)
 
     def itemSelected(self, userCode, menuName):
         if userCode == MenuManager.LAUNCH:
@@ -268,8 +267,8 @@ class MenuManager(QtCore.QObject):
             args = ['-enableRemoteControl']
             self.assistantProcess.start(app, args)
             if not self.assistantProcess.waitForStarted():
-                QtGui.QMessageBox.critical(None, self.tr("Qt Demo"),
-                        self.tr("Could not start %1.").arg(app))
+                QtGui.QMessageBox.critical(None, "PyQt Demo",
+                        "Could not start %s." % app)
                 return
 
         # Send command through remote control even if the process was just
@@ -281,10 +280,8 @@ class MenuManager(QtCore.QObject):
         executable = self.resolveExeFile(name)
 
         process = QtCore.QProcess(self)
-        #process.finished.connect(self.exampleFinished)
-        #process.error.connect(self.exampleError)
-        QtCore.QObject.connect(process, QtCore.SIGNAL('finished()'), self.exampleFinished)
-        QtCore.QObject.connect(process, QtCore.SIGNAL('error()'), self.exampleError)
+        process.finished.connect(self.exampleFinished)
+        process.error.connect(self.exampleError)
 
         if sys.platform == 'win32':
             # Make sure it finds the DLLs on Windows.
@@ -305,10 +302,9 @@ class MenuManager(QtCore.QObject):
 
     def exampleError(self, error):
         if error != QtCore.QProcess.Crashed:
-            QtGui.QMessageBox.critical(None,
-                    self.tr("Failed to launch the example"),
-                    self.tr("Could not launch the example. Ensure that it has "
-                            "been built."),
+            QtGui.QMessageBox.critical(None, "Failed to launch the example",
+                    "Could not launch the example. Ensure that it has been "
+                    "built.",
                     QtGui.QMessageBox.Cancel)
 
     def init(self, window):

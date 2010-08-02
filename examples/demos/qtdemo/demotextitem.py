@@ -34,7 +34,7 @@ class DemoTextItem(DemoItem):
         textItem.setTextWidth(self.textWidth)
         textItem.setFont(self.font)
         textItem.setDefaultTextColor(self.textColor)
-        #textItem.document().setDocumentMargin(2)
+        textItem.document().setDocumentMargin(2)
 
         w = textItem.boundingRect().width()
         h = textItem.boundingRect().height()

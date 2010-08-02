@@ -3,6 +3,14 @@
   <demos dirname="." docname="demos" name="Demonstrations">
     <example filename="embeddeddialogs" name="Embedded Dialogs" />
   </demos>
+  <category dirname="animation" name="Animation Framework">
+    <example filename="animatedtiles" name="Animated Tiles" />
+    <example filename="appchooser" name="Appchooser" />
+    <example filename="easing" name="Easing Curves" />
+    <example filename="moveblocks" name="Moving Blocks" />
+    <example filename="states" name="States" />
+    <example filename="stickman" name="Stickman" />
+  </category>
   <category dirname="designer" name="Qt Designer">
     <example filename="calculatorform" name="Calculator Form" />
     <example filename="plugins" name="Custom Widget Plugins" />
@@ -26,7 +34,11 @@
     <example filename="fridgemagnets" name="Fridge Magnets" />
     <example filename="puzzle" name="Puzzle" image="draganddroppuzzle-example.png"/>
   </category>
+  <category dirname="effects" name="Graphics Effects">
+    <example filename="lighting" name="Lighting and Shadows" />
+  </category>
   <category dirname="graphicsview" name="Graphics View">
+    <example filename="anchorlayout" name="Anchor Layout" />
     <example filename="elasticnodes" name="Elastic Nodes" />
     <example filename="collidingmice" name="Colliding Mice" />
     <example filename="diagramscene" name="Diagram Scene" />
@@ -144,5 +156,8 @@
   <category dirname="xml" name="XML">
     <example filename="saxbookmarks" name="SAX Bookmarks" />
     <example filename="dombookmarks" name="DOM Bookmarks" />
+  </category>
+  <category dirname="xmlpatterns" name="XML Patterns">
+    <example filename="schema" name="XML Schema Validation" />
   </category>
 </categories>

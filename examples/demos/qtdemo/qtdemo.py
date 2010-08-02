@@ -42,6 +42,10 @@
 ##
 #############################################################################
 
+# This is only needed for Python v2 but is harmless for Python v3.
+#import sip
+#sip.setapi('QVariant', 2)
+
 from PySide import QtCore, QtGui
 
 import qtdemo_rc

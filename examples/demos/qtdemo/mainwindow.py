@@ -52,12 +52,12 @@ class MainWindow(QtGui.QGraphicsView):
         self.setGeometry(windowRect)
         self.setMinimumSize(80, 60)
 
-        self.setWindowTitle(self.tr("PyQt Examples and Demos"))
+        self.setWindowTitle("PyQt Examples and Demos")
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setFrameStyle(QtGui.QFrame.NoFrame)
         self.setRenderingSystem()
-        self.connect(self.updateTimer, QtCore.SIGNAL('timeout()'), self.tick)
+        self.updateTimer.timeout.connect(self.tick)
 
     def setRenderingSystem(self):
         if Colors.direct3dRendering:
@@ -186,7 +186,7 @@ class MainWindow(QtGui.QGraphicsView):
             return
 
         self.fpsHistory.sort()
-        self.fpsMedian = self.fpsHistory[size / 2]
+        self.fpsMedian = self.fpsHistory[size // 2]
         if self.fpsMedian == 0:
             self.fpsMedian = 0.01
 
@@ -209,8 +209,8 @@ class MainWindow(QtGui.QGraphicsView):
 
     def setupSceneItems(self):
         if Colors.showFps:
-            self.fpsLabel = DemoTextItem(QtCore.QString("FPS: --"),
-                    Colors.buttonFont(), QtCore.Qt.white, -1, self.scene, None,
+            self.fpsLabel = DemoTextItem("FPS: --", Colors.buttonFont(),
+                    QtCore.Qt.white, -1, self.scene, None,
                     DemoTextItem.DYNAMIC_TEXT)
             self.fpsLabel.setZValue(100)
             self.fpsLabel.setPos(Colors.stageStartX,
@@ -222,8 +222,8 @@ class MainWindow(QtGui.QGraphicsView):
                 1000, self.scene, None, True, 0.5)
         self.trolltechLogo.setZValue(100)
         self.qtLogo.setZValue(100)
-        self.pausedLabel = DemoTextItem(QtCore.QString("PAUSED"),
-                Colors.buttonFont(), QtCore.Qt.white, -1, self.scene, None)
+        self.pausedLabel = DemoTextItem("PAUSED", Colors.buttonFont(),
+                QtCore.Qt.white, -1, self.scene, None)
         self.pausedLabel.setZValue(100)
         fm = QtGui.QFontMetricsF(Colors.buttonFont())
         self.pausedLabel.setPos(Colors.stageWidth - fm.width("PAUSED"),
@@ -358,11 +358,9 @@ class MainWindow(QtGui.QGraphicsView):
     def resizeEvent(self, event):
         self.resetMatrix()
         self.scale(event.size().width() / 800.0, event.size().height() / 600.0)
-        
-        #FIXME: The best i came up with..?
-        self.fitInView(self.scene.sceneRect())
-        #super(MainWindow, self).resizeEvent(event)
-        
+
+        super(MainWindow, self).resizeEvent(event)
+
         DemoItem.setMatrix(self.matrix())
 
         if self.trolltechLogo:

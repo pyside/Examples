@@ -51,16 +51,16 @@ class MenuContentItem(DemoItem):
         in_str = QtCore.QTextStream(readme)
         # Skip a certain number of paragraphs.
         while startPara:
-            if in_str.readLine().isEmpty():
+            if not in_str.readLine():
                 startPara -= 1
 
         # Read in the number of wanted paragraphs.
-        result = QtCore.QString()
+        result = ''
         line = in_str.readLine()
         while True:
             result += line + " "
             line = in_str.readLine()
-            if line.isEmpty():
+            if not line:
                 nrPara -= 1
                 line = "<br><br>" + in_str.readLine()
 
