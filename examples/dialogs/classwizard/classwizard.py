@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+# This is only needed for Python v2 but is harmless for Python v3.
+#import sip
+#sip.setapi('QString', 2)
+#sip.setapi('QVariant', 2)
+
 from PySide import QtCore, QtGui
 
 import classwizard_rc
@@ -16,132 +21,131 @@ class ClassWizard(QtGui.QWizard):
         self.addPage(ConclusionPage())
 
         self.setPixmap(QtGui.QWizard.BannerPixmap,
-                QtGui.QPixmap(":/images/banner.png"))
+                QtGui.QPixmap(':/images/banner.png'))
         self.setPixmap(QtGui.QWizard.BackgroundPixmap,
-                QtGui.QPixmap(":/images/background.png"))
+                QtGui.QPixmap(':/images/background.png'))
 
-        self.setWindowTitle(self.tr("Class Wizard"))
+        self.setWindowTitle("Class Wizard")
 
     def accept(self):
-        className = self.field("className")
-        baseClass = self.field("baseClass")
-        macroName = self.field("macroName")
-        baseInclude = self.field("baseInclude")
+        className = self.field('className')
+        baseClass = self.field('baseClass')
+        macroName = self.field('macroName')
+        baseInclude = self.field('baseInclude')
 
-        outputDir = self.field("outputDir")
-        header = self.field("header")
-        implementation = self.field("implementation")
+        outputDir = self.field('outputDir')
+        header = self.field('header')
+        implementation = self.field('implementation')
 
-        block = QtCore.QByteArray()
+        block = ''
 
-        print self.field("comment")
-        if self.field("comment").toBool():
-            block += "/*\n"
-            block += "    " + header.toAscii() + "\n"
-            block += "*/\n"
-            block += "\n"
+        if self.field('comment'):
+            block += '/*\n'
+            block += '    ' + header + '\n'
+            block += '*/\n'
+            block += '\n'
 
-        if self.field("protect").toBool():
-            block += "#ifndef " + macroName + "\n"
-            block += "#define " + macroName + "\n"
-            block += "\n"
+        if self.field('protect'):
+            block += '#ifndef ' + macroName + '\n'
+            block += '#define ' + macroName + '\n'
+            block += '\n'
 
-        if self.field("includeBase").toBool():
-            block += "#include " + baseInclude + "\n"
-            block += "\n"
+        if self.field('includeBase'):
+            block += '#include ' + baseInclude + '\n'
+            block += '\n'
 
-        block += "class " + className
-        if len(baseClass):
-            block += " : public " + baseClass
+        block += 'class ' + className
+        if baseClass:
+            block += ' : public ' + baseClass
 
-        block += "\n"
-        block += "{\n"
+        block += '\n'
+        block += '{\n'
 
-        if self.field("qobjectMacro").toBool():
-            block += "    Q_OBJECT\n"
-            block += "\n"
+        if self.field('qobjectMacro'):
+            block += '    Q_OBJECT\n'
+            block += '\n'
 
-        block += "public:\n"
+        block += 'public:\n'
 
-        if self.field("qobjectCtor").toBool():
-            block += "    " + className + "(QObject *parent = 0);\n"
-        elif self.field("qwidgetCtor").toBool():
-            block += "    " + className + "(QWidget *parent = 0);\n"
-        elif self.field("defaultCtor").toBool():
-            block += "    " + className + "();\n"
+        if self.field('qobjectCtor'):
+            block += '    ' + className + '(QObject *parent = 0);\n'
+        elif self.field('qwidgetCtor'):
+            block += '    ' + className + '(QWidget *parent = 0);\n'
+        elif self.field('defaultCtor'):
+            block += '    ' + className + '();\n'
 
-            if self.field("copyCtor").toBool():
-                block += "    " + className + "(const " + className + " &other);\n"
-                block += "\n"
-                block += "    " + className + " &operator=" + "(const " + className + " &other);\n"
+            if self.field('copyCtor'):
+                block += '    ' + className + '(const ' + className + ' &other);\n'
+                block += '\n'
+                block += '    ' + className + ' &operator=' + '(const ' + className + ' &other);\n'
 
-        block += "};\n"
+        block += '};\n'
 
-        if self.field("protect").toBool():
-            block += "\n"
-            block += "#endif\n"
+        if self.field('protect'):
+            block += '\n'
+            block += '#endif\n'
 
-        headerFile = QtCore.QFile(outputDir + "/" + header)
+        headerFile = QtCore.QFile(outputDir + '/' + header)
 
         if not headerFile.open(QtCore.QFile.WriteOnly | QtCore.QFile.Text):
-            QtGui.QMessageBox.warning(None, self.tr("Class Wizard"),
-                    self.tr("Cannot write file {0}:\n{1}").format(headerFile.fileName(), headerFile.errorString()))
+            QtGui.QMessageBox.warning(None, "Class Wizard",
+                    "Cannot write file %s:\n%s" % (headerFile.fileName(), headerFile.errorString()))
             return
 
-        headerFile.write(block)
+        headerFile.write(str(block))
 
-        block.clear()
+        block = ''
 
-        if self.field("comment").toBool():
-            block += "/*\n"
-            block += "    " + implementation.toAscii() + "\n"
-            block += "*/\n"
-            block += "\n"
+        if self.field('comment'):
+            block += '/*\n'
+            block += '    ' + implementation + '\n'
+            block += '*/\n'
+            block += '\n'
 
-        block += "#include \"" + header.toAscii() + "\"\n"
-        block += "\n"
+        block += '#include "' + header + '"\n'
+        block += '\n'
 
-        if self.field("qobjectCtor").toBool():
-            block += className + "::" + className + "(QObject *parent)\n"
-            block += "    : " + baseClass + "(parent)\n"
-            block += "{\n"
-            block += "}\n"
-        elif self.field("qwidgetCtor").toBool():
-            block += className + "::" + className + "(QWidget *parent)\n"
-            block += "    : " + baseClass + "(parent)\n"
-            block += "{\n"
-            block += "}\n"
-        elif self.field("defaultCtor").toBool():
-            block += className + "::" + className + "()\n"
-            block += "{\n"
-            block += "    // missing code\n"
-            block += "}\n"
+        if self.field('qobjectCtor'):
+            block += className + '::' + className + '(QObject *parent)\n'
+            block += '    : ' + baseClass + '(parent)\n'
+            block += '{\n'
+            block += '}\n'
+        elif self.field('qwidgetCtor'):
+            block += className + '::' + className + '(QWidget *parent)\n'
+            block += '    : ' + baseClass + '(parent)\n'
+            block += '{\n'
+            block += '}\n'
+        elif self.field('defaultCtor'):
+            block += className + '::' + className + '()\n'
+            block += '{\n'
+            block += '    // missing code\n'
+            block += '}\n'
 
-            if self.field("copyCtor").toBool():
-                block += "\n"
-                block += className + "::" + className + "(const " + className + " &other)\n"
-                block += "{\n"
-                block += "    *this = other;\n"
-                block += "}\n"
-                block += "\n"
-                block += className + " &" + className + "::operator=(const " + className + " &other)\n"
-                block += "{\n"
+            if self.field('copyCtor'):
+                block += '\n'
+                block += className + '::' + className + '(const ' + className + ' &other)\n'
+                block += '{\n'
+                block += '    *this = other;\n'
+                block += '}\n'
+                block += '\n'
+                block += className + ' &' + className + '::operator=(const ' + className + ' &other)\n'
+                block += '{\n'
 
-                if len(baseClass):
-                    block += "    " + baseClass + "::operator=(other);\n"
+                if baseClass:
+                    block += '    ' + baseClass + '::operator=(other);\n'
 
-                block += "    // missing code\n"
-                block += "    return *this;\n"
-                block += "}\n"
+                block += '    // missing code\n'
+                block += '    return *this;\n'
+                block += '}\n'
 
-        implementationFile = QtCore.QFile(outputDir + "/" + implementation)
+        implementationFile = QtCore.QFile(outputDir + '/' + implementation)
 
         if not implementationFile.open(QtCore.QFile.WriteOnly | QtCore.QFile.Text):
-            QtGui.QMessageBox.warning(None, self.tr("Class Wizard"),
-                    self.tr("Cannot write file %1:\n%2").arg(implementationFile.fileName()).arg(implementationFile.errorString()));
+            QtGui.QMessageBox.warning(None, "Class Wizard",
+                    "Cannot write file %s:\n%s" % (implementationFile.fileName(), implementationFile.errorString()))
             return
 
-        implementationFile.write(block)
+        implementationFile.write(str(block))
 
         super(ClassWizard, self).accept()
 
@@ -150,17 +154,15 @@ class IntroPage(QtGui.QWizardPage):
     def __init__(self, parent=None):
         super(IntroPage, self).__init__(parent)
 
-        self.setTitle(self.tr("Introduction"))
+        self.setTitle("Introduction")
         self.setPixmap(QtGui.QWizard.WatermarkPixmap,
-                QtGui.QPixmap(":/images/watermark1.png"))
+                QtGui.QPixmap(':/images/watermark1.png'))
 
-        label = QtGui.QLabel(self.tr("This wizard will generate a skeleton "
-                                     "C++ class definition, including a few "
-                                     "functions. You simply need to specify "
-                                     "the class name and set a few options to "
-                                     "produce a header file and an "
-                                     "implementation file for your new C++ "
-                                     "class."))
+        label = QtGui.QLabel("This wizard will generate a skeleton C++ class "
+                "definition, including a few functions. You simply need to "
+                "specify the class name and set a few options to produce a "
+                "header file and an implementation file for your new C++ "
+                "class.")
         label.setWordWrap(True)
 
         layout = QtGui.QVBoxLayout()
@@ -172,41 +174,40 @@ class ClassInfoPage(QtGui.QWizardPage):
     def __init__(self, parent=None):
         super(ClassInfoPage, self).__init__(parent)
 
-        self.setTitle(self.tr("Class Information"))
-        self.setSubTitle(self.tr("Specify basic information about the class "
-                                 "for which you want to generate skeleton "
-                                 "source code files."))
+        self.setTitle("Class Information")
+        self.setSubTitle("Specify basic information about the class for "
+                "which you want to generate skeleton source code files.")
         self.setPixmap(QtGui.QWizard.LogoPixmap,
-                QtGui.QPixmap(":/images/logo1.png"))
+                QtGui.QPixmap(':/images/logo1.png'))
 
-        classNameLabel = QtGui.QLabel(self.tr("&Class name:"))
+        classNameLabel = QtGui.QLabel("&Class name:")
         classNameLineEdit = QtGui.QLineEdit()
         classNameLabel.setBuddy(classNameLineEdit)
 
-        baseClassLabel = QtGui.QLabel(self.tr("B&ase class:"))
+        baseClassLabel = QtGui.QLabel("B&ase class:")
         baseClassLineEdit = QtGui.QLineEdit()
         baseClassLabel.setBuddy(baseClassLineEdit)
 
-        qobjectMacroCheckBox = QtGui.QCheckBox(self.tr("Generate Q_OBJECT &macro"))
+        qobjectMacroCheckBox = QtGui.QCheckBox("Generate Q_OBJECT &macro")
 
-        groupBox = QtGui.QGroupBox(self.tr("C&onstructor"))
+        groupBox = QtGui.QGroupBox("C&onstructor")
 
-        qobjectCtorRadioButton = QtGui.QRadioButton(self.tr("&QObject-style constructor"))
-        qwidgetCtorRadioButton = QtGui.QRadioButton(self.tr("Q&Widget-style constructor"))
-        defaultCtorRadioButton = QtGui.QRadioButton(self.tr("&Default constructor"))
-        copyCtorCheckBox = QtGui.QCheckBox(self.tr("&Generate copy constructor and operator="))
+        qobjectCtorRadioButton = QtGui.QRadioButton("&QObject-style constructor")
+        qwidgetCtorRadioButton = QtGui.QRadioButton("Q&Widget-style constructor")
+        defaultCtorRadioButton = QtGui.QRadioButton("&Default constructor")
+        copyCtorCheckBox = QtGui.QCheckBox("&Generate copy constructor and operator=")
 
         defaultCtorRadioButton.setChecked(True)
 
-        QtCore.QObject.connect(defaultCtorRadioButton, QtCore.SIGNAL('toggled()'), copyCtorCheckBox.setEnabled)
+        defaultCtorRadioButton.toggled.connect(copyCtorCheckBox.setEnabled)
 
-        self.registerField("className*", classNameLineEdit)
-        self.registerField("baseClass", baseClassLineEdit)
-        self.registerField("qobjectMacro", qobjectMacroCheckBox)
-        self.registerField("qobjectCtor", qobjectCtorRadioButton)
-        self.registerField("qwidgetCtor", qwidgetCtorRadioButton)
-        self.registerField("defaultCtor", defaultCtorRadioButton)
-        self.registerField("copyCtor", copyCtorCheckBox)
+        self.registerField('className*', classNameLineEdit)
+        self.registerField('baseClass', baseClassLineEdit)
+        self.registerField('qobjectMacro', qobjectMacroCheckBox)
+        self.registerField('qobjectCtor', qobjectCtorRadioButton)
+        self.registerField('qwidgetCtor', qwidgetCtorRadioButton)
+        self.registerField('defaultCtor', defaultCtorRadioButton)
+        self.registerField('copyCtor', copyCtorCheckBox)
 
         groupBoxLayout = QtGui.QVBoxLayout()
         groupBoxLayout.addWidget(qobjectCtorRadioButton)
@@ -229,40 +230,39 @@ class CodeStylePage(QtGui.QWizardPage):
     def __init__(self, parent=None):
         super(CodeStylePage, self).__init__(parent)
 
-        self.setTitle(self.tr("Code Style Options"))
-        self.setSubTitle(self.tr("Choose the formatting of the generated code."))
+        self.setTitle("Code Style Options")
+        self.setSubTitle("Choose the formatting of the generated code.")
         self.setPixmap(QtGui.QWizard.LogoPixmap,
-                QtGui.QPixmap(":/images/logo2.png"))
+                QtGui.QPixmap(':/images/logo2.png'))
 
-        commentCheckBox = QtGui.QCheckBox(self.tr("&Start generated files "
-                                                  "with a comment"))
+        commentCheckBox = QtGui.QCheckBox("&Start generated files with a "
+                "comment")
         commentCheckBox.setChecked(True)
 
-        protectCheckBox = QtGui.QCheckBox(self.tr("&Protect header file "
-                                                  "against multiple "
-                                                  "inclusions"))
+        protectCheckBox = QtGui.QCheckBox("&Protect header file against "
+                "multiple inclusions")
         protectCheckBox.setChecked(True)
 
-        macroNameLabel = QtGui.QLabel(self.tr("&Macro name:"))
+        macroNameLabel = QtGui.QLabel("&Macro name:")
         self.macroNameLineEdit = QtGui.QLineEdit()
         macroNameLabel.setBuddy(self.macroNameLineEdit)
 
-        self.includeBaseCheckBox = QtGui.QCheckBox(self.tr("&Include base "
-                                                           "class definition"))
-        self.baseIncludeLabel = QtGui.QLabel(self.tr("Base class include:"))
+        self.includeBaseCheckBox = QtGui.QCheckBox("&Include base class "
+                "definition")
+        self.baseIncludeLabel = QtGui.QLabel("Base class include:")
         self.baseIncludeLineEdit = QtGui.QLineEdit()
         self.baseIncludeLabel.setBuddy(self.baseIncludeLineEdit)
 
-        QtCore.QObject.connect(protectCheckBox, QtCore.SIGNAL('toggled()'), macroNameLabel.setEnabled)
-        QtCore.QObject.connect(protectCheckBox, QtCore.SIGNAL('toggled()'), self.macroNameLineEdit.setEnabled)
-        QtCore.QObject.connect(self.includeBaseCheckBox, QtCore.SIGNAL('toggled()'), self.baseIncludeLabel.setEnabled)
-        QtCore.QObject.connect(self.includeBaseCheckBox, QtCore.SIGNAL('toggled()'), self.baseIncludeLineEdit.setEnabled)
+        protectCheckBox.toggled.connect(macroNameLabel.setEnabled)
+        protectCheckBox.toggled.connect(self.macroNameLineEdit.setEnabled)
+        self.includeBaseCheckBox.toggled.connect(self.baseIncludeLabel.setEnabled)
+        self.includeBaseCheckBox.toggled.connect(self.baseIncludeLineEdit.setEnabled)
 
-        self.registerField("comment", commentCheckBox)
-        self.registerField("protect", protectCheckBox)
-        self.registerField("macroName", self.macroNameLineEdit)
-        self.registerField("includeBase", self.includeBaseCheckBox)
-        self.registerField("baseInclude", self.baseIncludeLineEdit)
+        self.registerField('comment', commentCheckBox)
+        self.registerField('protect', protectCheckBox)
+        self.registerField('macroName', self.macroNameLineEdit)
+        self.registerField('includeBase', self.includeBaseCheckBox)
+        self.registerField('baseInclude', self.baseIncludeLineEdit)
 
         layout = QtGui.QGridLayout()
         layout.setColumnMinimumWidth(0, 20)
@@ -276,49 +276,50 @@ class CodeStylePage(QtGui.QWizardPage):
         self.setLayout(layout)
 
     def initializePage(self):
-        className = self.field("className").toString()
-        self.macroNameLineEdit.setText(className.toUpper() + "_H")
+        className = self.field('className')
+        self.macroNameLineEdit.setText(className.upper() + "_H")
 
-        baseClass = self.field("baseClass").toString()
+        baseClass = self.field('baseClass')
+        is_baseClass = bool(baseClass)
 
-        self.includeBaseCheckBox.setChecked(len(baseClass))
-        self.includeBaseCheckBox.setEnabled(len(baseClass))
-        self.baseIncludeLabel.setEnabled(len(baseClass))
-        self.baseIncludeLineEdit.setEnabled(len(baseClass))
+        self.includeBaseCheckBox.setChecked(is_baseClass)
+        self.includeBaseCheckBox.setEnabled(is_baseClass)
+        self.baseIncludeLabel.setEnabled(is_baseClass)
+        self.baseIncludeLineEdit.setEnabled(is_baseClass)
 
-        if len(baseClass) == 0.:
+        if not is_baseClass:
             self.baseIncludeLineEdit.clear()
-        elif QtCore.QRegExp("Q[A-Z].*").exactMatch(baseClass):
-            self.baseIncludeLineEdit.setText("<" + baseClass + ">")
+        elif QtCore.QRegExp('Q[A-Z].*').exactMatch(baseClass):
+            self.baseIncludeLineEdit.setText('<' + baseClass + '>')
         else:
-            self.baseIncludeLineEdit.setText("\"" + baseClass.lower() + ".h\"")
+            self.baseIncludeLineEdit.setText('"' + baseClass.lower() + '.h"')
 
 
 class OutputFilesPage(QtGui.QWizardPage):
     def __init__(self, parent=None):
         super(OutputFilesPage, self).__init__(parent)
 
-        self.setTitle(self.tr("Output Files"))
-        self.setSubTitle(self.tr("Specify where you want the wizard to put "
-                                 "the generated skeleton code."))
+        self.setTitle("Output Files")
+        self.setSubTitle("Specify where you want the wizard to put the "
+                "generated skeleton code.")
         self.setPixmap(QtGui.QWizard.LogoPixmap,
-                QtGui.QPixmap(":/images/logo3.png"))
+                QtGui.QPixmap(':/images/logo3.png'))
 
-        outputDirLabel = QtGui.QLabel(self.tr("&Output directory:"))
+        outputDirLabel = QtGui.QLabel("&Output directory:")
         self.outputDirLineEdit = QtGui.QLineEdit()
         outputDirLabel.setBuddy(self.outputDirLineEdit)
 
-        headerLabel = QtGui.QLabel(self.tr("&Header file name:"))
+        headerLabel = QtGui.QLabel("&Header file name:")
         self.headerLineEdit = QtGui.QLineEdit()
         headerLabel.setBuddy(self.headerLineEdit)
 
-        implementationLabel = QtGui.QLabel(self.tr("&Implementation file name:"))
+        implementationLabel = QtGui.QLabel("&Implementation file name:")
         self.implementationLineEdit = QtGui.QLineEdit()
         implementationLabel.setBuddy(self.implementationLineEdit)
 
-        self.registerField("outputDir*", self.outputDirLineEdit)
-        self.registerField("header*", self.headerLineEdit)
-        self.registerField("implementation*", self.implementationLineEdit)
+        self.registerField('outputDir*', self.outputDirLineEdit)
+        self.registerField('header*', self.headerLineEdit)
+        self.registerField('implementation*', self.implementationLineEdit)
 
         layout = QtGui.QGridLayout()
         layout.addWidget(outputDirLabel, 0, 0)
@@ -330,9 +331,9 @@ class OutputFilesPage(QtGui.QWizardPage):
         self.setLayout(layout)
 
     def initializePage(self):
-        className = self.field("className").toString()
-        self.headerLineEdit.setText(className.toLower() + ".h")
-        self.implementationLineEdit.setText(className.toLower() + ".cpp")
+        className = self.field('className')
+        self.headerLineEdit.setText(className.lower() + '.h')
+        self.implementationLineEdit.setText(className.lower() + '.cpp')
         self.outputDirLineEdit.setText(QtCore.QDir.convertSeparators(QtCore.QDir.tempPath()))
 
 
@@ -340,9 +341,9 @@ class ConclusionPage(QtGui.QWizardPage):
     def __init__(self, parent=None):
         super(ConclusionPage, self).__init__(parent)
 
-        self.setTitle(self.tr("Conclusion"))
+        self.setTitle("Conclusion")
         self.setPixmap(QtGui.QWizard.WatermarkPixmap,
-                QtGui.QPixmap(":/images/watermark2.png"))
+                QtGui.QPixmap(':/images/watermark2.png'))
 
         self.label = QtGui.QLabel()
         self.label.setWordWrap(True)
@@ -353,11 +354,11 @@ class ConclusionPage(QtGui.QWizardPage):
 
     def initializePage(self):
         finishText = self.wizard().buttonText(QtGui.QWizard.FinishButton)
-        finishText.remove('&')
-        self.label.setText(self.tr("Click %1 to generate the class skeleton.").arg(finishText));
+        finishText.replace('&', '')
+        self.label.setText("Click %s to generate the class skeleton." % finishText)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     import sys
 

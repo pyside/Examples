@@ -1,78 +1,73 @@
 #!/usr/bin/env python
 
-"""PySide port of the dialogs/extension example from Qt v4.x"""
+"""PyQt4 port of the dialogs/extension example from Qt v4.x"""
 
-import sys
 from PySide import QtCore, QtGui
 
 
 class FindDialog(QtGui.QDialog):
     def __init__(self, parent=None):
-        QtGui.QDialog.__init__(self, parent)
+        super(FindDialog, self).__init__(parent)
 
-        self.label = QtGui.QLabel(self.tr("Find &what:"))
-        self.lineEdit = QtGui.QLineEdit()
-        self.label.setBuddy(self.lineEdit)
+        label = QtGui.QLabel("Find &what:")
+        lineEdit = QtGui.QLineEdit()
+        label.setBuddy(lineEdit)
 
-        self.caseCheckBox = QtGui.QCheckBox(self.tr("Match &case"))
-        self.fromStartCheckBox = QtGui.QCheckBox(self.tr("Search from &start"))
-        self.fromStartCheckBox.setChecked(True)
+        caseCheckBox = QtGui.QCheckBox("Match &case")
+        fromStartCheckBox = QtGui.QCheckBox("Search from &start")
+        fromStartCheckBox.setChecked(True)
 
-        self.findButton = QtGui.QPushButton(self.tr("&Find"))
-        self.findButton.setDefault(True)
+        findButton = QtGui.QPushButton("&Find")
+        findButton.setDefault(True)
 
-        self.closeButton = QtGui.QPushButton(self.tr("Close"))
+        moreButton = QtGui.QPushButton("&More")
+        moreButton.setCheckable(True)
+        moreButton.setAutoDefault(False)
 
-        self.moreButton = QtGui.QPushButton(self.tr("&More"))
-        self.moreButton.setCheckable(True)
-        self.moreButton.setAutoDefault(False)
+        buttonBox = QtGui.QDialogButtonBox(QtCore.Qt.Vertical)
+        buttonBox.addButton(findButton, QtGui.QDialogButtonBox.ActionRole)
+        buttonBox.addButton(moreButton, QtGui.QDialogButtonBox.ActionRole)
 
-        self.extension = QtGui.QWidget()
+        extension = QtGui.QWidget()
 
-        self.wholeWordsCheckBox = QtGui.QCheckBox(self.tr("&Whole words"))
-        self.backwardCheckBox = QtGui.QCheckBox(self.tr("Search &backward"))
-        self.searchSelectionCheckBox = QtGui.QCheckBox(self.tr("Search se&lection"))
+        wholeWordsCheckBox = QtGui.QCheckBox("&Whole words")
+        backwardCheckBox = QtGui.QCheckBox("Search &backward")
+        searchSelectionCheckBox = QtGui.QCheckBox("Search se&lection")
 
-        self.connect(self.closeButton, QtCore.SIGNAL("clicked()"),
-                     self, QtCore.SLOT("close()"))
-        self.connect(self.moreButton, QtCore.SIGNAL("toggled(bool)"),
-                     self.extension, QtCore.SLOT("setVisible(bool)"))
+        moreButton.toggled.connect(extension.setVisible)
 
         extensionLayout = QtGui.QVBoxLayout()
         extensionLayout.setMargin(0)
-        extensionLayout.addWidget(self.wholeWordsCheckBox)
-        extensionLayout.addWidget(self.backwardCheckBox)
-        extensionLayout.addWidget(self.searchSelectionCheckBox)
-        self.extension.setLayout(extensionLayout)
+        extensionLayout.addWidget(wholeWordsCheckBox)
+        extensionLayout.addWidget(backwardCheckBox)
+        extensionLayout.addWidget(searchSelectionCheckBox)
+        extension.setLayout(extensionLayout)
 
         topLeftLayout = QtGui.QHBoxLayout()
-        topLeftLayout.addWidget(self.label)
-        topLeftLayout.addWidget(self.lineEdit)
+        topLeftLayout.addWidget(label)
+        topLeftLayout.addWidget(lineEdit)
 
         leftLayout = QtGui.QVBoxLayout()
         leftLayout.addLayout(topLeftLayout)
-        leftLayout.addWidget(self.caseCheckBox)
-        leftLayout.addWidget(self.fromStartCheckBox)
+        leftLayout.addWidget(caseCheckBox)
+        leftLayout.addWidget(fromStartCheckBox)
         leftLayout.addStretch(1)
-
-        rightLayout = QtGui.QVBoxLayout()
-        rightLayout.addWidget(self.findButton)
-        rightLayout.addWidget(self.closeButton)
-        rightLayout.addWidget(self.moreButton)
-        rightLayout.addStretch(1)
 
         mainLayout = QtGui.QGridLayout()
         mainLayout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
         mainLayout.addLayout(leftLayout, 0, 0)
-        mainLayout.addLayout(rightLayout, 0, 1)
-        mainLayout.addWidget(self.extension, 1, 0, 1, 2)
+        mainLayout.addWidget(buttonBox, 0, 1)
+        mainLayout.addWidget(extension, 1, 0, 1, 2)
         self.setLayout(mainLayout)
 
-        self.setWindowTitle(self.tr("Extension"))
-        self.extension.hide()
+        self.setWindowTitle("Extension")
+        extension.hide()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     dialog = FindDialog()
     sys.exit(dialog.exec_())

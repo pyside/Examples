@@ -1,20 +1,25 @@
 #!/usr/bin/env python
 
-"""PySide port of the dialogs/standarddialogs example from Qt v4.x"""
+"""PyQt4 port of the dialogs/standarddialogs example from Qt v4.x"""
+
+# This is only needed for Python v2 but is harmless for Python v3.
+#import sip
+#sip.setapi('QString', 2)
 
 import sys
 from PySide import QtCore, QtGui
 
 
 class Dialog(QtGui.QDialog):
-    MESSAGE = QtCore.QT_TR_NOOP("<p>Message boxes have a caption, a text, and up to "
-                                "three buttons, each with standard or custom texts.</p>"
-                                "<p>Click a button or press Esc.</p>")
+    MESSAGE = "<p>Message boxes have a caption, a text, and up to three " \
+            "buttons, each with standard or custom texts.</p>" \
+            "<p>Click a button to close the message box. Pressing the Esc " \
+            "button will activate the detected escape button (if any).</p>"
 
     def __init__(self, parent=None):
-        QtGui.QDialog.__init__(self, parent)
+        super(Dialog, self).__init__(parent)
 
-        self.openFilesPath = ""#QtCore.QString()
+        self.openFilesPath = ''
 
         self.errorMessageDialog = QtGui.QErrorMessage(self)
 
@@ -22,63 +27,63 @@ class Dialog(QtGui.QDialog):
 
         self.integerLabel = QtGui.QLabel()
         self.integerLabel.setFrameStyle(frameStyle)
-        self.integerButton = QtGui.QPushButton(self.tr("QInputDialog.get&Integer()"))
+        self.integerButton = QtGui.QPushButton("QInputDialog.get&Integer()")
 
         self.doubleLabel = QtGui.QLabel()
         self.doubleLabel.setFrameStyle(frameStyle)
-        self.doubleButton = QtGui.QPushButton(self.tr("QInputDialog.get&Double()"))
+        self.doubleButton = QtGui.QPushButton("QInputDialog.get&Double()")
 
         self.itemLabel = QtGui.QLabel()
         self.itemLabel.setFrameStyle(frameStyle)
-        self.itemButton = QtGui.QPushButton(self.tr("QInputDialog.getIte&m()"))
+        self.itemButton = QtGui.QPushButton("QInputDialog.getIte&m()")
 
         self.textLabel = QtGui.QLabel()
         self.textLabel.setFrameStyle(frameStyle)
-        self.textButton = QtGui.QPushButton(self.tr("QInputDialog.get&Text()"))
+        self.textButton = QtGui.QPushButton("QInputDialog.get&Text()")
 
         self.colorLabel = QtGui.QLabel()
         self.colorLabel.setFrameStyle(frameStyle)
-        self.colorButton = QtGui.QPushButton(self.tr("QColorDialog.get&Color()"))
+        self.colorButton = QtGui.QPushButton("QColorDialog.get&Color()")
 
         self.fontLabel = QtGui.QLabel()
         self.fontLabel.setFrameStyle(frameStyle)
-        self.fontButton = QtGui.QPushButton(self.tr("QFontDialog.get&Font()"))
+        self.fontButton = QtGui.QPushButton("QFontDialog.get&Font()")
 
         self.directoryLabel = QtGui.QLabel()
         self.directoryLabel.setFrameStyle(frameStyle)
-        self.directoryButton = QtGui.QPushButton(self.tr("QFileDialog.getE&xistingDirectory()"))
+        self.directoryButton = QtGui.QPushButton("QFileDialog.getE&xistingDirectory()")
 
         self.openFileNameLabel = QtGui.QLabel()
         self.openFileNameLabel.setFrameStyle(frameStyle)
-        self.openFileNameButton = QtGui.QPushButton(self.tr("QFileDialog.get&OpenFileName()"))
+        self.openFileNameButton = QtGui.QPushButton("QFileDialog.get&OpenFileName()")
 
         self.openFileNamesLabel = QtGui.QLabel()
         self.openFileNamesLabel.setFrameStyle(frameStyle)
-        self.openFileNamesButton = QtGui.QPushButton(self.tr("QFileDialog.&getOpenFileNames()"))
+        self.openFileNamesButton = QtGui.QPushButton("QFileDialog.&getOpenFileNames()")
 
         self.saveFileNameLabel = QtGui.QLabel()
         self.saveFileNameLabel.setFrameStyle(frameStyle)
-        self.saveFileNameButton = QtGui.QPushButton(self.tr("QFileDialog.get&SaveFileName()"))
+        self.saveFileNameButton = QtGui.QPushButton("QFileDialog.get&SaveFileName()")
 
         self.criticalLabel = QtGui.QLabel()
         self.criticalLabel.setFrameStyle(frameStyle)
-        self.criticalButton = QtGui.QPushButton(self.tr("QMessageBox.critica&l()"))
+        self.criticalButton = QtGui.QPushButton("QMessageBox.critica&l()")
 
         self.informationLabel = QtGui.QLabel()
         self.informationLabel.setFrameStyle(frameStyle)
-        self.informationButton = QtGui.QPushButton(self.tr("QMessageBox.i&nformation()"))
+        self.informationButton = QtGui.QPushButton("QMessageBox.i&nformation()")
 
         self.questionLabel = QtGui.QLabel()
         self.questionLabel.setFrameStyle(frameStyle)
-        self.questionButton = QtGui.QPushButton(self.tr("QMessageBox.&question()"))
+        self.questionButton = QtGui.QPushButton("QMessageBox.&question()")
 
         self.warningLabel = QtGui.QLabel()
         self.warningLabel.setFrameStyle(frameStyle)
-        self.warningButton = QtGui.QPushButton(self.tr("QMessageBox.&warning()"))
+        self.warningButton = QtGui.QPushButton("QMessageBox.&warning()")
 
         self.errorLabel = QtGui.QLabel()
         self.errorLabel.setFrameStyle(frameStyle)
-        self.errorButton = QtGui.QPushButton(self.tr("QErrorMessage.show&M&essage()"))
+        self.errorButton = QtGui.QPushButton("QErrorMessage.show&M&essage()")
 
         self.integerButton.clicked.connect(self.setInteger)
         self.doubleButton.clicked.connect(self.setDouble)
@@ -95,6 +100,12 @@ class Dialog(QtGui.QDialog):
         self.questionButton.clicked.connect(self.questionMessage)
         self.warningButton.clicked.connect(self.warningMessage)
         self.errorButton.clicked.connect(self.errorMessage)
+
+        self.native = QtGui.QCheckBox()
+        self.native.setText("Use native file dialog.")
+        self.native.setChecked(True)
+        if sys.platform not in ("win32", "darwin"):
+            self.native.hide()
 
         layout = QtGui.QGridLayout()
         layout.setColumnStretch(1, 1)
@@ -129,125 +140,141 @@ class Dialog(QtGui.QDialog):
         layout.addWidget(self.warningLabel, 13, 1)
         layout.addWidget(self.errorButton, 14, 0)
         layout.addWidget(self.errorLabel, 14, 1)
+        layout.addWidget(self.native, 15, 0)
         self.setLayout(layout)
 
-        self.setWindowTitle(self.tr("Standard Dialogs"))
+        self.setWindowTitle("Standard Dialogs")
 
-    def setInteger(self):
-        i, ok = QtGui.QInputDialog.getInteger(self, self.tr("QInputDialog.getInteger()"),
-                                              self.tr("Percentage:"), 25, 0, 100, 1)
+    def setInteger(self):    
+        i, ok = QtGui.QInputDialog.getInteger(self,
+                "QInputDialog.getInteger()", "Percentage:", 25, 0, 100, 1)
         if ok:
-            self.integerLabel.setText(self.tr("{0}%").format(i))
+            self.integerLabel.setText("%d" % i)
 
-    def setDouble(self):
-        d, ok = QtGui.QInputDialog.getDouble(self, self.tr("QInputDialog.getDouble()"),
-                                             self.tr("Amount:"), 37.56, -10000, 10000, 2)
+    def setDouble(self):    
+        d, ok = QtGui.QInputDialog.getDouble(self, "QInputDialog.getDouble()",
+                "Amount:", 37.56, -10000, 10000, 2)
         if ok:
-           self.doubleLabel.setText(("${0}").format(d))
+            self.doubleLabel.setText("$%g" % d)
 
-    def setItem(self):
-        items = [self.tr("Spring"), self.tr("Summer"), self.tr("Fall"), self.tr("Winter")]
+    def setItem(self):    
+        items = ("Spring", "Summer", "Fall", "Winter")
 
-        item, ok = QtGui.QInputDialog.getItem(self, self.tr("QInputDialog.getItem()"),
-                                              self.tr("Season:"), items, 0, False)
-        if ok and len(item):
+        item, ok = QtGui.QInputDialog.getItem(self, "QInputDialog.getItem()",
+                "Season:", items, 0, False)
+        if ok and item:
             self.itemLabel.setText(item)
 
     def setText(self):
-        text, ok = QtGui.QInputDialog.getText(self, self.tr("QInputDialog.getText()"),
-                                              self.tr("User name:"), QtGui.QLineEdit.Normal,
-                                              QtCore.QDir.home().dirName())
-        if ok and len(text):
+        text, ok = QtGui.QInputDialog.getText(self, "QInputDialog.getText()",
+                "User name:", QtGui.QLineEdit.Normal,
+                QtCore.QDir.home().dirName())
+        if ok and text != '':
             self.textLabel.setText(text)
 
-    def setColor(self):
+    def setColor(self):    
         color = QtGui.QColorDialog.getColor(QtCore.Qt.green, self)
-        if color.isValid():
+        if color.isValid(): 
             self.colorLabel.setText(color.name())
             self.colorLabel.setPalette(QtGui.QPalette(color))
+            self.colorLabel.setAutoFillBackground(True)
 
-    def setFont(self):
+    def setFont(self):    
         font, ok = QtGui.QFontDialog.getFont(QtGui.QFont(self.fontLabel.text()), self)
         if ok:
             self.fontLabel.setText(font.key())
+            self.fontLabel.setFont(font)
 
-    def setExistingDirectory(self):
+    def setExistingDirectory(self):    
+        options = QtGui.QFileDialog.DontResolveSymlinks | QtGui.QFileDialog.ShowDirsOnly
         directory = QtGui.QFileDialog.getExistingDirectory(self,
-                                          self.tr("QFileDialog.getExistingDirectory()"),
-                                          self.directoryLabel.text(),
-                                          QtGui.QFileDialog.DontResolveSymlinks | QtGui.QFileDialog.ShowDirsOnly)
-        if len(directory):
+                "QFileDialog.getExistingDirectory()",
+                self.directoryLabel.text(), options)
+        if directory:
             self.directoryLabel.setText(directory)
 
-    def setOpenFileName(self):
-        fileName, filter = QtGui.QFileDialog.getOpenFileName(self,
-                                         self.tr("QFileDialog.getOpenFileName()"),
-                                         self.openFileNameLabel.text(),
-                                         self.tr("All Files (*);;Text Files (*.txt)"))
-        if len(fileName):
+    def setOpenFileName(self):    
+        options = QtGui.QFileDialog.Options()
+        if not self.native.isChecked():
+            options |= QtGui.QFileDialog.DontUseNativeDialog
+        fileName, filtr = QtGui.QFileDialog.getOpenFileName(self,
+                "QFileDialog.getOpenFileName()",
+                self.openFileNameLabel.text(),
+                "All Files (*);;Text Files (*.txt)", options)
+        if fileName:
             self.openFileNameLabel.setText(fileName)
 
-    def setOpenFileNames(self):
-        files, filter = QtGui.QFileDialog.getOpenFileNames(self,
-                                      self.tr("QFileDialog.getOpenFileNames()"),
-                                      self.openFilesPath,
-                                      self.tr("All Files (*);;Text Files (*.txt)"))
-        if len(files):
+    def setOpenFileNames(self):    
+        options = QtGui.QFileDialog.Options()
+        if not self.native.isChecked():
+            options |= QtGui.QFileDialog.DontUseNativeDialog
+        files, filtr = QtGui.QFileDialog.getOpenFileNames(self,
+                "QFileDialog.getOpenFileNames()", self.openFilesPath,
+                "All Files (*);;Text Files (*.txt)", options)
+        if files:
             self.openFilesPath = files[0]
-            self.openFileNamesLabel.setText("[{0}]".format(", ".join(files)))
+            self.openFileNamesLabel.setText("[%s]" % ', '.join(files))
 
-    def setSaveFileName(self):
-        fileName, filter = QtGui.QFileDialog.getSaveFileName(self,
-                                         self.tr("QFileDialog.getSaveFileName()"),
-                                         self.saveFileNameLabel.text(),
-                                         self.tr("All Files (*);;Text Files (*.txt)"))
-        if len(fileName):
+    def setSaveFileName(self):    
+        options = QtGui.QFileDialog.Options()
+        if not self.native.isChecked():
+            options |= QtGui.QFileDialog.DontUseNativeDialog
+        fileName, filtr = QtGui.QFileDialog.getSaveFileName(self,
+                "QFileDialog.getSaveFileName()",
+                self.saveFileNameLabel.text(),
+                "All Files (*);;Text Files (*.txt)", options)
+        if fileName:
             self.saveFileNameLabel.setText(fileName)
 
-    def criticalMessage(self):
-        reply = QtGui.QMessageBox.critical(self, self.tr("QMessageBox.showCritical()"),
-                                           Dialog.MESSAGE, QtGui.QMessageBox.Abort|
-                                           QtGui.QMessageBox.StandardButton.Retry|
-                                           QtGui.QMessageBox.StandardButton.Ignore)
+    def criticalMessage(self):    
+        reply = QtGui.QMessageBox.critical(self, "QMessageBox.critical()",
+                Dialog.MESSAGE,
+                QtGui.QMessageBox.Abort | QtGui.QMessageBox.Retry | QtGui.QMessageBox.Ignore)
         if reply == QtGui.QMessageBox.Abort:
-            self.criticalLabel.setText(self.tr("Abort"))
+            self.criticalLabel.setText("Abort")
         elif reply == QtGui.QMessageBox.Retry:
-            self.criticalLabel.setText(self.tr("Retry"))
+            self.criticalLabel.setText("Retry")
         else:
-            self.criticalLabel.setText(self.tr("Ignore"))
+            self.criticalLabel.setText("Ignore")
 
-    def informationMessage(self):
-        QtGui.QMessageBox.information(self, self.tr("QMessageBox.showInformation()"), Dialog.MESSAGE)
-        self.informationLabel.setText(self.tr("Closed with OK or Esc"))
+    def informationMessage(self):    
+        reply = QtGui.QMessageBox.information(self,
+                "QMessageBox.information()", Dialog.MESSAGE)
+        if reply == QtGui.QMessageBox.Ok:
+            self.informationLabel.setText("OK")
+        else:
+            self.informationLabel.setText("Escape")
 
-    def questionMessage(self):
-        reply = QtGui.QMessageBox.question(self, self.tr("QMessageBox.showQuestion()"),
-                                           Dialog.MESSAGE, QtGui.QMessageBox.StandardButton.Yes | QtGui.QMessageBox.StandardButton.No)
+    def questionMessage(self):    
+        reply = QtGui.QMessageBox.question(self, "QMessageBox.question()",
+                Dialog.MESSAGE,
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No | QtGui.QMessageBox.Cancel)
         if reply == QtGui.QMessageBox.Yes:
-            self.questionLabel.setText(self.tr("Yes"))
+            self.questionLabel.setText("Yes")
         elif reply == QtGui.QMessageBox.No:
-            self.questionLabel.setText(self.tr("No"))
+            self.questionLabel.setText("No")
         else:
-            self.questionLabel.setText(self.tr("Cancel"))
+            self.questionLabel.setText("Cancel")
 
-    def warningMessage(self):
-        reply = QtGui.QMessageBox.warning(self, self.tr("QMessageBox.showWarning()"),
-                                          Dialog.MESSAGE, QtGui.QMessageBox.StandardButton.Ok | QtGui.QMessageBox.StandardButton.Discard )
-        if reply == 0:
-            self.warningLabel.setText(self.tr("Save Again"))
+    def warningMessage(self):    
+        msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning,
+                "QMessageBox.warning()", Dialog.MESSAGE,
+                QtGui.QMessageBox.NoButton, self)
+        msgBox.addButton("Save &Again", QtGui.QMessageBox.AcceptRole)
+        msgBox.addButton("&Continue", QtGui.QMessageBox.RejectRole)
+        if msgBox.exec_() == QtGui.QMessageBox.AcceptRole:
+            self.warningLabel.setText("Save Again")
         else:
-            self.warningLabel.setText(self.tr("Continue"))
+            self.warningLabel.setText("Continue")
 
-    def errorMessage(self):
-        self.errorMessageDialog.showMessage(self.tr(
-                                    "This dialog shows and remembers error messages. "
-                                    "If the checkbox is checked (as it is by default), "
-                                    "the shown message will be shown again, "
-                                    "but if the user unchecks the box the message "
-                                    "will not appear again if QErrorMessage.showMessage() "
-                                    "is called with the same message."))
-        self.errorLabel.setText(self.tr("If the box is unchecked, the "
-                                        "message won't appear again."))
+    def errorMessage(self):    
+        self.errorMessageDialog.showMessage("This dialog shows and remembers "
+                "error messages. If the checkbox is checked (as it is by "
+                "default), the shown message will be shown again, but if the "
+                "user unchecks the box the message will not appear again if "
+                "QErrorMessage.showMessage() is called with the same message.")
+        self.errorLabel.setText("If the box is unchecked, the message won't "
+                "appear again.")
 
 
 if __name__ == '__main__':

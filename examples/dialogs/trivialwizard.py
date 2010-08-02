@@ -10,7 +10,7 @@ def createIntroPage():
     page.setTitle("Introduction")
 
     label = QtGui.QLabel("This wizard will help you register your copy of "
-                         "Super Product Two.")
+            "Super Product Two.")
     label.setWordWrap(True)
 
     layout = QtGui.QVBoxLayout()
