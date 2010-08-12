@@ -47,15 +47,14 @@ class SpinBoxDelegate(QtGui.QItemDelegate):
         return editor
 
     def setEditorData(self, spinBox, index):
-        value, ok = index.model().data(index, QtCore.Qt.DisplayRole).toInt()
-
+        value = index.model().data(index, QtCore.Qt.DisplayRole)
         spinBox.setValue(value)
 
     def setModelData(self, spinBox, model, index):
         spinBox.interpretText()
         value = spinBox.value()
 
-        model.setData(index, QtCore.QVariant(value))
+        model.setData(index, value)
 
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
@@ -74,7 +73,7 @@ if __name__ == "__main__":
     for row in range(4):
         for column in range(2):
             index = model.index(row, column, QtCore.QModelIndex())
-            model.setData(index, QtCore.QVariant((row+1) * (column+1)))
+            model.setData(index, (row+1) * (column+1))
 
     tableView.setWindowTitle("Spin Box Delegate")
     tableView.show()

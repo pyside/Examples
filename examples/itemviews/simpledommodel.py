@@ -70,31 +70,31 @@ class DomModel(QtCore.QAbstractItemModel):
 
     def data(self, index, role):
         if not index.isValid():
-            return QtCore.QVariant()
+            return None
 
         if role != QtCore.Qt.DisplayRole:
-            return QtCore.QVariant()
+            return None
 
         item = index.internalPointer()
 
         node = item.node()
-        attributes = QtCore.QStringList()
+        attributes = []
         attributeMap = node.attributes()
 
         if index.column() == 0:
-            return QtCore.QVariant(node.nodeName())
-        
+            return node.nodeName()
+
         elif index.column() == 1:
             for i in range(0, attributeMap.count()):
                 attribute = attributeMap.item(i)
                 attributes.append(attribute.nodeName() + "=\"" + \
                                   attribute.nodeValue() + "\"")
 
-            return QtCore.QVariant(attributes.join(" "))
+            return " ".join(attributes)
         elif index.column() == 2:
-            return QtCore.QVariant(node.nodeValue().split("\n").join(" "))
+            return node.nodeValue().split("\n").join(" ")
         else:
-            return QtCore.QVariant()
+            return None
 
     def flags(self, index):
         if not index.isValid():
@@ -105,15 +105,13 @@ class DomModel(QtCore.QAbstractItemModel):
     def headerData(self, section, orientation, role):
         if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
             if section == 0:
-                return QtCore.QVariant(self.tr("Name"))
+                return self.tr("Name")
             elif section == 1:
-                return QtCore.QVariant(self.tr("Attributes"))
+                return self.tr("Attributes")
             elif section == 2:
-                return QtCore.QVariant(self.tr("Value"))
-            else:
-                return QtCore.QVariant()
+                return self.tr("Value")
 
-        return QtCore.QVariant()
+        return None
 
     def index(self, row, column, parent):
         if row < 0 or column < 0 or row >= self.rowCount(parent) or column >= self.columnCount(parent):
@@ -172,11 +170,11 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle(self.tr("Simple DOM Model"))
 
     def openFile(self):
-        filePath = QtGui.QFileDialog.getOpenFileName(self, self.tr("Open File"),
+        filePath, ok = QtGui.QFileDialog.getOpenFileName(self, self.tr("Open File"),
             self.xmlPath, self.tr("XML files (*.xml);;HTML files (*.html);;"
                         "SVG files (*.svg);;User Interface files (*.ui)"))
 
-        if not filePath.isEmpty():
+        if len(filePath):
             f = QtCore.QFile(filePath)
             if f.open(QtCore.QIODevice.ReadOnly):
                 document = QtXml.QDomDocument()

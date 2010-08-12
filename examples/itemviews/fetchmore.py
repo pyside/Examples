@@ -12,7 +12,7 @@ class FileListModel(QtCore.QAbstractListModel):
     def __init__(self, parent=None):
         super(FileListModel, self).__init__(parent)
 
-        self.fileCount = 0    
+        self.fileCount = 0
         self.fileList = []
 
     def rowCount(self, parent=QtCore.QModelIndex()):
@@ -20,21 +20,21 @@ class FileListModel(QtCore.QAbstractListModel):
 
     def data(self, index, role=QtCore.Qt.DisplayRole):
         if not index.isValid():
-            return QtCore.QVariant()
+            return None
 
         if index.row() >= len(self.fileList) or index.row() < 0:
-            return QtCore.QVariant()
+            return None
 
         if role == QtCore.Qt.DisplayRole:
-            return QtCore.QVariant(self.fileList[index.row()])
+            return self.fileList[index.row()]
         elif role == QtCore.Qt.BackgroundRole:
             batch = (index.row() / 100) % 2
             if batch == 0:
-                return QtCore.QVariant(QtGui.qApp.palette().base())
+                return QtGui.qApp.palette().base()
             else:
-                return QtCore.QVariant(QtGui.qApp.palette().alternateBase())
+                return QtGui.qApp.palette().alternateBase()
 
-        return QtCore.QVariant()
+        return None
 
     def canFetchMore(self, index):
         return self.fileCount < len(self.fileList)
