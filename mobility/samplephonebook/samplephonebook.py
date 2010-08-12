@@ -103,15 +103,18 @@ class ContactListPage(QWidget):
             optionsMenu = QMenu("&Contacts", self)
             mainWindow.menuBar().addMenu(optionsMenu)
 
-            importAction = QAction("&Import contacts...", self)
+            importAction = QAction(self)
+            importAction.setText("&Import contacts...")
             importAction.triggered.connect(self.importClicked)
             optionsMenu.addAction(importAction)
-            exportAction = QAction("Ex&port contacts...", self)
+            exportAction = QAction(self)
+            exportAction.setText("&Export contacts...")
             exportAction.triggered.connect(self.exportClicked)
             optionsMenu.addAction(exportAction)
             optionsMenu.addSeparator()
 
-            exitAction = QAction("E&xit", self);
+            exitAction = QAction(self);
+            exitAction.setText("E&xit")
             exitAction.triggered.connect(qApp.quit)
             optionsMenu.addAction(exitAction)
 
@@ -120,8 +123,8 @@ class ContactListPage(QWidget):
 
     def __del__(self):
         self.initialisedManagers = self.initialisedManagers.values()
-        while not self.initialisedManagers.isEmpty():
-            deleteMe = self.initialisedManagers.takeFirst()
+        while self.initialisedManagers:
+            deleteMe = self.initialisedManagers.pop(0)
             del deleteMe
 
     def backendSelected(self):
@@ -362,7 +365,7 @@ class ContactEditor(QWidget):
 
         # avatar viewer
         #TODO: remove ()
-        if defs[QContactAvatar().DefinitionName] or defs[QContactThumbnail().DefinitionName]:
+        if QContactAvatar().DefinitionName in defs or QContactThumbnail().DefinitionName in defs:
             self.avatarBtn.setEnabled(True)
             #TODO: remove ()
             av = QContactAvatar(curr.detail(QContactAvatar().DefinitionName))
