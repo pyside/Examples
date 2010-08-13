@@ -108,7 +108,7 @@ class MainWindow(QtGui.QMainWindow):
         frame.setFrameFormat(frameFormat)
 
         format = cursor.charFormat()
-        format.setFontPointSize(self.fontSize)
+        format.setFontPointSize(float(self.fontSize))
 
         boldFormat = QtGui.QTextCharFormat(format)
         boldFormat.setFontWeight(QtGui.QFont.Bold)
@@ -166,4 +166,4 @@ if __name__ == '__main__':
     window = MainWindow()
     window.resize(640, 256)
     window.show()
-    sys.exit(app.exec_())    
+    sys.exit(app.exec_())
