@@ -142,12 +142,6 @@ class Dialog(QWidget, Ui_Dialog):
             inputs.append("Mouse")
 
         self.inputMethodLabel.setText(" ".join(inputs))
-        bLabel = "Off"
-        if self.di.currentBluetoothPowerState():
-            bLabel = "On"
-
-        self.bluetoothPowerLabel.setText(bLabel)
-        self.di.bluetoothStateChanged.connect(self.bluetoothChanged)
 
     def updateDeviceLockedState(self):
         if self.di:
@@ -162,30 +156,10 @@ class Dialog(QWidget, Ui_Dialog):
         self.brightnessLabel.setText(str(di.displayBrightness(0)))
         self.colorDepthLabel.setText(str(di.colorDepth((0))))
 
-        orientation = di.getOrientation(0);
-        if orientation == QSystemDisplayInfo.Landscape:
-            orientStr="Landscape"
-        elif orientation == QSystemDisplayInfo.Portrait:
-            orientStr="Portrait"
-        elif orientation == QSystemDisplayInfo.InvertedLandscape:
-            orientStr="Inverted Landscape";
-        elif orientation == QSystemDisplayInfo.InvertedPortrait:
-            orientStr="Inverted Portrait";
-        else:
-            orientStr = "Orientation unknown"
-
-        self.orientationLabel.setText(orientStr)
-        self.contrastLabel.setText(str(di.contrast((0))))
-        self.dpiWidthLabel.setText(str(di.getDPIWidth(0)))
-        self.dpiHeightLabel.setText(str(di.getDPIHeight((0))))
-        self.physicalHeightLabel.setText(str(di.physicalHeight(0)))
-        self.physicalWidthLabel.setText(str(di.physicalWidth((0))))
-
     def setupStorage(self):
         if not self.sti:
             self.sti = QSystemStorageInfo(self)
             self.storageTreeWidget.header().setResizeMode(QHeaderView.ResizeToContents)
-            self.sti.logicalDrivesChanged.connect(self.storageChanged)
         self.updateStorage();
 
     def updateStorage(self):
@@ -477,9 +451,6 @@ class Dialog(QWidget, Ui_Dialog):
                 simstring = ""
 
             self.simStatusLabel.setText(simstring)
-
-    def storageChanged(self, added):
-        self.setupStorage()
 
     def bluetoothChanged(self, b):
         if b:
