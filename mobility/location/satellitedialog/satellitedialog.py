@@ -215,13 +215,15 @@ class SatelliteDialog(QDialog):
         mainLayout.addWidget(titleLabel)
         mainLayout.addWidget(self.satelliteWidget)
 
-        switchAction = QAction(self.tr("Switch"), self)
+        switchAction = QAction(self)
+        switchAction.setText(self.tr("Switch"))
         switchAction.setSoftKeyRole(QAction.PositiveSoftKey)
 
         switchAction.triggered.connect(self.switchButtonClicked)
         self.addAction(switchAction)
 
-        cancelAction = QAction(self.tr("Cancel"), self)
+        cancelAction = QAction(self)
+        cancelAction.setText(self.tr("Cancel"))
         cancelAction.setSoftKeyRole(QAction.NegativeSoftKey)
 
         cancelAction.triggered.connect(self.reject)
