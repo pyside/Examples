@@ -31,7 +31,7 @@ class ButtonPrivate(object):
     def __init__(self, qptr):
 
         self._q = qptr
-        self._text = QString()
+        self._text = ""
         self._isPressed = False
         self._normalPixmap = QPixmap()
         self._pressedPixmap = QPixmap()

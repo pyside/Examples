@@ -41,9 +41,9 @@ class ContactResource(object):
         buffer = QTextStream(fp)
 
         while not buffer.atEnd():
-            line = buffer.readLine().trimmed()
+            line = buffer.readLine().strip()
 
-            if line.isEmpty():
+            if not line:
                 continue
 
             parts = line.split(':')
@@ -52,12 +52,12 @@ class ContactResource(object):
             values[0] = parts[0]
             values[1] = parts[1]
 
-            if parts[2].isEmpty():
-                values[2] = QString()
-                values[3] = QString()
+            if not parts[2]:
+                values[2] = ""
+                values[3] = ""
             else:
-                values[2] = QString("list_photo_%1").arg(parts[2])
-                values[3] = QString("call_photo_%1").arg(parts[2])
+                values[2] = "list_photo_%s" % parts[2]
+                values[3] = "call_photo_%s" % parts[2]
 
             self._values.append(values)
 
@@ -65,12 +65,12 @@ class ContactResource(object):
 
     def data(self, index, role):
         if index < 0 or index >= len(self._values):
-            return QString()
+            return ""
         else:
             if role in self._values[index]:
                 return self._values[index][role]
             else:
-                return QString()
+                return ""
 
     @staticmethod
     def instance():

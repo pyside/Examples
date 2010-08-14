@@ -46,8 +46,8 @@ class Overlay(QObject, QGraphicsRectItem):
     def __init__(self, parent=None):
         QObject.__init__(self, parent)
         QGraphicsRectItem.__init__(self)
-        self.setProperty("opacity", QVariant(0.0));
-        self.setProperty("visible", QVariant(True));
+        self.setProperty("opacity", 0.0);
+        self.setProperty("visible", True);
 
     def mousePressEvent(self, e):
         pass
@@ -82,8 +82,8 @@ class DialerWidget(QGraphicsWidget):
         self.setLayout(self._layout)
 
     def addButton(self, label, row, col, imagePrefix):
-        normalPath = QString("%1.png").arg(imagePrefix)
-        pressedPath = QString("%1_pressed.png").arg(imagePrefix)
+        normalPath = "%s.png" % imagePrefix
+        pressedPath = "%s_pressed.png" % imagePrefix
 
         button = Button(Resource.pixmap(normalPath),
                         Resource.pixmap(pressedPath), None, None)
@@ -112,15 +112,15 @@ class CallBoard(QGraphicsWidget):
         self._font = QFont(Resource.stringValue("default/font-family"))
         self._margin = Resource.intValue("call-board/margin")
         self._phoneColor = Resource.stringValue("call-board/phone-font-color")
-        self._subPanelRect = Resource.value("call-board/sub-panel-rect").toRect()
-        self._dialPos = Resource.value("call-board/dial-button-pos").toPoint()
-        self._mutePos = Resource.value("call-board/mute-button-pos").toPoint()
-        self._speakerPos = Resource.value("call-board/speaker-button-pos").toPoint()
-        self._dialIconPos = Resource.value("call-board/dial-icon-pos").toPoint()
-        self._callLabelRect = Resource.value("call-board/call-label-rect").toRect()
-        self._nameLabelRect = Resource.value("call-board/name-label-rect").toRect()
-        self._phoneLabelRect = Resource.value("call-board/phone-label-rect").toRect()
-        self._bigNameLabelRect = Resource.value("call-board/big-name-label-rect").toRect()
+        self._subPanelRect = Resource.value("call-board/sub-panel-rect")
+        self._dialPos = Resource.value("call-board/dial-button-pos")
+        self._mutePos = Resource.value("call-board/mute-button-pos")
+        self._speakerPos = Resource.value("call-board/speaker-button-pos")
+        self._dialIconPos = Resource.value("call-board/dial-icon-pos")
+        self._callLabelRect = Resource.value("call-board/call-label-rect")
+        self._nameLabelRect = Resource.value("call-board/name-label-rect")
+        self._phoneLabelRect = Resource.value("call-board/phone-label-rect")
+        self._bigNameLabelRect = Resource.value("call-board/big-name-label-rect")
 
         # initialize interface
         self.setMinimumSize(self._top.size().width(),
@@ -232,14 +232,16 @@ class DialerDisplay(QGraphicsWidget):
         return self._label.text()
 
     def append(self, value):
-        old = QString(self._label.text())
+        old = self._label.text()
+        if old is None:
+            old = ""
         self._label.setText(old + value)
 
     def clear(self):
-        value = QString(self._label.text())
+        value = self._label.text()
 
-        if not value.isEmpty():
-            self._label.setText(value.left(value.length() - 1))
+        if value:
+            self._label.setText(value[:-1])
 
     def paint(self, painter, style, widget):
         painter.drawPixmap(0, 0, self._background)
@@ -253,10 +255,10 @@ class PhoneView(View):
 
         # read settings
         callTimeout = Resource.intValue("phone-view/call-timeout")
-        displayPos = Resource.value("phone-view/display-pos").toPoint()
-        dialerBackPos = Resource.value("phone-view/dialer-back-pos").toPoint()
-        callButtonPos = Resource.value("phone-view/call-button-pos").toPoint()
-        contactsButtonPos = Resource.value("phone-view/contacts-button-pos").toPoint()
+        displayPos = Resource.value("phone-view/display-pos")
+        dialerBackPos = Resource.value("phone-view/dialer-back-pos")
+        callButtonPos = Resource.value("phone-view/call-button-pos")
+        contactsButtonPos = Resource.value("phone-view/contacts-button-pos")
 
         # initialize interface
         self.setFlag(QGraphicsItem.ItemHasNoContents)
@@ -274,7 +276,7 @@ class PhoneView(View):
 
         self._overlay = Overlay(self._frame)
         self._overlay.setBrush(QBrush(Qt.black))
-        self._overlay.setRect(QRectF(Resource.value("phone-view/overlay-rect").toRect()))
+        self._overlay.setRect(QRectF(Resource.value("phone-view/overlay-rect")))
 
         self._callButton = Button(Resource.pixmap("dialer_bt_call.png"),
                                   Resource.pixmap("dialer_bt_call_over.png"), None, self._frame)
@@ -298,7 +300,7 @@ class PhoneView(View):
                                    SLOT("dialButtonClicked(const QString &)"))
 
         self._contactList = ContactList(self)
-        self._contactList.setGeometry(QRectF(Resource.value("phone-view/contactlist-rect").toRect()))
+        self._contactList.setGeometry(QRectF(Resource.value("phone-view/contactlist-rect")))
         self._contactList.hide()
         self.connect(self._contactList, SIGNAL("contactClicked(int)"), self.contactClicked)
 
@@ -325,7 +327,7 @@ class PhoneView(View):
         self._board.setPhone(ContactResource.phone(index))
 
         photo = ContactResource.photo(index, ContactResource.LargePhoto)
-        if not photo.isEmpty():
+        if photo:
             self._board.setPhoto(Resource.pixmap(photo))
         else:
             self._board.setPhoto(Resource.pixmap("call_photo_nobody.png"))
@@ -342,63 +344,63 @@ class PhoneView(View):
         self._machine = QStateMachine(self)
 
         state0 = QState()
-        state0.assignProperty(self, "opacity", QVariant(0.0))
+        state0.assignProperty(self, "opacity", 0.0)
 
         # create default state
         state1 = QState()
-        state1.assignProperty(self, "opacity", QVariant(1.0))
-        state1.assignProperty(self._frame, "opacity", QVariant(1.0))
-        state1.assignProperty(self._frame, "visible", QVariant(True))
-        state1.assignProperty(self._dialer, "opacity", QVariant(1.0))
-        state1.assignProperty(self._display, "visible", QVariant(True))
-        state1.assignProperty(self._board, "visible", QVariant(False))
-        state1.assignProperty(self._callButton, "visible", QVariant(True))
-        state1.assignProperty(self._endCallButton, "visible", QVariant(False))
-        state1.assignProperty(self._board._contents, "opacity", QVariant(0.0))
-        state1.assignProperty(self._board, "geometry", QVariant(self._board.geometry()))
-        state1.assignProperty(self._overlay, "opacity", QVariant(0.0))
-        state1.assignProperty(self._overlay, "visible", QVariant(False))
-        state1.assignProperty(self._contactList, "y", QVariant(self._contactList.size().height() * 1.5))
-        state1.assignProperty(self._contactList, "visible", QVariant(False))
+        state1.assignProperty(self, "opacity", 1.0)
+        state1.assignProperty(self._frame, "opacity", 1.0)
+        state1.assignProperty(self._frame, "visible", True)
+        state1.assignProperty(self._dialer, "opacity", 1.0)
+        state1.assignProperty(self._display, "visible", True)
+        state1.assignProperty(self._board, "visible", False)
+        state1.assignProperty(self._callButton, "visible", True)
+        state1.assignProperty(self._endCallButton, "visible", False)
+        state1.assignProperty(self._board._contents, "opacity", 0.0)
+        state1.assignProperty(self._board, "geometry", self._board.geometry())
+        state1.assignProperty(self._overlay, "opacity", 0.0)
+        state1.assignProperty(self._overlay, "visible", False)
+        state1.assignProperty(self._contactList, "y", self._contactList.size().height() * 1.5)
+        state1.assignProperty(self._contactList, "visible", False)
 
         # create calling state
         state2 = QState()
-        state2.assignProperty(self._frame, "opacity", QVariant(1.0))
-        state2.assignProperty(self._frame, "visible", QVariant(True))
-        state2.assignProperty(self._dialer, "opacity", QVariant(0.0))
-        state2.assignProperty(self._display, "visible", QVariant(False))
-        state2.assignProperty(self._board, "visible", QVariant(True))
-        state2.assignProperty(self._callButton, "visible", QVariant(False))
-        state2.assignProperty(self._endCallButton, "visible", QVariant(True))
-        state2.assignProperty(self._board._contents, "opacity", QVariant(1.0))
+        state2.assignProperty(self._frame, "opacity", 1.0)
+        state2.assignProperty(self._frame, "visible", True)
+        state2.assignProperty(self._dialer, "opacity", 0.0)
+        state2.assignProperty(self._display, "visible", False)
+        state2.assignProperty(self._board, "visible", True)
+        state2.assignProperty(self._callButton, "visible", False)
+        state2.assignProperty(self._endCallButton, "visible", True)
+        state2.assignProperty(self._board._contents, "opacity", 1.0)
         offsetY = -(self._board.pos().y() - self._display.pos().y())
         state2.assignProperty(self._board, "geometry",
-                               QVariant(self._board.geometry().adjusted(0, offsetY, 0, 0)))
+                               self._board.geometry().adjusted(0, offsetY, 0, 0))
 
-        state2.assignProperty(self._board._panelWait, "opacity", QVariant(1.0))
-        state2.assignProperty(self._board._panelInCall, "opacity", QVariant(0.0))
-        state2.assignProperty(self._board._panelWait, "visible", QVariant(True))
-        state2.assignProperty(self._board._panelInCall, "visible", QVariant(False))
-        state2.assignProperty(self._overlay, "opacity", QVariant(0.5))
-        state2.assignProperty(self._overlay, "visible", QVariant(True))
-        state2.assignProperty(self._contactList, "y", QVariant(self._contactList.size().height() * 1.5))
-        state2.assignProperty(self._contactList, "visible", QVariant(False))
+        state2.assignProperty(self._board._panelWait, "opacity", 1.0)
+        state2.assignProperty(self._board._panelInCall, "opacity", 0.0)
+        state2.assignProperty(self._board._panelWait, "visible", True)
+        state2.assignProperty(self._board._panelInCall, "visible", False)
+        state2.assignProperty(self._overlay, "opacity", 0.5)
+        state2.assignProperty(self._overlay, "visible", True)
+        state2.assignProperty(self._contactList, "y", self._contactList.size().height() * 1.5)
+        state2.assignProperty(self._contactList, "visible", False)
 
         #create in-call state
         state3 = QState()
-        state3.assignProperty(self._board._panelWait, "opacity", QVariant(0.0))
-        state3.assignProperty(self._board._panelInCall, "opacity", QVariant(1.0))
-        state3.assignProperty(self._board._panelWait, "visible", QVariant(False))
-        state3.assignProperty(self._board._panelInCall, "visible", QVariant(True))
-        state3.assignProperty(self._overlay, "opacity", QVariant(0.5))
-        state3.assignProperty(self._overlay, "visible", QVariant(True))
+        state3.assignProperty(self._board._panelWait, "opacity", 0.0)
+        state3.assignProperty(self._board._panelInCall, "opacity", 1.0)
+        state3.assignProperty(self._board._panelWait, "visible", False)
+        state3.assignProperty(self._board._panelInCall, "visible", True)
+        state3.assignProperty(self._overlay, "opacity", 0.5)
+        state3.assignProperty(self._overlay, "visible", True)
 
         # create contact list state
         state4 = QState()
-        state4.assignProperty(self._frame, "opacity", QVariant(0.0))
-        state4.assignProperty(self._frame, "visible", QVariant(False))
-        state4.assignProperty(self._contactList, "y", QVariant(0))
-        state4.assignProperty(self._contactList, "visible", QVariant(True))
+        state4.assignProperty(self._frame, "opacity", 0.0)
+        state4.assignProperty(self._frame, "visible", False)
+        state4.assignProperty(self._contactList, "y", 0)
+        state4.assignProperty(self._contactList, "visible", True)
 
         # associates state1-state2 transition
         transition1 = state1.addTransition(self._callButton, SIGNAL("clicked()"), state2)
@@ -447,7 +449,7 @@ class PhoneView(View):
 
     def createInOutAnimation(self, out):
         result = QSequentialAnimationGroup()
-        result.addAnimation(propertyAnimation(self, "opacity", QVariant(400)))
+        result.addAnimation(propertyAnimation(self, "opacity", 400))
 
         if not out:
             self.connect(result, SIGNAL("finished()"), SIGNAL("transitionInFinished()"))
@@ -460,47 +462,47 @@ class PhoneView(View):
         result = QSequentialAnimationGroup()
 
         if close:
-            result.addAnimation(propertyAnimation(self._contactList, "y", QVariant(600),
+            result.addAnimation(propertyAnimation(self._contactList, "y", 600,
                                                    QEasingCurve.InQuart))
-            result.addAnimation(propertyAnimation(self._contactList, "visible", QVariant(0)))
-            result.addAnimation(propertyAnimation(self._frame, "visible", QVariant(0)))
-            result.addAnimation(propertyAnimation(self._frame, "opacity", QVariant(400)))
+            result.addAnimation(propertyAnimation(self._contactList, "visible", 0))
+            result.addAnimation(propertyAnimation(self._frame, "visible", 0))
+            result.addAnimation(propertyAnimation(self._frame, "opacity", 400))
         else:
-            result.addAnimation(propertyAnimation(self._contactList, "visible", QVariant(0)))
-            result.addAnimation(propertyAnimation(self._frame, "opacity", QVariant(400)))
-            result.addAnimation(propertyAnimation(self._contactList, "y", QVariant(600),
+            result.addAnimation(propertyAnimation(self._contactList, "visible", 0))
+            result.addAnimation(propertyAnimation(self._frame, "opacity", 400))
+            result.addAnimation(propertyAnimation(self._contactList, "y", 600,
                                                    QEasingCurve.OutQuart))
-            result.addAnimation(propertyAnimation(self._frame, "visible", QVariant(0)))
+            result.addAnimation(propertyAnimation(self._frame, "visible", 0))
 
         return result
 
     def createCallAnimation(self):
         result = QSequentialAnimationGroup()
-        result.addAnimation(propertyAnimation(self._dialer, "opacity", QVariant(200)))
-        result.addAnimation(propertyAnimation(self._board, "geometry", QVariant(300)))
-        result.addAnimation(propertyAnimation(self._board._contents, "opacity", QVariant(200)))
-        result.addAnimation(propertyAnimation(self._overlay, "opacity", QVariant(200)))
+        result.addAnimation(propertyAnimation(self._dialer, "opacity", 200))
+        result.addAnimation(propertyAnimation(self._board, "geometry", 300))
+        result.addAnimation(propertyAnimation(self._board._contents, "opacity", 200))
+        result.addAnimation(propertyAnimation(self._overlay, "opacity", 200))
 
         return result
 
     def createInCallAnimation(self):
         result = QSequentialAnimationGroup()
-        result.addAnimation(propertyAnimation(self._overlay, "opacity", QVariant(200)))
-        result.addAnimation(propertyAnimation(self._board._panelWait, "opacity", QVariant(300)))
-        result.addAnimation(propertyAnimation(self._board._panelWait, "visible", QVariant(0)))
-        result.addAnimation(propertyAnimation(self._board._panelInCall, "opacity", QVariant(300)))
-        result.addAnimation(propertyAnimation(self._overlay, "visible", QVariant(0)))
+        result.addAnimation(propertyAnimation(self._overlay, "opacity", 200))
+        result.addAnimation(propertyAnimation(self._board._panelWait, "opacity", 300))
+        result.addAnimation(propertyAnimation(self._board._panelWait, "visible", 0))
+        result.addAnimation(propertyAnimation(self._board._panelInCall, "opacity", 300))
+        result.addAnimation(propertyAnimation(self._overlay, "visible", 0))
 
         return result
 
     def createEndCallAnimation(self):
         result = QSequentialAnimationGroup()
-        result.addAnimation(propertyAnimation(self._overlay, "opacity", QVariant(200)))
-        result.addAnimation(propertyAnimation(self._board._contents, "opacity", QVariant(200)))
-        result.addAnimation(propertyAnimation(self._board, "geometry", QVariant(300)))
-        result.addAnimation(propertyAnimation(self._dialer, "opacity", QVariant(200)))
-        result.addAnimation(propertyAnimation(self._board, "visible", QVariant(False)))
-        result.addAnimation(propertyAnimation(self._display, "visible", QVariant(False)))
-        result.addAnimation(propertyAnimation(self._overlay, "visible", QVariant(False)))
+        result.addAnimation(propertyAnimation(self._overlay, "opacity", 200))
+        result.addAnimation(propertyAnimation(self._board._contents, "opacity", 200))
+        result.addAnimation(propertyAnimation(self._board, "geometry", 300))
+        result.addAnimation(propertyAnimation(self._dialer, "opacity", 200))
+        result.addAnimation(propertyAnimation(self._board, "visible", False))
+        result.addAnimation(propertyAnimation(self._display, "visible", False))
+        result.addAnimation(propertyAnimation(self._overlay, "visible", False))
 
         return result

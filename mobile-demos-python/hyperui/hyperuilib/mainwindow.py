@@ -78,11 +78,11 @@ class MainWindow(QGraphicsWidget):
         icon3G = QGraphicsPixmapItem(Resource.pixmap("topbar_3g.png"), self)
         iconNetwork = QGraphicsPixmapItem(Resource.pixmap("topbar_network.png"), self)
 
-        self._hourLabel.setPos(Resource.value("topbar/hour-label-pos").toPointF())
-        phoneLabel.setPos(Resource.value("topbar/label-pos").toPointF())
-        iconNetwork.setPos(Resource.value("topbar/icon-network-pos").toPointF())
-        icon3G.setPos(Resource.value("topbar/icon-3g-pos").toPointF())
-        iconBattery.setPos(Resource.value("topbar/icon-battery-pos").toPointF())
+        self._hourLabel.setPos(Resource.value("topbar/hour-label-pos"))
+        phoneLabel.setPos(Resource.value("topbar/label-pos"))
+        iconNetwork.setPos(Resource.value("topbar/icon-network-pos"))
+        icon3G.setPos(Resource.value("topbar/icon-3g-pos"))
+        iconBattery.setPos(Resource.value("topbar/icon-battery-pos"))
 
         self.updateTime()
         self.createDummyDailyEvents()

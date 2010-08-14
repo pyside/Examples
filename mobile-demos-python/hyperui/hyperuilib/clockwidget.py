@@ -60,12 +60,12 @@ class ClockWidget(QGraphicsWidget):
         self._weekDayFont.setPixelSize(Resource.intValue("clock-widget/wday-font-size"))
 
         self._labelHeight = Resource.intValue("clock-widget/label-height")
-        self._labelPos = Resource.value("clock-widget/label-init-pos").toPoint()
-        self._knobPoint = Resource.value("clock-widget/knob-pos").toPoint()
-        self._middlePoint = Resource.value("clock-widget/middle-pos").toPoint()
-        self._dayRect = Resource.value("clock-widget/day-label-rect").toRect()
-        self._weekDayRect = Resource.value("clock-widget/wday-label-rect").toRect()
-        self._eventsPixmapRect = Resource.value("clock-widget/events-pixmap-rect").toRect()
+        self._labelPos = Resource.value("clock-widget/label-init-pos")
+        self._knobPoint = Resource.value("clock-widget/knob-pos")
+        self._middlePoint = Resource.value("clock-widget/middle-pos")
+        self._dayRect = Resource.value("clock-widget/day-label-rect")
+        self._weekDayRect = Resource.value("clock-widget/wday-label-rect")
+        self._eventsPixmapRect = Resource.value("clock-widget/events-pixmap-rect")
         self._eventsInnerOffset = Resource.intValue("clock-widget/events-inner-offset")
         self._eventsInnerDiameter = Resource.intValue("clock-widget/events-inner-diameter")
         self.setMinimumSize(QSizeF(self._background.size()))
@@ -129,7 +129,7 @@ class ClockWidget(QGraphicsWidget):
         by = self._labelPos.y()
         bw = self._divLine.width()
 
-        lastText = QString()
+        lastText = ""
         font = self._labelFont;
         painter.drawPixmap(bx, by, self._divLine)
 

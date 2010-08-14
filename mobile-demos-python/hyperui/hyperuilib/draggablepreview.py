@@ -79,16 +79,16 @@ class DraggablePreview(QGraphicsWidget):
         self._machine = QStateMachine(self)
 
         self._minimizedState = QState()
-        self._minimizedState.assignProperty(self, "pos", QVariant(minimumPos))
-        self._minimizedState.assignProperty(self, "scale", QVariant(minimumScale))
+        self._minimizedState.assignProperty(self, "pos", minimumPos)
+        self._minimizedState.assignProperty(self, "scale", minimumScale)
 
         self._draggableState = QState()
-        self._draggableState.assignProperty(self, "pos", QVariant(self._draggablePos))
-        self._draggableState.assignProperty(self, "scale", QVariant(draggableScale))
+        self._draggableState.assignProperty(self, "pos", self._draggablePos)
+        self._draggableState.assignProperty(self, "scale", draggableScale)
 
         self._maximizedState = QState()
-        self._maximizedState.assignProperty(self, "pos", QVariant(maximumPos))
-        self._maximizedState.assignProperty(self, "scale", QVariant(1.0))
+        self._maximizedState.assignProperty(self, "pos", maximumPos)
+        self._maximizedState.assignProperty(self, "scale", 1.0)
 
         restoreTime = Resource.intValue("draggable-preview/restore-time")
         maximizeTime = Resource.intValue("draggable-preview/maximize-time")
@@ -160,7 +160,7 @@ class DraggablePreview(QGraphicsWidget):
 
     def mousePressEvent(self, e):
         self._lastPos = e.scenePos()
-        self._draggableState.assignProperty(self, "pos", QVariant(self._draggablePos))
+        self._draggableState.assignProperty(self, "pos", self._draggablePos)
         self.emit(SIGNAL("draggableStarted()"))
 
     def mouseMoveEvent(self, e):
@@ -171,7 +171,7 @@ class DraggablePreview(QGraphicsWidget):
 
         if fy < self._draggablePos.y():
             self._draggableState.assignProperty(self, "pos",
-                                                QVariant(QPointF(self._draggablePos.x(), fy)))
+                                                QPointF(self._draggablePos.x(), fy))
         self.emit(SIGNAL("draggableUpdate()"))
 
 

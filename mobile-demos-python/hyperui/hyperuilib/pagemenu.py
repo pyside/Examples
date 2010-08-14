@@ -39,7 +39,7 @@ class PageMenu(QGraphicsWidget):
         self.setFont(textFont)
 
         self._text = None
-        self._textRect = Resource.value("page-menu/label-rect").toRect()
+        self._textRect = Resource.value("page-menu/label-rect")
         self._fontColor = QColor(Resource.stringValue("default/font-color"))
 
         self.setMinimumSize(QSizeF(self._background.size()))

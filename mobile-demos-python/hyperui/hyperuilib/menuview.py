@@ -37,12 +37,12 @@ class MenuView(View):
     def FPOS(self, i, j):
         p = QPointF(self._leftMargin + self._vSpacing * i,
                        self._topMargin + self._hSpacing * j)
-        return QVariant(p)
+        return p
 
     def FNPOS(self, i, j):
         p = QPointF(self._vSpacing * -(i + 3),
                        self._topMargin + self._hSpacing * (j + 2))
-        return QVariant(p)
+        return p
 
 
     def __init__(self, parent=None):
@@ -57,8 +57,8 @@ class MenuView(View):
         self._leftMargin = Resource.intValue("menu-view/margin-left")
         self._vSpacing = Resource.intValue("menu-view/spacing-vertical")
         self._hSpacing = Resource.intValue("menu-view/spacing-horizontal")
-        self._mainIconIPos = Resource.value("menu-view/main-icon-pos").toPoint()
-        self._mainIconFPos = Resource.value("menu-view/main-icon-out-pos").toPoint()
+        self._mainIconIPos = Resource.value("menu-view/main-icon-pos")
+        self._mainIconFPos = Resource.value("menu-view/main-icon-out-pos")
 
         # initialize interface
         self._btnTwitter = self.addIcon(Resource.pixmap("menu_bt_twitter.png"), self.FPOS(0, 0))
@@ -76,7 +76,7 @@ class MenuView(View):
         self._btnCamera = self.addIcon(Resource.pixmap("menu_bt_camera.png"), self.FPOS(3, 3))
 
         self._btnPhone = self.addIcon(Resource.pixmap("menu_bt_phone.png"),
-                                      QVariant(self._mainIconIPos), SLOT("onPhoneClicked()"))
+                                      self._mainIconIPos, SLOT("onPhoneClicked()"))
 
         self.createStateMachine()
 
@@ -86,7 +86,7 @@ class MenuView(View):
 
     def addIcon(self, pixmap, pos, slot=None):
         button = Button(pixmap, None, None, self)
-        button.setPos(pos.toPointF())
+        button.setPos(pos)
         if slot:
             self.connect(button, SIGNAL("clicked()"), slot)
 
@@ -110,7 +110,7 @@ class MenuView(View):
         state1.assignProperty(self._btnFolder, "pos", self.FNPOS(1, 8))
         state1.assignProperty(self._btnCalendar, "pos", self.FNPOS(0, 7))
         state1.assignProperty(self._btnCamera, "pos", self.FNPOS(-1, 6))
-        state1.assignProperty(self._btnPhone, "pos", QVariant(self._mainIconFPos))
+        state1.assignProperty(self._btnPhone, "pos", self._mainIconFPos)
 
         state2 = QState()
         state2.assignProperty(self._btnTwitter, "pos", self.FPOS(0, 0))
@@ -124,7 +124,7 @@ class MenuView(View):
         state2.assignProperty(self._btnFolder, "pos", self.FPOS(1, 5))
         state2.assignProperty(self._btnCalendar, "pos", self.FPOS(2, 4))
         state2.assignProperty(self._btnCamera, "pos", self.FPOS(3, 3))
-        state2.assignProperty(self._btnPhone, "pos", QVariant(self._mainIconIPos))
+        state2.assignProperty(self._btnPhone, "pos", self._mainIconIPos)
 
         transition1 = state1.addTransition(self, SIGNAL("transitionInStarted()"), state2)
         transition1.addAnimation(self.createInOutAnimation(False))

@@ -24,7 +24,7 @@
 """
 
 
-from PySide.QtCore import QSettings, QVariant, QString
+from PySide.QtCore import QSettings
 from PySide.QtGui import QPixmap
 from hyperuilib.resource.hyperui_rc import *
 
@@ -53,7 +53,7 @@ class Resource(object):
     @staticmethod
     def pixmap(path):
         d = Resource.instance()
-        f = QString("%1%2").arg(d._pixmapPrefix, path)
+        f = d._pixmapPrefix + path
         p = QPixmap(f)
         if p.isNull():
             print "Pixmap not found: ", f
@@ -72,23 +72,22 @@ class Resource(object):
         return d._settings.contains(key)
 
     @staticmethod
-    def value(key, value = QVariant()):
+    def value(key, value=None):
         d = Resource.instance()
 
         if d._settings.contains(key):
-            return d._settings.value(key, QVariant(value))
+            return d._settings.value(key, value)
         else:
             print "Resource: key '%s' not found" % key
-            return QVariant()
 
     @staticmethod
     def intValue(key, value=0):
-        return Resource.value(key, value).toInt()[0]
+        return int(Resource.value(key, value))
 
     @staticmethod
     def doubleValue(key, value=0):
-        return Resource.value(key, value).toDouble()[0]
+        return float(Resource.value(key, value))
 
     @staticmethod
     def stringValue(key, value=0):
-        return Resource.value(key, value).toString()
+        return Resource.value(key, value)

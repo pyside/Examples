@@ -46,7 +46,7 @@ class LetterScroll(PixmapWidget):
 
         self._markerLabel = QGraphicsSimpleTextItem(self._marker)
         self._markerLabel.setBrush(Qt.white)
-        self._markerLabel.setText(QString())
+        self._markerLabel.setText("")
         self._markerLabel.setX(0.08 * self._marker.boundingRect().width())
         self._markerLabel.setY(0.07 * self._marker.boundingRect().height())
 
@@ -80,7 +80,7 @@ class LetterScroll(PixmapWidget):
 
         if index >= 0 and index < _len:
             c = letters[index]
-            self._markerLabel.setText(QString(c))
+            self._markerLabel.setText(c)
             if self._list.containsLetter(c):
                 opacity = 1.0
             else:
@@ -234,7 +234,7 @@ class ContactList(QGraphicsWidget):
                 break
 
             photo = ContactResource.photo(i)
-            if not photo.isEmpty():
+            if photo:
                 k += 1
                 topLayout.addItem(ContactPhoto(i, self))
 
@@ -244,14 +244,14 @@ class ContactList(QGraphicsWidget):
         for i in range(totalContacts):
             name = ContactResource.name(i)
 
-            if name.isEmpty():
+            if not name:
                 continue
 
-            c = str(name.at(0).toLatin1())
+            c = name[0]
 
             if lastChar != c:
                 lastChar = c
-                label = ContactLabel(QString(c))
+                label = ContactLabel(c)
                 contentsLayout.addItem(label)
                 self._labels[c] = label
 

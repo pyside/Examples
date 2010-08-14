@@ -36,9 +36,6 @@ def drawTextWithShadow(painter, x, y, text, color):
 
 def propertyAnimation(obj, property, time, type = QEasingCurve.Linear):
     result = QPropertyAnimation(obj, property)
-    if isinstance(time, QVariant):
-        result.setDuration(time.toInt()[0])
-    else:
-        result.setDuration(time)
+    result.setDuration(int(time))
     result.setEasingCurve(QEasingCurve(type))
     return result

@@ -72,5 +72,5 @@ def bDrawPixmap(painter, pixmap, boundingRect, leftBorder, topBorder, rightBorde
 
             dRect.translate(boundingRect.x(), boundingRect.y())
 
-            if not oRect.isEmpty() and not dRect.isEmpty():
+            if oRect and dRect:
                 painter.drawPixmap(dRect, pixmap, oRect)
