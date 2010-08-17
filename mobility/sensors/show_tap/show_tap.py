@@ -82,7 +82,12 @@ class TapSensorFilter(QTapFilter):
 
 if __name__ == "__main__":
     app = QCoreApplication(sys.argv)
+    rate_val = 0
+
     doublesensor = QTapSensor()
+    if rate_val > 0:
+        doublesensor.setDataRate(rate_val)
+
     filter = TapSensorFilter()
     doublesensor.addFilter(filter)
     doublesensor.start()
