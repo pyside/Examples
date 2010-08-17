@@ -32,7 +32,7 @@ for id in matchingIds:
             result.append(message.subject())
         else:
             # Extract the requested data items from this message
-            args = app.arguments()
+            args = sys.argv
             for arg in args[1:]:
                 if arg == "subject":
                     result.append(message.subject())
