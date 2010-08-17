@@ -136,7 +136,7 @@ class ContactListPage(QWidget):
 
         # the change is real.  update.
         if self.initialisedManagers.has_key(managerUri):
-            self.manager = self.initialisedManagers(managerUri)
+            self.manager = self.initialisedManagers[managerUri]
         else:
             self.manager = QContactManager.fromUri(managerUri)
             if self.manager.error():
@@ -394,9 +394,9 @@ class ContactEditor(QWidget):
         #TODO: remove ()
         defs = self.manager.detailDefinitions(QContactType().TypeContact)
         nameDef = defs[QContactName().DefinitionName]
-        if nameDef.fields()[QContactName().FieldCustomLabel]:
+        if QContactName().FieldCustomLabel in nameDef.fields():
             return QContactName().FieldCustomLabel
-        elif nameDef.fields()[QContactName().FieldFirstName]:
+        elif QContactName().FieldFirstName in nameDef.fields():
             return QContactName().FieldFirstName
         else:
             return ""
