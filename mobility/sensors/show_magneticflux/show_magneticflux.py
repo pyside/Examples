@@ -72,7 +72,7 @@ if __name__ == "__main__":
         qWarning("Magnetometersensor (geo) didn't start!")
         exit()
     rawsensor = QMagnetometer()
-    rawfileter = MagRawFilter()
+    rawfilter = MagRawFilter()
     rawsensor.addFilter(rawfilter)
     rawsensor.start()
     if not rawsensor.isActive():
