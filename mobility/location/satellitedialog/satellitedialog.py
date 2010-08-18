@@ -58,13 +58,13 @@ class SatelliteWidget (QWidget):
 
     def satellitesInUseUpdated(self, satellites):
         self.satellitesInUse = satellites
-        self.satellitesInUse(lambda s1, s2 : s1.prnNumber() < s2.prnNumber())
+        self.satellitesInUse.sort(lambda s1, s2 : s1.prnNumber() < s2.prnNumber())
         self.updateSatelliteList()
 
     def updateSatelliteList(self):
         self.satellites = []
 
-        if len(satellitesInUse) == 0 and len(satellitesInView) == 0:
+        if len(self.satellitesInUse) == 0 and len(self.satellitesInView) == 0:
             self.update()
             return
 
@@ -89,7 +89,7 @@ class SatelliteWidget (QWidget):
             self.satellites.sort(lambda p1, p2 : p1[0].signalStrength() < p2[0].signalStrength())
             self.maximumSignalStrength = self.satellites[-1][0].signalStrength()
 
-        update()
+        self.update()
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -106,13 +106,12 @@ class SatelliteWidget (QWidget):
         painter.drawRect(satBounds)
 
         for i in range(0, len(self.satellites)):
-            paintSatellite(painter, satBounds, i)
+            self.paintSatellite(painter, satBounds, i)
 
         legendBounds = QRect(self.rect().x() + self.borderOffset,
                              self.rect().height() - self.legendHeight,
                              self.rect().width() - 2 * self.borderOffset,
                              self.legendHeight);
-
         self.paintLegend(painter, legendBounds);
 
     def paintSatellite(self, painter, bounds, index):
@@ -120,10 +119,10 @@ class SatelliteWidget (QWidget):
         if self._ordering == SatelliteDialog.OrderBySignalStrength:
             bars = len(satellites)
 
-        pixelsPerUnit = bounds.width() / float(bars * spanWidth + gapWidth)
-        spanPixels = pixelsPerUnit * spanWidth
-        gapPixels = pixelsPerUnit * gapWidth
-        barPixels = pixelsPerUnit * barWidth
+        pixelsPerUnit = bounds.width() / float(bars * self.spanWidth + self.gapWidth)
+        spanPixels = pixelsPerUnit * self.spanWidth
+        gapPixels = pixelsPerUnit * self.gapWidth
+        barPixels = pixelsPerUnit * self.barWidth
 
         painter.setPen(QApplication.palette().color(QPalette.WindowText))
         if not self.satellites[index][1]:
@@ -132,12 +131,12 @@ class SatelliteWidget (QWidget):
             painter.setBrush(self.inUseColor)
 
         maximum = 100
-        if _scaling == SatelliteDialog.ScaleToMaxAvailable:
+        if self._scaling == SatelliteDialog.ScaleToMaxAvailable:
             maximum = self.maximumSignalStrength
 
         i = index;
-        if m_ordering == SatelliteDialog.OrderByPrnNumber:
-            i = satellites[index][0].prnNumber() - 1
+        if self._ordering == SatelliteDialog.OrderByPrnNumber:
+            i = self.satellites[index][0].prnNumber() - 1
 
         height = (self.satellites[index][0].signalStrength() / float(maximum)) * bounds.height()
 
@@ -167,7 +166,8 @@ class SatelliteWidget (QWidget):
         painter.setBrush(self.inUseColor);
         painter.drawRect(useKeyRect);
 
-        painter.setPen(QApplication.palette().color(QPalette.Text))
+        #painter.setPen(QApplication.palette().color(QPalette.Text))
+        painter.setPen(QColor(255,255,255))
         painter.drawText(viewTextRect, Qt.AlignLeft, self.tr("In View"))
         painter.drawText(useTextRect, Qt.AlignLeft, self.tr("In Use"))
 
@@ -240,10 +240,9 @@ class SatelliteDialog(QDialog):
         self.setModal(True);
 
     def connectSources(self, posSource, satSource):
-        #posSource.connect(SIGNAL("positionUpdated(const QGeoPositionInfo &)"), self.positionUpdated)
-        #satSource.connect(SIGNAL("satellitesInViewUpdated(const QList<QGeoSatelliteInfo>&)"), self.satellitesInViewUpdated)
-	#satSource.connect(SIGNAL("satellitesInUseUpdated(const QList<QGeoSatelliteInfo>&)"), self.satellitesInUseUpdated)
-	pass
+        posSource.positionUpdated.connect(self.positionUpdated)
+        satSource.satellitesInViewUpdated.connect(self.satellitesInViewUpdated)
+        satSource.satellitesInUseUpdated.connect(self.satellitesInUseUpdated)
 
     def switchButtonClicked(self):
         o = self.ordering()
