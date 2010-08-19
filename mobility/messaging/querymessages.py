@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from QtMobility.Messaging import *
 from PySide.QtCore import *
 import sys
@@ -27,7 +29,7 @@ for id in matchingIds:
     if manager.error() == QMessageManager.NoError:
         result = []
 
-        if len(app.arguments()) < 2:
+        if len(sys.argv) < 2:
             # Default to printing only the subject
             result.append(message.subject())
         else:
@@ -73,7 +75,7 @@ for id in matchingIds:
                         fileNames.append(message.find(id).suggestedFileName())
                     result.append(",".join(fileNames))
 
-        print(str(++n) + '\t' + result.join("\t"))
+        print(str(++n) + '\t' + "\t".join(result))
 
 if len(matchingIds) == 0:
     print "No matching messages!"
