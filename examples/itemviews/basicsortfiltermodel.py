@@ -53,9 +53,9 @@ class Window(QtGui.QWidget):
         self.filterPatternLabel.setBuddy(self.filterPatternLineEdit)
 
         self.filterSyntaxComboBox = QtGui.QComboBox()
-        self.filterSyntaxComboBox.addItem("Regular expression", QtCore.QVariant(QtCore.QRegExp.RegExp))
-        self.filterSyntaxComboBox.addItem("Wildcard", QtCore.QVariant(QtCore.QRegExp.Wildcard))
-        self.filterSyntaxComboBox.addItem("Fixed string", QtCore.QVariant(QtCore.QRegExp.FixedString))
+        self.filterSyntaxComboBox.addItem("Regular expression", QtCore.QRegExp.RegExp)
+        self.filterSyntaxComboBox.addItem("Wildcard", QtCore.QRegExp.Wildcard)
+        self.filterSyntaxComboBox.addItem("Fixed string", QtCore.QRegExp.FixedString)
         self.filterSyntaxLabel = QtGui.QLabel("Filter &syntax:")
         self.filterSyntaxLabel.setBuddy(self.filterSyntaxComboBox)
 
@@ -118,7 +118,7 @@ class Window(QtGui.QWidget):
         self.sourceView.setModel(model)
 
     def filterRegExpChanged(self):
-        syntax_nr, _ = self.filterSyntaxComboBox.itemData(self.filterSyntaxComboBox.currentIndex()).toInt()
+        syntax_nr = self.filterSyntaxComboBox.itemData(self.filterSyntaxComboBox.currentIndex())
         syntax = QtCore.QRegExp.PatternSyntax(syntax_nr)
 
         if self.filterCaseSensitivityCheckBox.isChecked():
@@ -143,17 +143,17 @@ class Window(QtGui.QWidget):
 
 def addMail(model, subject, sender, date):
     model.insertRow(0)
-    model.setData(model.index(0, 0), QtCore.QVariant(subject))
-    model.setData(model.index(0, 1), QtCore.QVariant(sender))
-    model.setData(model.index(0, 2), QtCore.QVariant(date))
+    model.setData(model.index(0, 0), subject)
+    model.setData(model.index(0, 1), sender)
+    model.setData(model.index(0, 2), date)
 
 
 def createMailModel(parent):
     model = QtGui.QStandardItemModel(0, 3, parent)
 
-    model.setHeaderData(0, QtCore.Qt.Horizontal, QtCore.QVariant("Subject"))
-    model.setHeaderData(1, QtCore.Qt.Horizontal, QtCore.QVariant("Sender"))
-    model.setHeaderData(2, QtCore.Qt.Horizontal, QtCore.QVariant("Date"))
+    model.setHeaderData(0, QtCore.Qt.Horizontal, "Subject")
+    model.setHeaderData(1, QtCore.Qt.Horizontal, "Sender")
+    model.setHeaderData(2, QtCore.Qt.Horizontal, "Date")
 
     addMail(model, "Happy New Year!", "Grace K. <grace@software-inc.com>",
             QtCore.QDateTime(QtCore.QDate(2006, 12, 31), QtCore.QTime(17, 03)))
