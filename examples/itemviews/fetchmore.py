@@ -7,7 +7,7 @@ from PySide import QtCore, QtGui
 
 
 class FileListModel(QtCore.QAbstractListModel):
-    #numberPopulated = QtCore.pyqtSignal(int)
+    numberPopulated = QtCore.Signal(int)
 
     def __init__(self, parent=None):
         super(FileListModel, self).__init__(parent)
@@ -50,7 +50,7 @@ class FileListModel(QtCore.QAbstractListModel):
 
         self.endInsertRows()
 
-        self.emit(QtCore.SIGNAL('numberPopulated'), itemsToFetch)
+        self.emit(QtCore.SIGNAL('numberPopulated(int)'), itemsToFetch)
 
     def setDirPath(self, path):
         dir = QtCore.QDir(path)
@@ -79,7 +79,7 @@ class Window(QtGui.QWidget):
 
         QtCore.QObject.connect(lineEdit, QtCore.SIGNAL('textChanged(const QString&)'), model.setDirPath)
         QtCore.QObject.connect(lineEdit, QtCore.SIGNAL('textChanged(const QString&)'), self.logViewer, QtCore.SLOT('clear()'))
-        QtCore.QObject.connect(model, QtCore.SIGNAL('numberPopulated'), self.updateLog)
+        QtCore.QObject.connect(model, QtCore.SIGNAL('numberPopulated(int)'), self.updateLog)
 
         layout = QtGui.QGridLayout()
         layout.addWidget(label, 0, 0)
@@ -91,7 +91,7 @@ class Window(QtGui.QWidget):
         self.setWindowTitle(self.tr("Fetch More Example"))
 
     def updateLog(self, number):
-        self.logViewer.append(self.tr("%1 items added.").arg(number))
+        self.logViewer.append(self.tr("%(number)d items added.") % {'number':number})
 
 
 if __name__ == '__main__':
