@@ -57,7 +57,7 @@ class TreeItem(object):
             return False
 
         for row in range(count):
-            data = [QtCore.QVariant() for v in range(columns)]
+            data = [None for v in range(columns)]
             item = TreeItem(data, self)
             self.childItems.insert(position, item)
 
@@ -68,7 +68,7 @@ class TreeItem(object):
             return False
 
         for column in range(columns):
-            self.itemData.insert(position, QtCore.QVariant())
+            self.itemData.insert(position, None)
 
         for child in self.childItems:
             child.insertColumns(position, columns)
@@ -103,10 +103,7 @@ class TreeItem(object):
         if column < 0 or column >= len(self.itemData):
             return False
 
-        if type(value) == type(QtCore.QVariant()):
-            self.itemData[column] = value.toString()
-        else:
-            self.itemData[column] = value
+        self.itemData[column] = value
 
         return True
 
@@ -124,13 +121,13 @@ class TreeModel(QtCore.QAbstractItemModel):
 
     def data(self, index, role):
         if not index.isValid():
-            return QtCore.QVariant()
+            return None
 
         if role != QtCore.Qt.DisplayRole and role != QtCore.Qt.EditRole:
-            return QtCore.QVariant()
+            return None
 
         item = self.getItem(index)
-        return QtCore.QVariant(item.data(index.column()))
+        return item.data(index.column())
 
     def flags(self, index):
         if not index.isValid():
@@ -148,9 +145,9 @@ class TreeModel(QtCore.QAbstractItemModel):
 
     def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
         if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
-            return QtCore.QVariant(self.rootItem.data(section))
+            return self.rootItem.data(section)
 
-        return QtCore.QVariant()
+        return None
 
     def index(self, row, column, parent=QtCore.QModelIndex()):
         if parent.isValid() and parent.column() != 0:
@@ -254,12 +251,11 @@ class TreeModel(QtCore.QAbstractItemModel):
                     break
                 position += 1
 
-            lineData = lines[number][position:].trimmed()
+            lineData = lines[number][position:].strip()
 
-            if not lineData.isEmpty():
+            if lineData:
                 # Read the column data from the rest of the line.
-                columnStrings = lineData.split("\t",
-                        QtCore.QString.SkipEmptyParts)
+                columnStrings = lineData.split()
                 columnData = []
                 for column in range(len(columnStrings)):
                     columnData.append(columnStrings[column])
@@ -293,12 +289,13 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         self.setupUi(self)
 
-        headers = QtCore.QStringList()
-        headers << self.tr("Title") << self.tr("Description")
+        headers = []
+        headers.append(self.tr("Title"))
+        headers.append(self.tr("Description"))
 
         file = QtCore.QFile(":/default.txt")
         file.open(QtCore.QIODevice.ReadOnly)
-        model = TreeModel(headers, QtCore.QString(file.readAll()))
+        model = TreeModel(headers, str(file.readAll()))
         file.close()
 
         self.view.setModel(model)
@@ -332,11 +329,11 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         for column in range(model.columnCount(index)):
             child = model.index(0, column, index)
-            model.setData(child, QtCore.QVariant("[No data]"),
+            model.setData(child, "[No data]",
                     QtCore.Qt.EditRole)
             if not model.headerData(column, QtCore.Qt.Horizontal).isValid():
                 model.setHeaderData(column, QtCore.Qt.Horizontal,
-                        QtCore.QVariant("[No header]"), QtCore.Qt.EditRole)
+                        "[No header]", QtCore.Qt.EditRole)
 
         self.view.selectionModel().setCurrentIndex(model.index(0, 0, index),
                 QtGui.QItemSelectionModel.ClearAndSelect)
@@ -350,7 +347,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         changed = model.insertColumn(column + 1, parent)
         if changed:
             model.setHeaderData(column + 1, QtCore.Qt.Horizontal,
-                    QtCore.QVariant("[No header]"), QtCore.Qt.EditRole)
+                    "[No header]", QtCore.Qt.EditRole)
 
         self.updateActions()
 
@@ -367,7 +364,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         for column in range(model.columnCount(index.parent())):
             child = model.index(index.row()+1, column, index.parent())
-            model.setData(child, QtCore.QVariant("[No data]"),
+            model.setData(child, "[No data]",
                     QtCore.Qt.EditRole)
 
     def removeColumn(self, parent=QtCore.QModelIndex()):
@@ -404,9 +401,9 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             row = self.view.selectionModel().currentIndex().row()
             column = self.view.selectionModel().currentIndex().column()
             if self.view.selectionModel().currentIndex().parent().isValid():
-                self.statusBar().showMessage(self.tr("Position: (%1,%2)").arg(row).arg(column))
+                self.statusBar().showMessage(self.tr("Position: (%(row)d,%(column)d)") % {'row': row, 'column': column})
             else:
-                self.statusBar().showMessage(self.tr("Position: (%1,%2) in top level").arg(row).arg(column))
+                self.statusBar().showMessage(self.tr("Position: (%(row)d,%(column)d) in top level") % {'row': row,'column': column})
 
 
 if __name__ == '__main__':
