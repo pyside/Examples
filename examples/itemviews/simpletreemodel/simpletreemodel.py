@@ -65,8 +65,8 @@ class TreeModel(QtCore.QAbstractItemModel):
         QtCore.QAbstractItemModel.__init__(self, parent)
 
         rootData = []
-        rootData.append(QtCore.QVariant("Title"))
-        rootData.append(QtCore.QVariant("Summary"))
+        rootData.append("Title")
+        rootData.append("Summary")
         self.rootItem = TreeItem(rootData)
         self.setupModelData(data.split("\n"), self.rootItem)
 
@@ -78,14 +78,14 @@ class TreeModel(QtCore.QAbstractItemModel):
 
     def data(self, index, role):
         if not index.isValid():
-            return QtCore.QVariant()
+            return None
 
         if role != QtCore.Qt.DisplayRole:
-            return QtCore.QVariant()
+            return None
 
         item = index.internalPointer()
 
-        return QtCore.QVariant(item.data(index.column()))
+        return item.data(index.column())
 
     def flags(self, index):
         if not index.isValid():
@@ -97,7 +97,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
             return self.rootItem.data(section)
 
-        return QtCore.QVariant()
+        return None
 
     def index(self, row, column, parent):
         if row < 0 or column < 0 or row >= self.rowCount(parent) or column >= self.columnCount(parent):
@@ -152,11 +152,11 @@ class TreeModel(QtCore.QAbstractItemModel):
                     break
                 position += 1
 
-            lineData = lines[number][position:].trimmed()
+            lineData = lines[number][position:].strip()
 
-            if not lineData.isEmpty():
+            if lineData:
                 # Read the column data from the rest of the line.
-                columnStrings = lineData.split("\t", QtCore.QString.SkipEmptyParts)
+                columnStrings = lineData.split()
                 columnData = []
                 for column in range(0, len(columnStrings)):
                     columnData.append(columnStrings[column])
@@ -185,7 +185,7 @@ if __name__ == "__main__":
 
     f = QtCore.QFile(":/default.txt")
     f.open(QtCore.QIODevice.ReadOnly)
-    model = TreeModel(QtCore.QString(f.readAll()))
+    model = TreeModel(str(f.readAll()))
     f.close()
 
     view = QtGui.QTreeView()
