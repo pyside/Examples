@@ -31,7 +31,7 @@ class Client(QtGui.QDialog):
     
         self.timerId = -1
         self.blockSize = 0
-        self.currentFortune = QtCore.QString()
+        self.currentFortune = ""
         self.tcpSocket = QtNetwork.QTcpSocket(self)
     
         self.connect(self.hostLineEdit, QtCore.SIGNAL("textChanged(const QString &)"), self.enableGetFortuneButton)
@@ -62,7 +62,7 @@ class Client(QtGui.QDialog):
         self.getFortuneButton.setEnabled(False)
         self.blockSize = 0
         self.tcpSocket.abort()
-        self.tcpSocket.connectToHost(self.hostLineEdit.text(), self.portLineEdit.text().toInt()[0])
+        self.tcpSocket.connectToHost(self.hostLineEdit.text(), int(self.portLineEdit.text()))
     
     def readFortune(self):
         instr = QtCore.QDataStream(self.tcpSocket)
@@ -77,8 +77,7 @@ class Client(QtGui.QDialog):
         if self.tcpSocket.bytesAvailable() < self.blockSize:
             return
     
-        nextFortune = QtCore.QString()
-        instr >> nextFortune
+        nextFortune = instr.readQString()
     
         if nextFortune == self.currentFortune:
             self.timerId = self.startTimer(10)
@@ -116,8 +115,8 @@ class Client(QtGui.QDialog):
         self.getFortuneButton.setEnabled(True)
     
     def enableGetFortuneButton(self):
-        self.getFortuneButton.setEnabled(not self.hostLineEdit.text().isEmpty() and
-                                         not self.portLineEdit.text().isEmpty())
+        self.getFortuneButton.setEnabled(self.hostLineEdit.text()!="" and
+                                         self.portLineEdit.text()!="")
 
 
 if __name__ == '__main__':
