@@ -86,8 +86,8 @@ class Dialog(QtGui.QDialog):
         
         while not self.tcpServer.isListening() and not self.tcpServer.listen():
             ret = QtGui.QMessageBox.critical(self, self.tr("Loopback"),
-                            self.tr("Unable to start the test: %1.").arg(
-                                    self.tcpServer.errorString()),
+                            self.tr("Unable to start the test: %(error)s.") % {
+                                'error': self.tcpServer.errorString()},
                             QtGui.QMessageBox.Retry,
                             QtGui.QMessageBox.Cancel)
             if ret == QtGui.QMessageBox.Cancel:
@@ -119,8 +119,8 @@ class Dialog(QtGui.QDialog):
 
         self.serverProgressBar.setMaximum(Dialog.TotalBytes)
         self.serverProgressBar.setValue(self.bytesReceived)
-        self.serverStatusLabel.setText(self.tr("Received %1MB")
-                                       .arg(self.bytesReceived / (1024 * 1024)))
+        self.serverStatusLabel.setText(self.tr("Received %(rec)d MiB")
+                                       % {'rec': self.bytesReceived / (1024 * 1024)})
         
         if self.bytesReceived == Dialog.TotalBytes:
             self.tcpServerConnection.close()
@@ -135,8 +135,8 @@ class Dialog(QtGui.QDialog):
 
         self.clientProgressBar.setMaximum(Dialog.TotalBytes)
         self.clientProgressBar.setValue(self.bytesWritten)
-        self.clientStatusLabel.setText(self.tr("Sent %1MB")
-                                       .arg(self.bytesWritten / (1024 * 1024)))
+        self.clientStatusLabel.setText(self.tr("Sent %(sent)d MiB")
+                                       % {'sent': self.bytesWritten / (1024 * 1024)})
         
     def displayError(self, socketError):
         if socketError == QtNetwork.QTcpSocket.RemoteHostClosedError:
@@ -144,8 +144,8 @@ class Dialog(QtGui.QDialog):
         
         QtGui.QMessageBox.information(self, self.tr("Network error"),
                                       self.tr("The following error occured: "\
-                                              "%1.")
-                                      .arg(self.tcpClient.errorString()))
+                                              "%(error)s.")
+                                      % {'error': self.tcpClient.errorString()})
 
         self.tcpClient.close()
         self.tcpServer.close()
