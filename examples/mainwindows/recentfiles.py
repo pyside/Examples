@@ -203,12 +203,10 @@ class MainWindow(QtGui.QMainWindow):
         settings = QtCore.QSettings('Trolltech', 'Recent Files Example')
         files = settings.value('recentFileList')
 
-        print "lendo: ", files
         numRecentFiles = 0
         if files:
             numRecentFiles = min(len(files), MainWindow.MaxRecentFiles)
 
-        print numRecentFiles
         for i in range(numRecentFiles):
             text = "&%d %s" % (i + 1, self.strippedName(files[i]))
             self.recentFileActs[i].setText(text)
