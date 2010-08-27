@@ -18,23 +18,24 @@ class Server(QtGui.QDialog):
         self.tcpServer = QtNetwork.QTcpServer(self)
         if not self.tcpServer.listen():
             QtGui.QMessageBox.critical(self, self.tr("Fortune Server"),
-                                       self.tr("Unable to start the server: %1.")
-                                       .arg(self.tcpServer.errorString()))
+                                       self.tr("Unable to start the server: %(error)s.")
+                                       % {'error': self.tcpServer.errorString()})
             self.close()
             return
 
-        self.statusLabel.setText(self.tr("The server is running on port %1.\n"
+        self.statusLabel.setText(self.tr("The server is running on port %(port)d.\n"
                                          "Run the Fortune Client example now.")
-                                         .arg(self.tcpServer.serverPort()))
+                                         % {'port': self.tcpServer.serverPort()})
 
-        self.fortunes = QtCore.QStringList()
-        (self.fortunes << self.tr("You've been leading a dog's life. Stay off the furniture.")
-                       << self.tr("You've got to think about tomorrow.")
-                       << self.tr("You will be surprised by a loud noise.")
-                       << self.tr("You will feel hungry again in another hour.")
-                       << self.tr("You might have mail.")
-                       << self.tr("You cannot kill time without injuring eternity.")
-                       << self.tr("Computers are not intelligent. They only think they are."))
+        self.fortunes = [
+            self.tr("You've been leading a dog's life. Stay off the furniture."),
+            self.tr("You've got to think about tomorrow."),
+            self.tr("You will be surprised by a loud noise."),
+            self.tr("You will feel hungry again in another hour."),
+            self.tr("You might have mail."),
+            self.tr("You cannot kill time without injuring eternity."),
+            self.tr("Computers are not intelligent. They only think they are."),
+        ]
 
         self.connect(self.quitButton, QtCore.SIGNAL("clicked()"), self, QtCore.SLOT("close()"))
         self.connect(self.tcpServer, QtCore.SIGNAL("newConnection()"), self.sendFortune)
@@ -55,7 +56,7 @@ class Server(QtGui.QDialog):
         out = QtCore.QDataStream(block, QtCore.QIODevice.WriteOnly)
         out.setVersion(QtCore.QDataStream.Qt_4_0)
         out.writeUInt16(0)
-        out << self.fortunes[random.randint(0, self.fortunes.count() - 1)]
+        out.writeString(self.fortunes[random.randint(0, len(self.fortunes) - 1)])
         out.device().seek(0)
         out.writeUInt16(block.size() - 2)
 
