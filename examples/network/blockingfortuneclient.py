@@ -32,7 +32,7 @@ class FortuneThread(QtCore.QThread):
         QtCore.QThread.__init__(self, parent)
 
         self.quit = False
-        self.hostName = QtCore.QString()
+        self.hostName = ""
         self.cond = QtCore.QWaitCondition()
         self.mutex = QtCore.QMutex()
         self.port = 0
@@ -86,8 +86,7 @@ class FortuneThread(QtCore.QThread):
 
             locker = QtCore.QMutexLocker(self.mutex)
 
-            fortune = QtCore.QString()
-            instr >> fortune
+            fortune = instr.readQString()
             self.emit(QtCore.SIGNAL("newFortune(const QString &)"), fortune)
 
             self.cond.wait(self.mutex)
@@ -102,7 +101,7 @@ class BlockingClient(QtGui.QDialog):
 
         self._main = QtCore.QThread.currentThread()
         self.thread = FortuneThread()
-        self.currentFortune = QtCore.QString()
+        self.currentFortune = ""
 
         self.hostLabel = QtGui.QLabel(self.tr("&Server name:"))
         self.portLabel = QtGui.QLabel(self.tr("S&erver port:"))
@@ -159,14 +158,14 @@ class BlockingClient(QtGui.QDialog):
     def requestNewFortune(self):
         self.getFortuneButton.setEnabled(False)
         self.thread.requestNewFortune(self.hostLineEdit.text(),
-                                      self.portLineEdit.text().toInt()[0])
+                                      int(self.portLineEdit.text()))
 
     def showFortune(self, nextFortune):
         if nextFortune == self.currentFortune:
             self.requestNewFortune()
             return
 
-        self.currentFortune = QtCore.QString(nextFortune)
+        self.currentFortune = nextFortune
         self.statusLabel.setText(self.currentFortune)
         self.getFortuneButton.setEnabled(True)
 
@@ -196,8 +195,8 @@ class BlockingClient(QtGui.QDialog):
 
     def enableGetFortuneButton(self):
         self.getFortuneButton.setEnabled( 
-                        not self.hostLineEdit.text().isEmpty() and
-                        not self.portLineEdit.text().isEmpty())
+                        self.hostLineEdit.text()!="" and
+                        self.portLineEdit.text()!="")
 
 
 if __name__ == "__main__":
