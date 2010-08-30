@@ -137,7 +137,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         glNewList(dlist, GL_COMPILE)
 
         for i in range(6):
-            self.bindTexture(QtGui.QPixmap(QtCore.QString(":/images/side%1.png").arg(i + 1)))
+            self.bindTexture(QtGui.QPixmap(":/images/side%d.png" % (i + 1)))
 
             glBegin(GL_QUADS)
             for j in range(4):
