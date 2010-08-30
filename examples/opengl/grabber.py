@@ -395,8 +395,8 @@ class MainWindow(QtGui.QMainWindow):
         regExp = QtCore.QRegExp("([0-9]+) *x *([0-9]+)")
 
         if regExp.exactMatch(text):
-            width = regExp.cap(0).toInt()
-            height = regExp.cap(1).toInt()
+            width = int(regExp.cap(1))
+            height = int(regExp.cap(2))
             if width > 0 and width < 2048 and height > 0 and height < 2048:
                 return QtCore.QSize(width, height)
 
