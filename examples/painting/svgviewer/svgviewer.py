@@ -12,7 +12,7 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         QtGui.QMainWindow.__init__(self)
 
-        self.currentPath = QtCore.QString()
+        self.currentPath = ""
 
         self.area = SvgWindow()
 
@@ -54,16 +54,15 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle(self.tr("SVG Viewer"))
 
     def openFile(self, path=""):
-        path = QtCore.QString(path)
-        if path.isEmpty():
+        if path=="":
             fileName = QtGui.QFileDialog.getOpenFileName(self, self.tr("Open SVG File"),
                                                          self.currentPath, "*.svg")
         else:
             fileName = path
 
-        if not fileName.isEmpty():
+        if fileName!="":
             self.area.openFile(fileName)
-            if not fileName.startsWith(":/"):
+            if not fileName.startswith(":/"):
                 self.currentPath = fileName
                 self.setWindowTitle(self.tr("%1 - SVGViewer").arg(self.currentPath))
 
@@ -85,7 +84,7 @@ class SvgWindow(QtGui.QScrollArea):
 
         self.mousePressPos = QtCore.QPoint()
         self.scrollBarValuesOnMousePress = QtCore.QPoint()
-        self.currentPath = QtCore.QString()
+        self.currentPath = ""
 
         self.view = QtGui.QWidget(self)
         self.renderer = SvgWindow.Image
