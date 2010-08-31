@@ -72,11 +72,11 @@ class MainWindow(QtGui.QMainWindow):
         return QtCore.QSize(500, 300)
 
     def addFiles(self):
-        files = QtGui.QFileDialog.getOpenFileNames(self,
-                self.tr("Select Music Files"),
-                QtGui.QDesktopServices.storageLocation(QtGui.QDesktopServices.MusicLocation))
+        files,_ = QtGui.QFileDialog.getOpenFileNames(self,
+                  self.tr("Select Music Files"),
+                  QtGui.QDesktopServices.storageLocation(QtGui.QDesktopServices.MusicLocation))
 
-        if files.isEmpty():
+        if files=="":
             return
 
         index = len(self.sources)
@@ -155,22 +155,22 @@ class MainWindow(QtGui.QMainWindow):
 
         metaData = self.metaInformationResolver.metaData()
 
-        title = metaData.get(QtCore.QString('TITLE'), [QtCore.QString()])[0]
-        if title.isEmpty():
+        title = metaData.get('TITLE', [""])[0]
+        if title=="":
             title = self.metaInformationResolver.currentSource().fileName()
 
         titleItem = QtGui.QTableWidgetItem(title)
         titleItem.setFlags(titleItem.flags() ^ QtCore.Qt.ItemIsEditable)
 
-        artist = metaData.get(QtCore.QString('ARTIST'), [QtCore.QString()])[0]
+        artist = metaData.get('ARTIST', [""])[0]
         artistItem = QtGui.QTableWidgetItem(artist)
         artistItem.setFlags(artistItem.flags() ^ QtCore.Qt.ItemIsEditable)
 
-        album = metaData.get(QtCore.QString('ALBUM'), [QtCore.QString()])[0]
+        album = metaData.get('ALBUM', [""])[0]
         albumItem = QtGui.QTableWidgetItem(album)
         albumItem.setFlags(albumItem.flags() ^ QtCore.Qt.ItemIsEditable)
 
-        year = metaData.get(QtCore.QString('DATE'), [QtCore.QString()])[0]
+        year = metaData.get('DATE', [""])[0]
         yearItem = QtGui.QTableWidgetItem(year)
         yearItem.setFlags(yearItem.flags() ^ QtCore.Qt.ItemIsEditable)
 
