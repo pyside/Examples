@@ -207,8 +207,8 @@ class Window(QtGui.QWidget):
         self.penColorComboBox.activated.connect(self.penColorChanged)
 
         for i in range(Window.NumRenderAreas):
-            self.penWidthSpinBox.valueChanged.connect(self.renderAreas[i].setPenWidth)
-            self.rotationAngleSpinBox.valueChanged.connect(self.renderAreas[i].setRotationAngle)
+            self.penWidthSpinBox.valueChanged[int].connect(self.renderAreas[i].setPenWidth)
+            self.rotationAngleSpinBox.valueChanged[int].connect(self.renderAreas[i].setRotationAngle)
 
         topLayout = QtGui.QGridLayout()
         for i in range(Window.NumRenderAreas):
