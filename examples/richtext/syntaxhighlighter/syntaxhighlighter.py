@@ -3,6 +3,7 @@
 """PySide port of the richtext/syntaxhighlighter example from Qt v4.x"""
 
 import sys
+import re
 from PySide import QtCore, QtGui
 
 import syntaxhighlighter_rc
@@ -24,16 +25,16 @@ class MainWindow(QtGui.QMainWindow):
         self.editor.clear()
     
     def openFile(self, path=""):
-        fileName = QtCore.QString(path)
+        fileName = path
     
-        if fileName.isEmpty():
-            fileName = QtGui.QFileDialog.getOpenFileName(self, self.tr("Open File"), "",
+        if fileName=="":
+            fileName,_ = QtGui.QFileDialog.getOpenFileName(self, self.tr("Open File"), "",
                                                          "qmake Files (*.pro *.prf *.pri)")
     
-        if not fileName.isEmpty():
+        if fileName!="":
             inFile = QtCore.QFile(fileName)
             if inFile.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
-                self.editor.setPlainText(QtCore.QString(inFile.readAll()))
+                self.editor.setPlainText(inFile.readAll())
     
     def setupEditor(self):
         variableFormat = QtGui.QTextCharFormat()
@@ -101,7 +102,6 @@ class Highlighter(QtCore.QObject):
         if not block.isValid():
             return
     
-        endBlock = QtGui.QTextBlock()
         if added > removed:
             endBlock = doc.findBlock(position + added)
         else:
@@ -116,18 +116,15 @@ class Highlighter(QtCore.QObject):
         text = block.text()
     
         overrides = []
-    
+
         for pattern in self.mappings:
-            expression = QtCore.QRegExp(pattern)
-            i = text.indexOf(expression)
-            while i >= 0:
+            for m in re.finditer(pattern,text):
                 range = QtGui.QTextLayout.FormatRange()
-                range.start = i
-                range.length = expression.matchedLength()
+                s,e = m.span()
+                range.start = s
+                range.length = e-s
                 range.format = self.mappings[pattern]
                 overrides.append(range)
-    
-                i = text.indexOf(expression, i + expression.matchedLength())
     
         layout.setAdditionalFormats(overrides)
         block.document().markContentsDirty(block.position(), block.length())
