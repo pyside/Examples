@@ -47,10 +47,10 @@ class Window(QtGui.QWidget):
 
         svgCharFormat = QtGui.QTextCharFormat()
         svgCharFormat.setObjectType(Window.SvgTextFormat)
-        svgCharFormat.setProperty(Window.SvgData, QtCore.QVariant(svgData))
+        svgCharFormat.setProperty(Window.SvgData, svgData)
 
         cursor = self.textEdit.textCursor()
-        cursor.insertText(QtCore.QString(QtCore.QChar(QtCore.QChar.ObjectReplacementCharacter)), svgCharFormat)
+        cursor.insertText(u"\uFFFD", svgCharFormat)
         self.textEdit.setTextCursor(cursor)
 
     def setupTextObject(self):
