@@ -58,7 +58,7 @@ class DomItem:
 
 
 class DomModel(QtCore.QAbstractItemModel):
-    def __init__(self, document, parent = None):
+    def __init__(self, document, parent):
         QtCore.QAbstractItemModel.__init__(self, parent)
 
         self.domDocument = document
@@ -92,7 +92,7 @@ class DomModel(QtCore.QAbstractItemModel):
 
             return " ".join(attributes)
         elif index.column() == 2:
-            return node.nodeValue().split("\n").join(" ")
+            return " ".join(node.nodeValue().split("\n"))
         else:
             return None
 
