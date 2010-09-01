@@ -38,7 +38,7 @@ class MainWindow(QtGui.QMainWindow):
         self.resize(500, 400)
 
     def open(self):
-        fileName = QtGui.QFileDialog.getOpenFileName(self)
+        fileName, _ = QtGui.QFileDialog.getOpenFileName(self)
         if fileName:
             inFile = QtCore.QFile(fileName)
             if not inFile.open(QtCore.QFile.ReadOnly):
