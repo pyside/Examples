@@ -1,4 +1,4 @@
-#!usr/bin/python
+#!/usr/bin/python
 
 #       pysideqplayer.py
 #       
@@ -129,12 +129,12 @@ class QPlayer(QtGui.QWidget):
         self.lcdTimer.display("00:00")
 
     def browseClicked(self):
-        f=QtGui.QFileDialog.getOpenFileName(self)
-        if not f.isEmpty():
+        f, _ = QtGui.QFileDialog.getOpenFileName(self)
+        if f!="":
             self.fileEdit.setText(f)
 
     def checkFileName(self, s):
-        if not s.isEmpty():
+        if s!="":
             self.playButton.setEnabled(True)
         else:
             self.playButton.setEnabled(False)
