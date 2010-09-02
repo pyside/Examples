@@ -44,8 +44,8 @@ class AddressBook(QtGui.QWidget):
         super(AddressBook, self).__init__(parent)
 
         self.contacts = SortedDict()
-        self.oldName = QtCore.QString()
-        self.oldAddress = QtCore.QString()
+        self.oldName = ""
+        self.oldAddress = ""
 
         nameLabel = QtGui.QLabel(self.tr("Name:"))
         self.nameLine = QtGui.QLineEdit()
@@ -122,10 +122,10 @@ class AddressBook(QtGui.QWidget):
         if name not in self.contacts:
             self.contacts[name] = address
             QtGui.QMessageBox.information(self, self.tr("Add Successful"),
-                    self.tr("\"%1\" has been added to your address book.").arg(name))
+                    self.tr("\"%s\" has been added to your address book.") % name)
         else:
             QtGui.QMessageBox.information(self, self.tr("Add Unsuccessful"),
-                    self.tr("Sorry, \"%1\" is already in your address book.").arg(name))
+                    self.tr("Sorry, \"%s\" is already in your address book.") % name)
             return
 
         if not self.contacts:

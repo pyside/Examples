@@ -46,9 +46,8 @@ class AddressBook(QtGui.QWidget):
         super(AddressBook, self).__init__(parent)
 
         self.contacts = SortedDict()
-        self.oldName = QtCore.QString()
-        self.oldAddress = QtCore.QString()
-        self.currentMode = self.NavigationMode
+        self.oldName = ""
+        self.oldAddress = ""
 
         nameLabel = QtGui.QLabel(self.tr("Name:"))
         self.nameLine = QtGui.QLineEdit()
