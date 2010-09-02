@@ -38,7 +38,7 @@ class MainWindow(QtGui.QMainWindow):
             self.fallbacksAct.setEnabled(True)
 
     def openIniFile(self):
-        fileName = QtGui.QFileDialog.getOpenFileName(self, "Open INI File",
+        fileName, _  = QtGui.QFileDialog.getOpenFileName(self, "Open INI File",
                 '', "INI Files (*.ini *.conf)")
 
         if fileName:
@@ -47,7 +47,7 @@ class MainWindow(QtGui.QMainWindow):
             self.fallbacksAct.setEnabled(False)
 
     def openPropertyList(self):
-        fileName = QtGui.QFileDialog.getOpenFileName(self,
+        fileName, _ = QtGui.QFileDialog.getOpenFileName(self,
                 "Open Property List", '', "Property List Files (*.plist)")
 
         if fileName:
