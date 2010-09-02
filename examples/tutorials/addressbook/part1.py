@@ -16,10 +16,10 @@ class AddressBook(QtGui.QWidget):
     def __init__(self, parent=None):
         super(AddressBook, self).__init__(parent)
 
-        nameLabel = QtGui.QLabel(self.tr("Name:"))
+        nameLabel = QtGui.QLabel("Name:")
         self.nameLine = QtGui.QLineEdit()
 
-        addressLabel = QtGui.QLabel(self.tr("Address:"))
+        addressLabel = QtGui.QLabel("Address:")
         self.addressText = QtGui.QTextEdit()
 
         mainLayout = QtGui.QGridLayout()
@@ -29,7 +29,7 @@ class AddressBook(QtGui.QWidget):
         mainLayout.addWidget(self.addressText, 1, 1)
 
         self.setLayout(mainLayout)
-        self.setWindowTitle(self.tr("Simple Address Book"))
+        self.setWindowTitle("Simple Address Book")
 
 
 if __name__ == '__main__':

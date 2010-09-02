@@ -35,6 +35,8 @@ class SortedDict(dict):
 
             return key, value
 
+        __next__ = next
+
     def __iter__(self):
         return SortedDict.Iterator(self)
 
@@ -48,59 +50,59 @@ class AddressBook(QtGui.QWidget):
         super(AddressBook, self).__init__(parent)
 
         self.contacts = SortedDict()
-        self.oldName = ""
-        self.oldAddress = ""
+        self.oldName = ''
+        self.oldAddress = ''
         self.currentMode = self.NavigationMode
 
-        nameLabel = QtGui.QLabel(self.tr("Name:"))
+        nameLabel = QtGui.QLabel("Name:")
         self.nameLine = QtGui.QLineEdit()
         self.nameLine.setReadOnly(True)
 
-        addressLabel = QtGui.QLabel(self.tr("Address:"))
+        addressLabel = QtGui.QLabel("Address:")
         self.addressText = QtGui.QTextEdit()
         self.addressText.setReadOnly(True)
 
-        self.addButton = QtGui.QPushButton(self.tr("&Add"))
+        self.addButton = QtGui.QPushButton("&Add")
         self.addButton.show()
-        self.editButton = QtGui.QPushButton(self.tr("&Edit"))
+        self.editButton = QtGui.QPushButton("&Edit")
         self.editButton.setEnabled(False)
-        self.removeButton = QtGui.QPushButton(self.tr("&Remove"))
+        self.removeButton = QtGui.QPushButton("&Remove")
         self.removeButton.setEnabled(False)
-        self.findButton = QtGui.QPushButton(self.tr("&Find"))
+        self.findButton = QtGui.QPushButton("&Find")
         self.findButton.setEnabled(False)
-        self.submitButton = QtGui.QPushButton(self.tr("&Submit"))
+        self.submitButton = QtGui.QPushButton("&Submit")
         self.submitButton.hide()
-        self.cancelButton = QtGui.QPushButton(self.tr("&Cancel"))
+        self.cancelButton = QtGui.QPushButton("&Cancel")
         self.cancelButton.hide()
 
-        self.nextButton = QtGui.QPushButton(self.tr("&Next"))
+        self.nextButton = QtGui.QPushButton("&Next")
         self.nextButton.setEnabled(False)
-        self.previousButton = QtGui.QPushButton(self.tr("&Previous"))
+        self.previousButton = QtGui.QPushButton("&Previous")
         self.previousButton.setEnabled(False)
 
-        self.loadButton = QtGui.QPushButton(self.tr("&Load..."))
-        self.loadButton.setToolTip(self.tr("Load contacts from a file"))
-        self.saveButton = QtGui.QPushButton(self.tr("Sa&ve..."))
-        self.saveButton.setToolTip(self.tr("Save contacts to a file"))
+        self.loadButton = QtGui.QPushButton("&Load...")
+        self.loadButton.setToolTip("Load contacts from a file")
+        self.saveButton = QtGui.QPushButton("Sa&ve...")
+        self.saveButton.setToolTip("Save contacts to a file")
         self.saveButton.setEnabled(False)
 
-        self.exportButton = QtGui.QPushButton(self.tr("Ex&port"))
-        self.exportButton.setToolTip(self.tr("Export as vCard"))
+        self.exportButton = QtGui.QPushButton("Ex&port")
+        self.exportButton.setToolTip("Export as vCard")
         self.exportButton.setEnabled(False)
 
         self.dialog = FindDialog()
 
-        self.connect(self.addButton,QtCore.SIGNAL("clicked()"),self.addContact)
-        self.connect(self.submitButton,QtCore.SIGNAL("clicked()"),self.submitContact)
-        self.connect(self.cancelButton,QtCore.SIGNAL("clicked()"),self.cancel)
-        self.connect(self.nextButton,QtCore.SIGNAL("clicked()"), self.next)
-        self.connect(self.previousButton,QtCore.SIGNAL("clicked()"),self.previous)
-        self.connect(self.editButton, QtCore.SIGNAL("clicked()"),self.editContact)
-        self.connect(self.removeButton, QtCore.SIGNAL("clicked()"),self.removeContact)
-        self.connect(self.findButton, QtCore.SIGNAL("clicked()"), self.findContact)
-        self.connect(self.loadButton, QtCore.SIGNAL("clicked()"),self.loadFromFile)
-        self.connect(self.saveButton, QtCore.SIGNAL("clicked()"), self.saveToFile)
-        self.connect(self.exportButton, QtCore.SIGNAL("clicked()"),self.exportAsVCard)
+        self.addButton.clicked.connect(self.addContact)
+        self.submitButton.clicked.connect(self.submitContact)
+        self.editButton.clicked.connect(self.editContact)
+        self.removeButton.clicked.connect(self.removeContact)
+        self.findButton.clicked.connect(self.findContact)
+        self.cancelButton.clicked.connect(self.cancel)
+        self.nextButton.clicked.connect(self.next)
+        self.previousButton.clicked.connect(self.previous)
+        self.loadButton.clicked.connect(self.loadFromFile)
+        self.saveButton.clicked.connect(self.saveToFile)
+        self.exportButton.clicked.connect(self.exportAsVCard)
 
         buttonLayout1 = QtGui.QVBoxLayout()
         buttonLayout1.addWidget(self.addButton)
@@ -127,7 +129,7 @@ class AddressBook(QtGui.QWidget):
         mainLayout.addLayout(buttonLayout2, 2, 1)
 
         self.setLayout(mainLayout)
-        self.setWindowTitle(self.tr("Simple Address Book"))
+        self.setWindowTitle("Simple Address Book")
 
     def addContact(self):
         self.oldName = self.nameLine.text()
@@ -149,38 +151,34 @@ class AddressBook(QtGui.QWidget):
         address = self.addressText.toPlainText()
 
         if name == "" or address == "":
-            QtGui.QMessageBox.information(self, self.tr("Empty Field"),
-                    self.tr("Please enter a name and address."))
+            QtGui.QMessageBox.information(self, "Empty Field",
+                    "Please enter a name and address.")
             return
 
         if self.currentMode == self.AddingMode:
             if name not in self.contacts:
                 self.contacts[name] = address
-                QtGui.QMessageBox.information(self, self.tr("Add Successful"),
-                        self.tr("\"%1\" has been added to your address book.").arg(name))
+                QtGui.QMessageBox.information(self, "Add Successful",
+                        "\"%s\" has been added to your address book." % name)
             else:
-                QtGui.QMessageBox.information(self, self.tr("Add Unsuccessful"),
-                        self.tr("Sorry, \"%1\" is already in your address book.").arg(name))
+                QtGui.QMessageBox.information(self, "Add Unsuccessful",
+                        "Sorry, \"%s\" is already in your address book." % name)
                 return
 
         elif self.currentMode == self.EditingMode:
             if self.oldName != name:
                 if name not in self.contacts:
-                    QtGui.QMessageBox.information(self,
-                            self.tr("Edit Successful"),
-                            self.tr("\"%1\" has been edited in your address "
-                                    "book.").arg(self.oldName))
+                    QtGui.QMessageBox.information(self, "Edit Successful",
+                            "\"%s\" has been edited in your address book." % self.oldName)
                     del self.contacts[self.oldName]
                     self.contacts[name] = address
                 else:
-                    QtGui.QMessageBox.information(self,
-                            self.tr("Edit Unsuccessful"),
-                            self.tr("Sorry, \"%1\" is already in your address "
-                                    "book.").arg(name))
+                    QtGui.QMessageBox.information(self, "Edit Unsuccessful",
+                            "Sorry, \"%s\" is already in your address book." % name)
                     return
             elif self.oldAddress != address:
-                QtGui.QMessageBox.information(self, self.tr("Edit Successful"),
-                        self.tr("\"%1\" has been edited in your address book.").arg(name))
+                QtGui.QMessageBox.information(self, "Edit Successful",
+                        "\"%s\" has been edited in your address book." % name)
                 self.contacts[name] = address
 
         self.updateInterface(self.NavigationMode)
@@ -195,19 +193,16 @@ class AddressBook(QtGui.QWidget):
         address = self.addressText.toPlainText()
 
         if name in self.contacts:
-            button = QtGui.QMessageBox.question(self,
-                    self.tr("Confirm Remove"),
-                    self.tr("Are you sure you want to remove \"%1\"?").arg(name),
+            button = QtGui.QMessageBox.question(self, "Confirm Remove",
+                    "Are you sure you want to remove \"%s\"?" % name,
                     QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
 
             if button == QtGui.QMessageBox.Yes:
                 self.previous()
                 del self.contacts[name]
 
-                QtGui.QMessageBox.information(self,
-                        self.tr("Remove Successful"),
-                        self.tr("\"%1\" has been removed from your address "
-                                "book.").arg(name))
+                QtGui.QMessageBox.information(self, "Remove Successful",
+                        "\"%s\" has been removed from your address book." % name)
 
         self.updateInterface(self.NavigationMode)
 
@@ -260,9 +255,8 @@ class AddressBook(QtGui.QWidget):
                 self.nameLine.setText(contactName)
                 self.addressText.setText(self.contacts[contactName])
             else:
-                QtGui.QMessageBox.information(self,
-                        self.tr("Contact Not Found"),
-                        self.tr("Sorry, \"%1\" is not in your address book.").arg(contactName))
+                QtGui.QMessageBox.information(self, "Contact Not Found",
+                        "Sorry, \"%s\" is not in your address book." % contactName)
                 return
 
         self.updateInterface(self.NavigationMode)
@@ -314,74 +308,67 @@ class AddressBook(QtGui.QWidget):
             self.saveButton.setEnabled(number >= 1)
 
     def saveToFile(self):
-        fileName = QtGui.QFileDialog.getSaveFileName(self,
-                self.tr("Save Address Book"), "",
-                self.tr("Address Book (*.abk);;All Files (*)"))
+        fileName,_ = QtGui.QFileDialog.getSaveFileName(self,
+                "Save Address Book", '',
+                "Address Book (*.abk);;All Files (*)")
 
         if not fileName:
             return
-        else:
-            try:
-                out_file = open(str(fileName), 'wb')
-            except IOError:
-                QtGui.QMessageBox.information(self,
-                        self.tr("Unable to open file"),
-                        self.tr("There was an error opening \"%1\"").arg(fileName))
-                return
 
-            pickle.dump(self.contacts, out_file)
-            out_file.close()
+        try:
+            out_file = open(str(fileName), 'wb')
+        except IOError:
+            QtGui.QMessageBox.information(self, "Unable to open file",
+                    "There was an error opening \"%s\"" % fileName)
+            return
+
+        pickle.dump(self.contacts, out_file)
+        out_file.close()
 
     def loadFromFile(self):
-        fileName = QtGui.QFileDialog.getOpenFileName(self,
-                self.tr("Open Address Book"), "",
-                self.tr("Address Book (*.abk);;All Files (*)"))
+        fileName,_ = QtGui.QFileDialog.getOpenFileName(self,
+                "Open Address Book", '',
+                "Address Book (*.abk);;All Files (*)")
 
         if not fileName:
             return
+
+        try:
+            in_file = open(str(fileName), 'rb')
+        except IOError:
+            QtGui.QMessageBox.information(self, "Unable to open file",
+                    "There was an error opening \"%s\"" % fileName)
+            return
+
+        self.contacts = pickle.load(in_file)
+        in_file.close()
+
+        if len(self.contacts) == 0:
+            QtGui.QMessageBox.information(self, "No contacts in file",
+                    "The file you are attempting to open contains no "
+                    "contacts.")
         else:
-            try:
-                in_file = open(str(fileName), 'rb')
-            except IOError:
-                QtGui.QMessageBox.information(self,
-                        self.tr("Unable to open file"),
-                        self.tr("There was an error opening \"%1\"").arg(fileName))
-                return
-
-            self.contacts = pickle.load(in_file)
-            in_file.close()
-
-            if len(self.contacts) == 0:
-                QtGui.QMessageBox.information(self,
-                        self.tr("No contacts in file"),
-                        self.tr("The file you are attempting to open contains "
-                                "no contacts."))
-            else:
-                for name, address in self.contacts:
-                    self.nameLine.setText(name)
-                    self.addressText.setText(address)
+            for name, address in self.contacts:
+                self.nameLine.setText(name)
+                self.addressText.setText(address)
 
         self.updateInterface(self.NavigationMode)
 
     def exportAsVCard(self):
-        name = self.nameLine.text()
+        name = str(self.nameLine.text())
         address = self.addressText.toPlainText()
 
-        index = name.indexOf(" ")
+        nameList = name.split()
 
-        if index != -1:
-            nameList = name.split(QtCore.QRegExp("\\s+"),
-                    QtCore.QString.SkipEmptyParts)
-            firstName = nameList.first()
-            lastName = nameList.last()
+        if len(nameList) > 1:
+            firstName = nameList[0]
+            lastName = nameList[-1]
         else:
-            nameList = QtCore.QStringList()
             firstName = name
-            lastName = QtCore.QString("")
+            lastName = ''
 
-        fileName = QtGui.QFileDialog.getSaveFileName(self,
-                self.tr("Export Contact"), "",
-                self.tr("vCard Files (*.vcf);;All Files (*)"))
+        fileName = QtGui.QFileDialog.getSaveFileName(self, "Export Contact",
+                '', "vCard Files (*.vcf);;All Files (*)")
 
         if not fileName:
             return
@@ -389,41 +376,37 @@ class AddressBook(QtGui.QWidget):
         out_file = QtCore.QFile(fileName)
 
         if not out_file.open(QtCore.QIODevice.WriteOnly):
-            QtGui.QMessageBox.information(self, self.tr("Unable to open file"),
+            QtGui.QMessageBox.information(self, "Unable to open file",
                     out_file.errorString())
             return
 
         out_s = QtCore.QTextStream(out_file)
 
-        out_s << "BEGIN:VCARD" << "\n"
-        out_s << "VERSION:2.1" << "\n"
-        out_s << "N:" << lastName << ";" << firstName << "\n"
+        out_s << 'BEGIN:VCARD' << '\n'
+        out_s << 'VERSION:2.1' << '\n'
+        out_s << 'N:' << lastName << ';' << firstName << '\n'
+        out_s << 'FN:' << ' '.join(nameList) << '\n'
 
-        if not nameList.isEmpty():
-            out_s << "FN:" << nameList.join(" ") << "\n"
-        else:
-            out_s << "FN:" << firstName << "\n"
+        address.replace(';', '\\;')
+        address.replace('\n', ';')
+        address.replace(',', ' ')
 
-        address.replace(";", "\\;", QtCore.Qt.CaseInsensitive)
-        address.replace("\n", ";", QtCore.Qt.CaseInsensitive)
-        address.replace(",", " ", QtCore.Qt.CaseInsensitive)
+        out_s << 'ADR;HOME:;' << address << '\n'
+        out_s << 'END:VCARD' << '\n'
 
-        out_s << "ADR;HOME:;" << address << "\n"
-        out_s << "END:VCARD" << "\n"
-
-        QtGui.QMessageBox.information(self, self.tr("Export Successful"),
-                self.tr("\"%1\" has been exported as a vCard.").arg(name))
+        QtGui.QMessageBox.information(self, "Export Successful",
+                "\"%s\" has been exported as a vCard." % name)
 
 
 class FindDialog(QtGui.QDialog):
     def __init__(self, parent=None):
         super(FindDialog, self).__init__(parent)
 
-        findLabel = QtGui.QLabel(self.tr("Enter the name of a contact:"))
+        findLabel = QtGui.QLabel("Enter the name of a contact:")
         self.lineEdit = QtGui.QLineEdit()
 
-        self.findButton = QtGui.QPushButton(self.tr("&Find"))
-        self.findText = QtCore.QString()
+        self.findButton = QtGui.QPushButton("&Find")
+        self.findText = ''
 
         layout = QtGui.QHBoxLayout()
         layout.addWidget(findLabel)
@@ -431,24 +414,22 @@ class FindDialog(QtGui.QDialog):
         layout.addWidget(self.findButton)
 
         self.setLayout(layout)
-        self.setWindowTitle(self.tr("Find a Contact"))
+        self.setWindowTitle("Find a Contact")
 
-
-        self.connect(self.findButton, QtCore.SIGNAL("clicked()"), self.findClicked)
-        self.connect(self.findButton, QtCore.SIGNAL("clicked()"), self.accept)
-
+        self.findButton.clicked.connect(self.findClicked)
+        self.findButton.clicked.connect(self.accept)
 
     def findClicked(self):
         text = self.lineEdit.text()
 
         if not text:
-            QtGui.QMessageBox.information(self, self.tr("Empty Field"),
-                    self.tr("Please enter a name."))
+            QtGui.QMessageBox.information(self, "Empty Field",
+                    "Please enter a name.")
             return
-        else:
-            self.findText = text
-            self.lineEdit.clear()
-            self.hide()
+
+        self.findText = text
+        self.lineEdit.clear()
+        self.hide()
 
     def getFindText(self):
         return self.findText

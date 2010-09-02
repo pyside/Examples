@@ -33,6 +33,8 @@ class SortedDict(dict):
 
             return key, value
 
+        __next__ = next
+
     def __iter__(self):
         return SortedDict.Iterator(self)
 
@@ -44,33 +46,33 @@ class AddressBook(QtGui.QWidget):
         super(AddressBook, self).__init__(parent)
 
         self.contacts = SortedDict()
-        self.oldName = ""
-        self.oldAddress = ""
+        self.oldName = ''
+        self.oldAddress = ''
 
-        nameLabel = QtGui.QLabel(self.tr("Name:"))
+        nameLabel = QtGui.QLabel("Name:")
         self.nameLine = QtGui.QLineEdit()
         self.nameLine.setReadOnly(True)
 
-        addressLabel = QtGui.QLabel(self.tr("Address:"))
+        addressLabel = QtGui.QLabel("Address:")
         self.addressText = QtGui.QTextEdit()
         self.addressText.setReadOnly(True)
 
-        self.addButton = QtGui.QPushButton(self.tr("&Add"))
+        self.addButton = QtGui.QPushButton("&Add")
         self.addButton.show()
-        self.submitButton = QtGui.QPushButton(self.tr("&Submit"))
+        self.submitButton = QtGui.QPushButton("&Submit")
         self.submitButton.hide()
-        self.cancelButton = QtGui.QPushButton(self.tr("&Cancel"))
+        self.cancelButton = QtGui.QPushButton("&Cancel")
         self.cancelButton.hide()
-        self.nextButton = QtGui.QPushButton(self.tr("&Next"))
+        self.nextButton = QtGui.QPushButton("&Next")
         self.nextButton.setEnabled(False)
-        self.previousButton = QtGui.QPushButton(self.tr("&Previous"))
+        self.previousButton = QtGui.QPushButton("&Previous")
         self.previousButton.setEnabled(False)
 
-        self.connect(self.addButton,QtCore.SIGNAL("clicked()"),self.addContact)
-        self.connect(self.submitButton,QtCore.SIGNAL("clicked()"),self.submitContact)
-        self.connect(self.cancelButton,QtCore.SIGNAL("clicked()"),self.cancel)
-        self.connect(self.nextButton,QtCore.SIGNAL("clicked()"), self.next)
-        self.connect(self.previousButton,QtCore.SIGNAL("clicked()"),self.previous)
+        self.addButton.clicked.connect(self.addContact)
+        self.submitButton.clicked.connect(self.submitContact)
+        self.cancelButton.clicked.connect(self.cancel)
+        self.nextButton.clicked.connect(self.next)
+        self.previousButton.clicked.connect(self.previous)
 
         buttonLayout1 = QtGui.QVBoxLayout()
         buttonLayout1.addWidget(self.addButton, QtCore.Qt.AlignTop)
@@ -91,7 +93,7 @@ class AddressBook(QtGui.QWidget):
         mainLayout.addLayout(buttonLayout2, 3, 1)
 
         self.setLayout(mainLayout)
-        self.setWindowTitle(self.tr("Simple Address Book"))
+        self.setWindowTitle("Simple Address Book")
 
     def addContact(self):
         self.oldName = self.nameLine.text()
@@ -115,17 +117,17 @@ class AddressBook(QtGui.QWidget):
         address = self.addressText.toPlainText()
 
         if name == "" or address == "":
-            QtGui.QMessageBox.information(self, self.tr("Empty Field"),
-                    self.tr("Please enter a name and address."))
+            QtGui.QMessageBox.information(self, "Empty Field",
+                    "Please enter a name and address.")
             return
 
         if name not in self.contacts:
             self.contacts[name] = address
-            QtGui.QMessageBox.information(self, self.tr("Add Successful"),
-                    self.tr("\"%s\" has been added to your address book.") % name)
+            QtGui.QMessageBox.information(self, "Add Successful",
+                    "\"%s\" has been added to your address book." % name)
         else:
-            QtGui.QMessageBox.information(self, self.tr("Add Unsuccessful"),
-                    self.tr("Sorry, \"%s\" is already in your address book.") % name)
+            QtGui.QMessageBox.information(self, "Add Unsuccessful",
+                    "Sorry, \"%s\" is already in your address book." % name)
             return
 
         if not self.contacts:
