@@ -24,6 +24,7 @@
 #############################################################################
 
 import sys
+import os.path
 from PySide import QtCore, QtGui
 
 import i18n_rc
@@ -125,10 +126,9 @@ class LanguageChooser(QtGui.QDialog):
 
     def findQmFiles(self):
         trans_dir = QtCore.QDir("./translations")
-        fileNames = trans_dir.entryList(QtCore.QStringList("*.qm"), QtCore.QDir.Files, QtCore.QDir.Name)
+        fileNames = trans_dir.entryList(["*.qm"], QtCore.QDir.Files, QtCore.QDir.Name)
 
-        for i in fileNames:
-            fileNames.replaceInStrings(i, trans_dir.filePath(i))
+        fileNames = [trans_dir.filePath(p) for p in fileNames]
 
         return fileNames
 
@@ -176,7 +176,7 @@ class MainWindow(QtGui.QMainWindow):
         fileMenu.setPalette(QtGui.QPalette(QtCore.Qt.red))
         fileMenu.addAction(exitAction)
 
-        self.setWindowTitle(self.tr("Language: %1").arg(self.tr("English")))
+        self.setWindowTitle(self.tr("Language: %s") % (self.tr("English")))
         self.statusBar().showMessage(self.tr("Internationalization Example"))
 
         if self.tr("LTR") == "RTL":
