@@ -45,10 +45,10 @@ class SlidersGroup(QtGui.QGroupBox):
         self.dial = QtGui.QDial()
         self.dial.setFocusPolicy(QtCore.Qt.StrongFocus)
 
-        self.slider.valueChanged.connect(self.scrollBar.setValue)
-        self.scrollBar.valueChanged.connect(self.dial.setValue)
-        self.dial.valueChanged.connect(self.slider.setValue)
-        self.dial.valueChanged.connect(self.valueChanged)
+        self.slider.valueChanged[int].connect(self.scrollBar.setValue)
+        self.scrollBar.valueChanged[int].connect(self.dial.setValue)
+        self.dial.valueChanged[int].connect(self.slider.setValue)
+        self.dial.valueChanged[int].connect(self.valueChanged)
 
         if orientation == QtCore.Qt.Horizontal:
             direction = QtGui.QBoxLayout.TopToBottom
@@ -99,9 +99,9 @@ class Window(QtGui.QWidget):
 
         self.createControls("Controls")
 
-        self.horizontalSliders.valueChanged.connect(self.verticalSliders.setValue)
-        self.verticalSliders.valueChanged.connect(self.valueSpinBox.setValue)
-        self.valueSpinBox.valueChanged.connect(self.horizontalSliders.setValue)
+        self.horizontalSliders.valueChanged[int].connect(self.verticalSliders.setValue)
+        self.verticalSliders.valueChanged[int].connect(self.valueSpinBox.setValue)
+        self.valueSpinBox.valueChanged[int].connect(self.horizontalSliders.setValue)
 
         layout = QtGui.QHBoxLayout()
         layout.addWidget(self.controlsGroup)
@@ -141,10 +141,10 @@ class Window(QtGui.QWidget):
         orientationCombo.addItem("Vertical slider-like widgets")
 
         orientationCombo.activated[int].connect(self.stackedWidget.setCurrentIndex)
-        self.minimumSpinBox.valueChanged.connect(self.horizontalSliders.setMinimum)
-        self.minimumSpinBox.valueChanged.connect(self.verticalSliders.setMinimum)
-        self.maximumSpinBox.valueChanged.connect(self.horizontalSliders.setMaximum)
-        self.maximumSpinBox.valueChanged.connect(self.verticalSliders.setMaximum)
+        self.minimumSpinBox.valueChanged[int].connect(self.horizontalSliders.setMinimum)
+        self.minimumSpinBox.valueChanged[int].connect(self.verticalSliders.setMinimum)
+        self.maximumSpinBox.valueChanged[int].connect(self.horizontalSliders.setMaximum)
+        self.maximumSpinBox.valueChanged[int].connect(self.verticalSliders.setMaximum)
         invertedAppearance.toggled.connect(self.horizontalSliders.invertAppearance)
         invertedAppearance.toggled.connect(self.verticalSliders.invertAppearance)
         invertedKeyBindings.toggled.connect(self.horizontalSliders.invertKeyBindings)

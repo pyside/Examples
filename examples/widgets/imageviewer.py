@@ -51,7 +51,7 @@ class ImageViewer(QtGui.QMainWindow):
         self.resize(500, 400)
 
     def open(self):
-        fileName = QtGui.QFileDialog.getOpenFileName(self, "Open File",
+        fileName,_ = QtGui.QFileDialog.getOpenFileName(self, "Open File",
                 QtCore.QDir.currentPath())
         if fileName:
             image = QtGui.QImage(fileName)

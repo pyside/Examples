@@ -165,7 +165,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def open(self):
         if self.maybeSave():
-            fileName = QtGui.QFileDialog.getOpenFileName(self, "Open File",
+            fileName,_ = QtGui.QFileDialog.getOpenFileName(self, "Open File",
                     QtCore.QDir.currentPath())
             if fileName:
                 self.scribbleArea.openImage(fileName)
@@ -276,9 +276,9 @@ class MainWindow(QtGui.QMainWindow):
     def saveFile(self, fileFormat):
         initialPath = QtCore.QDir.currentPath() + '/untitled.' + fileFormat
 
-        fileName = QtGui.QFileDialog.getSaveFileName(self, "Save As",
+        fileName,_ = QtGui.QFileDialog.getSaveFileName(self, "Save As",
                 initialPath,
-                "%s Files (*.%s);;All Files (*)" % (fileFormat.upper(), fileFormat))
+                "%s Files (*.%s);;All Files (*)" % (str(fileFormat).upper(), fileFormat))
         if fileName:
             return self.scribbleArea.saveImage(fileName, fileFormat)
 

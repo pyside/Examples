@@ -104,7 +104,7 @@ class Window(QtGui.QWidget):
         formatComboBox.addItem('hh:mm:ss')
         formatComboBox.addItem('hh:mm ap')
 
-        formatComboBox.activated["QString"].connect(self.setFormatString)
+        formatComboBox.activated[str].connect(self.setFormatString)
 
         self.setFormatString(formatComboBox.currentText())
 
@@ -162,7 +162,7 @@ class Window(QtGui.QWidget):
         self.priceSpinBox.setPrefix('$')
         self.priceSpinBox.setValue(99.99)
 
-        precisionSpinBox.valueChanged.connect(self.changePrecision)
+        precisionSpinBox.valueChanged[int].connect(self.changePrecision)
 
         spinBoxLayout = QtGui.QVBoxLayout()
         spinBoxLayout.addWidget(precisionLabel)

@@ -155,8 +155,8 @@ class MainWindow(QtGui.QMainWindow):
         self.clipboard = QtGui.QApplication.clipboard()
 
         self.fontCombo.currentFontChanged.connect(self.findStyles)
-        self.fontCombo.activated["QString"].connect(self.characterWidget.updateFont)
-        self.styleCombo.activated["QString"].connect(self.characterWidget.updateStyle)
+        self.fontCombo.activated[str].connect(self.characterWidget.updateFont)
+        self.styleCombo.activated[str].connect(self.characterWidget.updateStyle)
         self.characterWidget.characterSelected.connect(self.insertCharacter)
         clipboardButton.clicked.connect(self.updateClipboard)
 
