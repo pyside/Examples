@@ -38,8 +38,8 @@ class MainWindow(QtGui.QMainWindow):
                 QtGui.QSizePolicy.Expanding)
 
         self.infoLabel = QtGui.QLabel(
-                "<i>Choose a menu option, or right-click to invoke a context menu</i>")
-        self.infoLabel.setAlignment(QtCore.Qt.AlignCenter)
+                "<i>Choose a menu option, or right-click to invoke a context menu</i>",
+                alignment=QtCore.Qt.AlignCenter)
         self.infoLabel.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Sunken)
 
         bottomFiller = QtGui.QWidget()
@@ -131,116 +131,98 @@ class MainWindow(QtGui.QMainWindow):
         self.infoLabel.setText("Invoked <b>Help|About Qt</b>")
 
     def createActions(self):
-        self.newAct = QtGui.QAction("&New", self)
-        self.newAct.setShortcut(QtGui.QKeySequence.New)
-        self.newAct.setStatusTip("Create a new file")
-        self.newAct.triggered.connect(self.newFile)
+        self.newAct = QtGui.QAction("&New", self,
+                shortcut=QtGui.QKeySequence.New,
+                statusTip="Create a new file", triggered=self.newFile)
 
-        self.openAct = QtGui.QAction("&Open...", self)
-        self.openAct.setShortcut(QtGui.QKeySequence.Open)
-        self.openAct.setStatusTip("Open an existing file")
-        self.openAct.triggered.connect(self.open)
+        self.openAct = QtGui.QAction("&Open...", self,
+                shortcut=QtGui.QKeySequence.Open,
+                statusTip="Open an existing file", triggered=self.open)
 
-        self.saveAct = QtGui.QAction("&Save", self)
-        self.saveAct.setShortcut(QtGui.QKeySequence.Save)
-        self.saveAct.setStatusTip("Save the document to disk")
-        self.saveAct.triggered.connect(self.save)
+        self.saveAct = QtGui.QAction("&Save", self,
+                shortcut=QtGui.QKeySequence.Save,
+                statusTip="Save the document to disk", triggered=self.save)
 
-        self.printAct = QtGui.QAction("&Print...", self)
-        self.printAct.setShortcut(QtGui.QKeySequence.Print)
-        self.printAct.setStatusTip("Print the document")
-        self.printAct.triggered.connect(self.print_)
+        self.printAct = QtGui.QAction("&Print...", self,
+                shortcut=QtGui.QKeySequence.Print,
+                statusTip="Print the document", triggered=self.print_)
 
-        self.exitAct = QtGui.QAction("E&xit", self)
-        self.exitAct.setShortcut("Ctrl+Q")
-        self.exitAct.setStatusTip("Exit the application")
-        self.exitAct.triggered.connect(self.close)
+        self.exitAct = QtGui.QAction("E&xit", self, shortcut="Ctrl+Q",
+                statusTip="Exit the application", triggered=self.close)
 
-        self.undoAct = QtGui.QAction("&Undo", self)
-        self.undoAct.setShortcut(QtGui.QKeySequence.Undo)
-        self.undoAct.setStatusTip("Undo the last operation")
-        self.undoAct.triggered.connect(self.undo)
+        self.undoAct = QtGui.QAction("&Undo", self,
+                shortcut=QtGui.QKeySequence.Undo,
+                statusTip="Undo the last operation", triggered=self.undo)
 
-        self.redoAct = QtGui.QAction("&Redo", self)
-        self.redoAct.setShortcut(QtGui.QKeySequence.Redo)
-        self.redoAct.setStatusTip("Redo the last operation")
-        self.redoAct.triggered.connect(self.redo)
+        self.redoAct = QtGui.QAction("&Redo", self,
+                shortcut=QtGui.QKeySequence.Redo,
+                statusTip="Redo the last operation", triggered=self.redo)
 
-        self.cutAct = QtGui.QAction("Cu&t", self)
-        self.cutAct.setShortcut(QtGui.QKeySequence.Cut)
-        self.cutAct.setStatusTip("Cut the current selection's contents to the clipboard")
-        self.cutAct.triggered.connect(self.cut)
+        self.cutAct = QtGui.QAction("Cu&t", self,
+                shortcut=QtGui.QKeySequence.Cut,
+                statusTip="Cut the current selection's contents to the clipboard",
+                triggered=self.cut)
 
-        self.copyAct = QtGui.QAction("&Copy", self)
-        self.copyAct.setShortcut(QtGui.QKeySequence.Copy)
-        self.copyAct.setStatusTip("Copy the current selection's contents to the clipboard")
-        self.copyAct.triggered.connect(self.copy)
+        self.copyAct = QtGui.QAction("&Copy", self,
+                shortcut=QtGui.QKeySequence.Copy,
+                statusTip="Copy the current selection's contents to the clipboard",
+                triggered=self.copy)
 
-        self.pasteAct = QtGui.QAction("&Paste", self)
-        self.pasteAct.setShortcut(QtGui.QKeySequence.Paste)
-        self.pasteAct.setStatusTip("Paste the clipboard's contents into the current selection")
-        self.pasteAct.triggered.connect(self.paste)
+        self.pasteAct = QtGui.QAction("&Paste", self,
+                shortcut=QtGui.QKeySequence.Paste,
+                statusTip="Paste the clipboard's contents into the current selection",
+                triggered=self.paste)
 
-        self.boldAct = QtGui.QAction("&Bold", self)
-        self.boldAct.setCheckable(True)
-        self.boldAct.setShortcut("Ctrl+B")
-        self.boldAct.setStatusTip("Make the text bold")
-        self.boldAct.triggered.connect(self.bold)
+        self.boldAct = QtGui.QAction("&Bold", self, checkable=True,
+                shortcut="Ctrl+B", statusTip="Make the text bold",
+                triggered=self.bold)
 
         boldFont = self.boldAct.font()
         boldFont.setBold(True)
         self.boldAct.setFont(boldFont)
 
-        self.italicAct = QtGui.QAction("&Italic", self)
-        self.italicAct.setCheckable(True)
-        self.italicAct.setShortcut("Ctrl+I")
-        self.italicAct.setStatusTip("Make the text italic")
-        self.italicAct.triggered.connect(self.italic)
+        self.italicAct = QtGui.QAction("&Italic", self, checkable=True,
+                shortcut="Ctrl+I", statusTip="Make the text italic",
+                triggered=self.italic)
 
         italicFont = self.italicAct.font()
         italicFont.setItalic(True)
         self.italicAct.setFont(italicFont)
 
-        self.setLineSpacingAct = QtGui.QAction("Set &Line Spacing...", self)
-        self.setLineSpacingAct.setStatusTip("Change the gap between the lines of a paragraph")
-        self.setLineSpacingAct.triggered.connect(self.setLineSpacing)
+        self.setLineSpacingAct = QtGui.QAction("Set &Line Spacing...", self,
+                statusTip="Change the gap between the lines of a paragraph",
+                triggered=self.setLineSpacing)
 
-        self.setParagraphSpacingAct = QtGui.QAction("Set &Paragraph Spacing...", self)
-        self.setParagraphSpacingAct.setStatusTip("Change the gap between paragraphs")
-        self.setParagraphSpacingAct.triggered.connect(self.setParagraphSpacing)
+        self.setParagraphSpacingAct = QtGui.QAction(
+                "Set &Paragraph Spacing...", self,
+                statusTip="Change the gap between paragraphs",
+                triggered=self.setParagraphSpacing)
 
-        self.aboutAct = QtGui.QAction("&About", self)
-        self.aboutAct.setStatusTip("Show the application's About box")
-        self.aboutAct.triggered.connect(self.about)
+        self.aboutAct = QtGui.QAction("&About", self,
+                statusTip="Show the application's About box",
+                triggered=self.about)
 
-        self.aboutQtAct = QtGui.QAction("About &Qt", self)
-        self.aboutQtAct.setStatusTip("Show the Qt library's About box")
-        self.aboutQtAct.triggered.connect(self.aboutQt)
+        self.aboutQtAct = QtGui.QAction("About &Qt", self,
+                statusTip="Show the Qt library's About box",
+                triggered=self.aboutQt)
         self.aboutQtAct.triggered.connect(QtGui.qApp.aboutQt)
 
-        self.leftAlignAct = QtGui.QAction("&Left Align", self)
-        self.leftAlignAct.setCheckable(True)
-        self.leftAlignAct.setShortcut("Ctrl+L")
-        self.leftAlignAct.setStatusTip("Left align the selected text")
-        self.leftAlignAct.triggered.connect(self.leftAlign)
+        self.leftAlignAct = QtGui.QAction("&Left Align", self, checkable=True,
+                shortcut="Ctrl+L", statusTip="Left align the selected text",
+                triggered=self.leftAlign)
 
-        self.rightAlignAct = QtGui.QAction("&Right Align", self)
-        self.rightAlignAct.setCheckable(True)
-        self.rightAlignAct.setShortcut("Ctrl+R")
-        self.rightAlignAct.setStatusTip("Right align the selected text")
-        self.rightAlignAct.triggered.connect(self.rightAlign)
+        self.rightAlignAct = QtGui.QAction("&Right Align", self,
+                checkable=True, shortcut="Ctrl+R",
+                statusTip="Right align the selected text",
+                triggered=self.rightAlign)
 
-        self.justifyAct = QtGui.QAction("&Justify", self)
-        self.justifyAct.setCheckable(True)
-        self.justifyAct.setShortcut("Ctrl+J")
-        self.justifyAct.setStatusTip("Justify the selected text")
-        self.justifyAct.triggered.connect(self.justify)
+        self.justifyAct = QtGui.QAction("&Justify", self, checkable=True,
+                shortcut="Ctrl+J", statusTip="Justify the selected text",
+                triggered=self.justify)
 
-        self.centerAct = QtGui.QAction("&Center", self)
-        self.centerAct.setCheckable(True)
-        self.centerAct.setShortcut("Ctrl+C")
-        self.centerAct.setStatusTip("Center the selected text")
-        self.centerAct.triggered.connect(self.center)
+        self.centerAct = QtGui.QAction("&Center", self, checkable=True,
+                shortcut="Ctrl+C", statusTip="Center the selected text",
+                triggered=self.center)
 
         self.alignmentGroup = QtGui.QActionGroup(self)
         self.alignmentGroup.addAction(self.leftAlignAct)
