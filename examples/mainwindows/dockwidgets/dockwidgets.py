@@ -172,38 +172,35 @@ class MainWindow(QtGui.QMainWindow):
                 "standard paragraphs to add them.")
 
     def createActions(self):
-        self.newLetterAct = QtGui.QAction(QtGui.QIcon(':/images/new.png'), "&New Letter", self)
-        self.newLetterAct.setShortcut(QtGui.QKeySequence.New)
-        self.newLetterAct.setStatusTip("Create a new form letter")
-        self.newLetterAct.triggered.connect(self.newLetter)
+        self.newLetterAct = QtGui.QAction(QtGui.QIcon(':/images/new.png'),
+                "&New Letter", self, shortcut=QtGui.QKeySequence.New,
+                statusTip="Create a new form letter",
+                triggered=self.newLetter)
 
-        self.saveAct = QtGui.QAction(QtGui.QIcon(':/images/save.png'), "&Save...", self)
-        self.saveAct.setShortcut(QtGui.QKeySequence.Save)
-        self.saveAct.setStatusTip("Save the current form letter")
-        self.saveAct.triggered.connect(self.save)
+        self.saveAct = QtGui.QAction(QtGui.QIcon(':/images/save.png'),
+                "&Save...", self, shortcut=QtGui.QKeySequence.Save,
+                statusTip="Save the current form letter",
+                triggered=self.save)
 
-        self.printAct = QtGui.QAction(QtGui.QIcon(':/images/print.png'), "&Print...", self)
-        self.printAct.setShortcut(QtGui.QKeySequence.Print)
-        self.printAct.setStatusTip("Print the current form letter")
-        self.printAct.triggered.connect(self.print_)
+        self.printAct = QtGui.QAction(QtGui.QIcon(':/images/print.png'),
+                "&Print...", self, shortcut=QtGui.QKeySequence.Print,
+                statusTip="Print the current form letter",
+                triggered=self.print_)
 
-        self.undoAct = QtGui.QAction(QtGui.QIcon(':/images/undo.png'), "&Undo", self)
-        self.undoAct.setShortcut(QtGui.QKeySequence.Undo)
-        self.undoAct.setStatusTip("Undo the last editing action")
-        self.undoAct.triggered.connect(self.undo)
+        self.undoAct = QtGui.QAction(QtGui.QIcon(':/images/undo.png'),
+                "&Undo", self, shortcut=QtGui.QKeySequence.Undo,
+                statusTip="Undo the last editing action", triggered=self.undo)
 
-        self.quitAct = QtGui.QAction("&Quit", self)
-        self.quitAct.setShortcut("Ctrl+Q")
-        self.quitAct.setStatusTip("Quit the application")
-        self.quitAct.triggered.connect(self.close)
+        self.quitAct = QtGui.QAction("&Quit", self, shortcut="Ctrl+Q",
+                statusTip="Quit the application", triggered=self.close)
 
-        self.aboutAct = QtGui.QAction("&About", self)
-        self.aboutAct.setStatusTip("Show the application's About box")
-        self.aboutAct.triggered.connect(self.about)
+        self.aboutAct = QtGui.QAction("&About", self,
+                statusTip="Show the application's About box",
+                triggered=self.about)
 
-        self.aboutQtAct = QtGui.QAction("About &Qt", self)
-        self.aboutQtAct.setStatusTip("Show the Qt library's About box")
-        self.aboutQtAct.triggered.connect(QtGui.qApp.aboutQt)
+        self.aboutQtAct = QtGui.QAction("About &Qt", self,
+                statusTip="Show the Qt library's About box",
+                triggered=QtGui.qApp.aboutQt)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
