@@ -32,14 +32,14 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 # 02110-1301 USA
 
-from PySide.QtCore import QUrl, QStringList, QVariant
+from PySide.QtCore import QUrl
 from PySide.QtGui import QPushButton, QApplication
 from PySide.QtDeclarative import QDeclarativeView
 
 # This example uses a QML file to show a scrolling list containing
 # all the items listed into dataList.
 
-dataList = QStringList(["Item 1", "Item 2", "Item 3", "Item 4"])
+dataList = ["Item 1", "Item 2", "Item 3", "Item 4"]
 
 app = QApplication([])
 view = QDeclarativeView()
