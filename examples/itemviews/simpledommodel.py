@@ -23,11 +23,10 @@
 **
 ***************************************************************************"""
 
-import sys
 from PySide import QtCore, QtGui, QtXml
 
 
-class DomItem:
+class DomItem(object):
     def __init__(self, node, row, parent=None):
         self.domNode = node
         # Record the item's location within its parent.
@@ -42,7 +41,7 @@ class DomItem:
         return self.parentItem
 
     def child(self, i):
-        if self.childItems.has_key(i):
+        if i in self.childItems:
             return self.childItems[i]
 
         if i >= 0 and i < self.domNode.childNodes().count():
@@ -51,15 +50,15 @@ class DomItem:
             self.childItems[i] = childItem
             return childItem
 
-        return 0
+        return None
 
     def row(self):
         return self.rowNumber
 
 
 class DomModel(QtCore.QAbstractItemModel):
-    def __init__(self, document, parent):
-        QtCore.QAbstractItemModel.__init__(self, parent)
+    def __init__(self, document, parent=None):
+        super(DomModel, self).__init__(parent)
 
         self.domDocument = document
 
@@ -83,38 +82,45 @@ class DomModel(QtCore.QAbstractItemModel):
 
         if index.column() == 0:
             return node.nodeName()
-
+        
         elif index.column() == 1:
             for i in range(0, attributeMap.count()):
                 attribute = attributeMap.item(i)
-                attributes.append(attribute.nodeName() + "=\"" + \
-                                  attribute.nodeValue() + "\"")
+                attributes.append(attribute.nodeName() + '="' +
+                                  attribute.nodeValue() + '"')
 
             return " ".join(attributes)
-        elif index.column() == 2:
-            return " ".join(node.nodeValue().split("\n"))
-        else:
-            return None
+
+        if index.column() == 2:
+            value = node.nodeValue()
+            if value is None:
+                return ''
+
+            return ' '.join(node.nodeValue().split('\n'))
+
+        return None
 
     def flags(self, index):
         if not index.isValid():
-            return QtCore.Qt.ItemIsEnabled
+            return QtCore.Qt.NoItemFlags
 
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
     def headerData(self, section, orientation, role):
         if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
             if section == 0:
-                return self.tr("Name")
-            elif section == 1:
-                return self.tr("Attributes")
-            elif section == 2:
-                return self.tr("Value")
+                return "Name"
+
+            if section == 1:
+                return "Attributes"
+
+            if section == 2:
+                return "Value"
 
         return None
 
     def index(self, row, column, parent):
-        if row < 0 or column < 0 or row >= self.rowCount(parent) or column >= self.columnCount(parent):
+        if not self.hasIndex(row, column, parent):
             return QtCore.QModelIndex()
 
         if not parent.isValid():
@@ -153,28 +159,27 @@ class DomModel(QtCore.QAbstractItemModel):
 
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self, parent=None):
-        QtGui.QMainWindow.__init__(self, parent)
+    def __init__(self):
+        super(MainWindow, self).__init__()
 
-        self.fileMenu = self.menuBar().addMenu(self.tr("&File"))
-        self.fileMenu.addAction(self.tr("&Open..."), self.openFile,
-                                QtGui.QKeySequence(self.tr("Ctrl+O")))
-        self.fileMenu.addAction(self.tr("E&xit"), self, QtCore.SLOT("close()"),
-                                QtGui.QKeySequence(self.tr("Ctrl+Q")))
+        self.fileMenu = self.menuBar().addMenu("&File")
+        self.fileMenu.addAction("&Open...", self.openFile, "Ctrl+O")
+        self.fileMenu.addAction("E&xit", self.close, "Ctrl+Q")
+
         self.xmlPath = ""
         self.model = DomModel(QtXml.QDomDocument(), self)
         self.view = QtGui.QTreeView(self)
         self.view.setModel(self.model)
 
         self.setCentralWidget(self.view)
-        self.setWindowTitle(self.tr("Simple DOM Model"))
+        self.setWindowTitle("Simple DOM Model")
 
     def openFile(self):
-        filePath, ok = QtGui.QFileDialog.getOpenFileName(self, self.tr("Open File"),
-            self.xmlPath, self.tr("XML files (*.xml);;HTML files (*.html);;"
-                        "SVG files (*.svg);;User Interface files (*.ui)"))
+        filePath,_ = QtGui.QFileDialog.getOpenFileName(self, "Open File",
+                self.xmlPath, "XML files (*.xml);;HTML files (*.html);;"
+                "SVG files (*.svg);;User Interface files (*.ui)")
 
-        if len(filePath):
+        if filePath:
             f = QtCore.QFile(filePath)
             if f.open(QtCore.QIODevice.ReadOnly):
                 document = QtXml.QDomDocument()
@@ -187,7 +192,10 @@ class MainWindow(QtGui.QMainWindow):
                 f.close()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     window = MainWindow()
     window.resize(640, 480)
