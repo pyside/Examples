@@ -23,44 +23,52 @@
 # 
 ############################################################################
 
-import sys
 from PySide import QtCore, QtGui, QtNetwork
 
 
 class Receiver(QtGui.QDialog):
     def __init__(self, parent=None):
-        QtGui.QDialog.__init__(self, parent)
-       
-        self.statusLabel = QtGui.QLabel(self.tr("Listening for broadcasted messages"))
-        self.quitButton = QtGui.QPushButton(self.tr("&Quit"))
-        
+        super(Receiver, self).__init__(parent)
+
+        self.statusLabel = QtGui.QLabel("Listening for broadcasted messages")
+        quitButton = QtGui.QPushButton("&Quit")
+
         self.udpSocket = QtNetwork.QUdpSocket(self)
         self.udpSocket.bind(45454)
-        
-        self.connect(self.udpSocket, QtCore.SIGNAL("readyRead()"),
-                     self.processPendingDatagrams)
-        self.connect(self.quitButton, QtCore.SIGNAL("clicked()"),
-                     self, QtCore.SLOT("close()"))
-        
+
+        self.udpSocket.readyRead.connect(self.processPendingDatagrams)
+        quitButton.clicked.connect(self.close)
+
         buttonLayout = QtGui.QHBoxLayout()
         buttonLayout.addStretch(1)
-        buttonLayout.addWidget(self.quitButton)
-        
+        buttonLayout.addWidget(quitButton)
+        buttonLayout.addStretch(1)
+
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addWidget(self.statusLabel)
         mainLayout.addLayout(buttonLayout)
         self.setLayout(mainLayout)
-        
-        self.setWindowTitle(self.tr("Broadcast Receiver"))
-        
+
+        self.setWindowTitle("Broadcast Receiver")
+
     def processPendingDatagrams(self):
         while self.udpSocket.hasPendingDatagrams():
             datagram, host, port = self.udpSocket.readDatagram(self.udpSocket.pendingDatagramSize())
-            self.statusLabel.setText(self.tr("Received datagram: \"%1\"")
-                                             .arg(datagram))
-    
 
-if __name__ == "__main__":
+            try:
+                # Python v3.
+                datagram = str(datagram, encoding='ascii')
+            except TypeError:
+                # Python v2.
+                pass
+
+            self.statusLabel.setText("Received datagram: \"%s\"" % datagram)
+
+
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     receiver = Receiver()
     receiver.show()
