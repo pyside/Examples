@@ -270,83 +270,78 @@ class MainWindow(QtGui.QMainWindow):
         return child
 
     def createActions(self):
-        self.newAct = QtGui.QAction(QtGui.QIcon(':/images/new.png'), "&New", self)
-        self.newAct.setShortcut(QtGui.QKeySequence.New)
-        self.newAct.setStatusTip("Create a new file")
-        self.newAct.triggered.connect(self.newFile)
+        self.newAct = QtGui.QAction(QtGui.QIcon(':/images/new.png'), "&New",
+                self, shortcut=QtGui.QKeySequence.New,
+                statusTip="Create a new file", triggered=self.newFile)
 
-        self.openAct = QtGui.QAction(QtGui.QIcon(':/images/open.png'), "&Open...", self)
-        self.openAct.setShortcut(QtGui.QKeySequence.Open)
-        self.openAct.setStatusTip("Open an existing file")
-        self.openAct.triggered.connect(self.open)
+        self.openAct = QtGui.QAction(QtGui.QIcon(':/images/open.png'),
+                "&Open...", self, shortcut=QtGui.QKeySequence.Open,
+                statusTip="Open an existing file", triggered=self.open)
 
-        self.saveAct = QtGui.QAction(QtGui.QIcon(':/images/save.png'), "&Save", self)
-        self.saveAct.setShortcut(QtGui.QKeySequence.Save)
-        self.saveAct.setStatusTip("Save the document to disk")
-        self.saveAct.triggered.connect(self.save)
+        self.saveAct = QtGui.QAction(QtGui.QIcon(':/images/save.png'),
+                "&Save", self, shortcut=QtGui.QKeySequence.Save,
+                statusTip="Save the document to disk", triggered=self.save)
 
-        self.saveAsAct = QtGui.QAction("Save &As...", self)
-        self.saveAsAct.setShortcut(QtGui.QKeySequence.SaveAs)
-        self.saveAsAct.setStatusTip("Save the document under a new name")
-        self.saveAsAct.triggered.connect(self.saveAs)
+        self.saveAsAct = QtGui.QAction("Save &As...", self,
+                shortcut=QtGui.QKeySequence.SaveAs,
+                statusTip="Save the document under a new name",
+                triggered=self.saveAs)
 
-        self.exitAct = QtGui.QAction("E&xit", self)
-        self.exitAct.setShortcut("Ctrl+Q")
-        self.exitAct.setStatusTip("Exit the application")
-        self.exitAct.triggered.connect(QtGui.qApp.closeAllWindows)
+        self.exitAct = QtGui.QAction("E&xit", self, shortcut="Ctrl+Q",
+                statusTip="Exit the application",
+                triggered=QtGui.qApp.closeAllWindows)
 
-        self.cutAct = QtGui.QAction(QtGui.QIcon(':/images/cut.png'), "Cu&t", self)
-        self.cutAct.setShortcut(QtGui.QKeySequence.Cut)
-        self.cutAct.setStatusTip("Cut the current selection's contents to the clipboard")
-        self.cutAct.triggered.connect(self.cut)
+        self.cutAct = QtGui.QAction(QtGui.QIcon(':/images/cut.png'), "Cu&t",
+                self, shortcut=QtGui.QKeySequence.Cut,
+                statusTip="Cut the current selection's contents to the clipboard",
+                triggered=self.cut)
 
-        self.copyAct = QtGui.QAction(QtGui.QIcon(':/images/copy.png'), "&Copy", self)
-        self.copyAct.setShortcut(QtGui.QKeySequence.Copy)
-        self.copyAct.setStatusTip("Copy the current selection's contents to the clipboard")
-        self.copyAct.triggered.connect(self.copy)
+        self.copyAct = QtGui.QAction(QtGui.QIcon(':/images/copy.png'),
+                "&Copy", self, shortcut=QtGui.QKeySequence.Copy,
+                statusTip="Copy the current selection's contents to the clipboard",
+                triggered=self.copy)
 
-        self.pasteAct = QtGui.QAction(QtGui.QIcon(':/images/paste.png'), "&Paste", self)
-        self.pasteAct.setShortcut(QtGui.QKeySequence.Paste)
-        self.pasteAct.setStatusTip("Paste the clipboard's contents into the current selection")
-        self.pasteAct.triggered.connect(self.paste)
+        self.pasteAct = QtGui.QAction(QtGui.QIcon(':/images/paste.png'),
+                "&Paste", self, shortcut=QtGui.QKeySequence.Paste,
+                statusTip="Paste the clipboard's contents into the current selection",
+                triggered=self.paste)
 
-        self.closeAct = QtGui.QAction("Cl&ose", self)
-        self.closeAct.setShortcut("Ctrl+F4")
-        self.closeAct.setStatusTip("Close the active window")
-        self.closeAct.triggered.connect(self.mdiArea.closeActiveSubWindow)
+        self.closeAct = QtGui.QAction("Cl&ose", self, shortcut="Ctrl+F4",
+                statusTip="Close the active window",
+                triggered=self.mdiArea.closeActiveSubWindow)
 
-        self.closeAllAct = QtGui.QAction("Close &All", self)
-        self.closeAllAct.setStatusTip("Close all the windows")
-        self.closeAllAct.triggered.connect(self.mdiArea.closeAllSubWindows)
+        self.closeAllAct = QtGui.QAction("Close &All", self,
+                statusTip="Close all the windows",
+                triggered=self.mdiArea.closeAllSubWindows)
 
-        self.tileAct = QtGui.QAction("&Tile", self)
-        self.tileAct.setStatusTip("Tile the windows")
-        self.tileAct.triggered.connect(self.mdiArea.tileSubWindows)
+        self.tileAct = QtGui.QAction("&Tile", self,
+                statusTip="Tile the windows",
+                triggered=self.mdiArea.tileSubWindows)
 
-        self.cascadeAct = QtGui.QAction("&Cascade", self)
-        self.cascadeAct.setStatusTip("Cascade the windows")
-        self.cascadeAct.triggered.connect(self.mdiArea.cascadeSubWindows)
+        self.cascadeAct = QtGui.QAction("&Cascade", self,
+                statusTip="Cascade the windows",
+                triggered=self.mdiArea.cascadeSubWindows)
 
-        self.nextAct = QtGui.QAction("Ne&xt", self)
-        self.nextAct.setShortcut(QtGui.QKeySequence.NextChild)
-        self.nextAct.setStatusTip("Move the focus to the next window")
-        self.nextAct.triggered.connect(self.mdiArea.activateNextSubWindow)
+        self.nextAct = QtGui.QAction("Ne&xt", self,
+                shortcut=QtGui.QKeySequence.NextChild,
+                statusTip="Move the focus to the next window",
+                triggered=self.mdiArea.activateNextSubWindow)
 
-        self.previousAct = QtGui.QAction("Pre&vious", self)
-        self.previousAct.setShortcut(QtGui.QKeySequence.PreviousChild)
-        self.previousAct.setStatusTip("Move the focus to the previous window")
-        self.previousAct.triggered.connect(self.mdiArea.activatePreviousSubWindow)
+        self.previousAct = QtGui.QAction("Pre&vious", self,
+                shortcut=QtGui.QKeySequence.PreviousChild,
+                statusTip="Move the focus to the previous window",
+                triggered=self.mdiArea.activatePreviousSubWindow)
 
         self.separatorAct = QtGui.QAction(self)
         self.separatorAct.setSeparator(True)
 
-        self.aboutAct = QtGui.QAction("&About", self)
-        self.aboutAct.setStatusTip("Show the application's About box")
-        self.aboutAct.triggered.connect(self.about)
+        self.aboutAct = QtGui.QAction("&About", self,
+                statusTip="Show the application's About box",
+                triggered=self.about)
 
-        self.aboutQtAct = QtGui.QAction("About &Qt", self)
-        self.aboutQtAct.setStatusTip("Show the Qt library's About box")
-        self.aboutQtAct.triggered.connect(QtGui.qApp.aboutQt)
+        self.aboutQtAct = QtGui.QAction("About &Qt", self,
+                statusTip="Show the Qt library's About box",
+                triggered=QtGui.qApp.aboutQt)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
