@@ -149,7 +149,7 @@ class Dialog(QtGui.QDialog):
         i, ok = QtGui.QInputDialog.getInteger(self,
                 "QInputDialog.getInteger()", "Percentage:", 25, 0, 100, 1)
         if ok:
-            self.integerLabel.setText("%d" % i)
+            self.integerLabel.setText("%d%%" % i)
 
     def setDouble(self):    
         d, ok = QtGui.QInputDialog.getDouble(self, "QInputDialog.getDouble()",
