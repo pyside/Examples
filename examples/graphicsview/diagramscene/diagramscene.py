@@ -695,7 +695,7 @@ class MainWindow(QtGui.QMainWindow):
         self.sceneScaleCombo = QtGui.QComboBox()
         self.sceneScaleCombo.addItems(["50%", "75%", "100%", "125%", "150%"])
         self.sceneScaleCombo.setCurrentIndex(2)
-        self.sceneScaleCombo.currentIndexChanged.connect(self.sceneScaleChanged)
+        self.sceneScaleCombo.currentIndexChanged[str].connect(self.sceneScaleChanged)
 
         self.pointerToolbar = self.addToolBar("Pointer type")
         self.pointerToolbar.addWidget(pointerButton)
