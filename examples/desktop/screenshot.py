@@ -69,7 +69,7 @@ class Screenshot(QtGui.QWidget):
         format = 'png'
         initialPath = QtCore.QDir.currentPath() + "/untitled." + format
 
-        fileName = QtGui.QFileDialog.getSaveFileName(self, "Save As",
+        fileName,_ = QtGui.QFileDialog.getSaveFileName(self, "Save As",
                 initialPath,
                 "%s Files (*.%s);;All Files (*)" % (format.upper(), format))
         if fileName:
