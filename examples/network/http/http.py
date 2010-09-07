@@ -13,16 +13,16 @@ class HttpWindow(QtGui.QDialog):
         self.httpGetId = 0
         self.httpRequestAborted = False
 
-        self.urlLineEdit = QtGui.QLineEdit("https://")
+        self.urlLineEdit = QtGui.QLineEdit('https://')
 
-        urlLabel = QtGui.QLabel(self.tr("&URL:"))
+        urlLabel = QtGui.QLabel("&URL:")
         urlLabel.setBuddy(self.urlLineEdit)
-        self.statusLabel = QtGui.QLabel(self.tr("Please enter the URL of a "
-                                                "file you want to download."))
+        self.statusLabel = QtGui.QLabel("Please enter the URL of a file you "
+                "want to download.")
 
-        self.downloadButton = QtGui.QPushButton(self.tr("Download"))
+        self.downloadButton = QtGui.QPushButton("Download")
         self.downloadButton.setDefault(True)
-        self.quitButton = QtGui.QPushButton(self.tr("Quit"))
+        self.quitButton = QtGui.QPushButton("Quit")
         self.quitButton.setAutoDefault(False)
 
         buttonBox = QtGui.QDialogButtonBox()
@@ -34,26 +34,15 @@ class HttpWindow(QtGui.QDialog):
 
         self.http = QtNetwork.QHttp(self)
 
-        #self.urlLineEdit.textChanged.connect(self.enableDownloadButton)
-        #self.http.requestFinished.connect(self.httpRequestFinished)
-        #self.http.dataReadProgress.connect(self.updateDataReadProgress)
-        #self.http.responseHeaderReceived.connect(self.readResponseHeader)
-        #self.http.authenticationRequired.connect(self.slotAuthenticationRequired)
-        #self.http.sslErrors.connect(self.sslErrors)
-        #self.progressDialog.canceled.connect(self.cancelDownload)
-        #self.downloadButton.clicked.connect(self.downloadFile)
-        #self.quitButton.clicked.connect(self.close)
-
-        QtCore.QObject.connect(self.urlLineEdit, QtCore.SIGNAL('textChanged()'), self.enableDownloadButton)
-        QtCore.QObject.connect(self.http, QtCore.SIGNAL('requestFinished(int,bool)'), self.httpRequestFinished)
-        QtCore.QObject.connect(self.http, QtCore.SIGNAL('dataReadProgress(int,int)'), self.updateDataReadProgress)
-        QtCore.QObject.connect(self.http, QtCore.SIGNAL('responseHeaderReceived(const QHttpResponseHeader&)'), self.readResponseHeader)
-        QtCore.QObject.connect(self.http, QtCore.SIGNAL('authenticationRequired(const QString&, quint16, QAuthenticator *)'),self.slotAuthenticationRequired)
-        QtCore.QObject.connect(self.http, QtCore.SIGNAL('sslErrors(const QList<QSslError>&)'), self.sslErrors)
-        QtCore.QObject.connect(self.progressDialog, QtCore.SIGNAL('canceled()'), self.cancelDownload)
-        QtCore.QObject.connect(self.downloadButton, QtCore.SIGNAL('clicked()'), self.downloadFile)
-        QtCore.QObject.connect(self.quitButton, QtCore.SIGNAL('clicked()'), self.close)
-
+        self.urlLineEdit.textChanged.connect(self.enableDownloadButton)
+        self.http.requestFinished.connect(self.httpRequestFinished)
+        self.http.dataReadProgress.connect(self.updateDataReadProgress)
+        self.http.responseHeaderReceived.connect(self.readResponseHeader)
+        self.http.authenticationRequired.connect(self.slotAuthenticationRequired)
+        self.http.sslErrors.connect(self.sslErrors)
+        self.progressDialog.canceled.connect(self.cancelDownload)
+        self.downloadButton.clicked.connect(self.downloadFile)
+        self.quitButton.clicked.connect(self.close)
 
         topLayout = QtGui.QHBoxLayout()
         topLayout.addWidget(urlLabel)
@@ -65,7 +54,7 @@ class HttpWindow(QtGui.QDialog):
         mainLayout.addWidget(buttonBox)
         self.setLayout(mainLayout)
 
-        self.setWindowTitle(self.tr("HTTP"))
+        self.setWindowTitle("HTTP")
         self.urlLineEdit.setFocus()
 
     def downloadFile(self):
@@ -73,13 +62,13 @@ class HttpWindow(QtGui.QDialog):
         fileInfo = QtCore.QFileInfo(url.path())
         fileName = fileInfo.fileName()
 
-        if fileName=="":
-            fileName = "index.html"
+        if not fileName:
+            fileName = 'index.html'
 
         if QtCore.QFile.exists(fileName):
-            ret = QtGui.QMessageBox.question(self, self.tr("HTTP"),
-                    self.tr("There already exists a file called %s in the "
-                            "current directory.") % (fileName),
+            ret = QtGui.QMessageBox.question(self, "HTTP",
+                    "There already exists a file called %s in the current "
+                    "directory." % fileName,
                     QtGui.QMessageBox.Ok | QtGui.QMessageBox.Cancel,
                     QtGui.QMessageBox.Cancel)
 
@@ -90,10 +79,8 @@ class HttpWindow(QtGui.QDialog):
 
         self.outFile = QtCore.QFile(fileName)
         if not self.outFile.open(QtCore.QIODevice.WriteOnly):
-            QtGui.QMessageBox.information(self, self.tr("HTTP"),
-                    self.tr("Unable to save the file %(name)s: %(error)s.")
-                            % {'name': fileName,
-                               'error': self.outFile.errorString()})
+            QtGui.QMessageBox.information(self, "HTTP",
+                    "Unable to save the file %s: %s." % (fileName, self.outFile.errorString()))
             self.outFile = None
             return
 
@@ -109,21 +96,30 @@ class HttpWindow(QtGui.QDialog):
 
         self.http.setHost(url.host(), mode, port)
 
-        if url.userName()!="":
+        if url.userName():
             self.http.setUser(url.userName(), url.password())
 
         self.httpRequestAborted = False
+
         path = QtCore.QUrl.toPercentEncoding(url.path(), "!$&'()*+,;=:@/")
-        if path=="":
-            path = "/"
+        if path:
+            try:
+                # Python v3.
+                path = str(path, encoding='utf-8')
+            except TypeError:
+                # Python v2.
+                path = str(path)
+        else:
+            path = '/'
+
         self.httpGetId = self.http.get(path, self.outFile)
 
-        self.progressDialog.setWindowTitle(self.tr("HTTP"))
-        self.progressDialog.setLabelText(self.tr("Downloading %s.") % (fileName))
+        self.progressDialog.setWindowTitle("HTTP")
+        self.progressDialog.setLabelText("Downloading %s." % fileName)
         self.downloadButton.setEnabled(False)
 
     def cancelDownload(self):
-        self.statusLabel.setText(self.tr("Download canceled."))
+        self.statusLabel.setText("Download canceled.")
         self.httpRequestAborted = True
         self.http.abort()
         self.downloadButton.setEnabled(True)
@@ -146,11 +142,11 @@ class HttpWindow(QtGui.QDialog):
 
         if error:
             self.outFile.remove()
-            QtGui.QMessageBox.information(self, self.tr("HTTP"),
-                    self.tr("Download failed: %s.") % (self.http.errorString()))
+            QtGui.QMessageBox.information(self, "HTTP",
+                    "Download failed: %s." % self.http.errorString())
         else:
             fileName = QtCore.QFileInfo(QtCore.QUrl(self.urlLineEdit.text()).path()).fileName()
-            self.statusLabel.setText(self.tr("Downloaded %s to current directory.") % (fileName))
+            self.statusLabel.setText("Downloaded %s to current directory." % fileName)
 
         self.downloadButton.setEnabled(True)
         self.outFile = None
@@ -158,9 +154,8 @@ class HttpWindow(QtGui.QDialog):
     def readResponseHeader(self, responseHeader):
         # Check for genuine error conditions.
         if responseHeader.statusCode() not in (200, 300, 301, 302, 303, 307):
-            QtGui.QMessageBox.information(self, self.tr("HTTP"),
-                                          self.tr("Download failed: %s.")
-                                          % (responseHeader.reasonPhrase()))
+            QtGui.QMessageBox.information(self, "HTTP",
+                    "Download failed: %s." % responseHeader.reasonPhrase())
             self.httpRequestAborted = True
             self.progressDialog.hide()
             self.http.abort()
@@ -173,7 +168,7 @@ class HttpWindow(QtGui.QDialog):
         self.progressDialog.setValue(bytesRead)
 
     def enableDownloadButton(self):
-        self.downloadButton.setEnabled(self.urlLineEdit.text())
+        self.downloadButton.setEnabled(bool(self.urlLineEdit.text()))
 
     def slotAuthenticationRequired(self, hostName, _, authenticator):
 
@@ -186,9 +181,7 @@ class HttpWindow(QtGui.QDialog):
         dlg.adjustSize()
         # ugly way to get the children. Somehow findChild wasn't working in this case
         siteDescripition = [x for x in dlg.children() if x.objectName() == 'siteDescription'][0]
-        siteDescription.setText(self.tr("%(auth)s at %(host)s") % 
-                                {'auth': authenticator.realm(),
-                                 'host': hostName})
+        siteDescription.setText("%s at %s" % (authenticator.realm(), hostName))
 
         if dlg.exec_() == QtGui.QDialog.Accepted:
             authenticator.setUser(dlg.userEdit.text())
@@ -197,8 +190,8 @@ class HttpWindow(QtGui.QDialog):
     def sslErrors(self, errors):
         errorString = ", ".join([str(error.errorString()) for error in errors])
 
-        ret = QtGui.QMessageBox.warning(self, self.tr("HTTP Example"),
-                self.tr("One or more SSL errors has occurred: %s") % (errorString),
+        ret = QtGui.QMessageBox.warning(self, "HTTP Example",
+                "One or more SSL errors has occurred: %s" % errorString,
                 QtGui.QMessageBox.Ignore | QtGui.QMessageBox.Abort)
 
         if ret == QtGui.QMessageBox.Ignore:
