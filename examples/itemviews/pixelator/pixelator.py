@@ -34,33 +34,35 @@ ItemSize = 256
 
 class PixelDelegate(QtGui.QAbstractItemDelegate):
     def __init__(self, parent=None):
-        QtGui.QAbstractItemDelegate.__init__(self,parent)
+        super(PixelDelegate, self).__init__(parent)
 
         self.pixelSize = 12
 
     def paint(self, painter, option, index):
-        painter.setRenderHint(QtGui.QPainter.Antialiasing)
-        painter.setPen(QtCore.Qt.NoPen)
-
         if option.state & QtGui.QStyle.State_Selected:
-            painter.setBrush(option.palette.highlight())
-        else:
-            painter.setBrush(QtGui.QBrush(QtCore.Qt.white))
-
-        painter.drawRect(option.rect)
-
-        if option.state & QtGui.QStyle.State_Selected:
-            painter.setBrush(option.palette.highlightedText())
-        else:
-            painter.setBrush(QtCore.Qt.black)
+            painter.fillRect(option.rect, option.palette.highlight())
 
         size = min(option.rect.width(), option.rect.height())
         brightness = index.model().data(index, QtCore.Qt.DisplayRole)
         radius = (size/2.0) - (brightness/255.0 * size/2.0)
+        if radius == 0.0:
+            return
+
+        painter.save()
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+        painter.setPen(QtCore.Qt.NoPen)
+
+        if option.state & QtGui.QStyle.State_Selected:
+            painter.setBrush(option.palette.highlightedText())
+        else:
+            painter.setBrush(QtGui.QBrush(QtCore.Qt.black))
+
         painter.drawEllipse(QtCore.QRectF(
                             option.rect.x() + option.rect.width()/2 - radius,
                             option.rect.y() + option.rect.height()/2 - radius,
                             2*radius, 2*radius))
+
+        painter.restore()
 
     def sizeHint(self, option, index):
         return QtCore.QSize(self.pixelSize, self.pixelSize)
@@ -70,10 +72,14 @@ class PixelDelegate(QtGui.QAbstractItemDelegate):
 
 
 class ImageModel(QtCore.QAbstractTableModel):
-    def __init__(self, image, parent=None):
-        QtCore.QAbstractTableModel.__init__(self, parent)
+    def __init__(self, parent=None):
+        super(ImageModel, self).__init__(parent)
 
+        self.modelImage = QtGui.QImage()
+
+    def setImage(self, image):
         self.modelImage = QtGui.QImage(image)
+        self.reset()
 
     def rowCount(self, parent):
         return self.modelImage.height()
@@ -82,20 +88,24 @@ class ImageModel(QtCore.QAbstractTableModel):
         return self.modelImage.width()
 
     def data(self, index, role):
-        if not index.isValid():
-            return None
-        elif role != QtCore.Qt.DisplayRole:
+        if not index.isValid() or role != QtCore.Qt.DisplayRole:
             return None
 
         return QtGui.qGray(self.modelImage.pixel(index.column(), index.row()))
 
+    def headerData(self, section, orientation, role):
+        if role == QtCore.Qt.SizeHintRole:
+            return QtCore.QSize(1, 1)
+
+        return None
+
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self, parent=None):
-        QtGui.QMainWindow.__init__(self, parent)
+    def __init__(self):
+        super(MainWindow, self).__init__()
 
-        self.currentPath = QtCore.QDir.home().absolutePath()
-        self.model = ImageModel(QtGui.QImage(), self)
+        self.currentPath = QtCore.QDir.homePath()
+        self.model = ImageModel(self)
 
         centralWidget = QtGui.QWidget()
 
@@ -103,46 +113,43 @@ class MainWindow(QtGui.QMainWindow):
         self.view.setShowGrid(False)
         self.view.horizontalHeader().hide()
         self.view.verticalHeader().hide()
+        self.view.horizontalHeader().setMinimumSectionSize(1)
+        self.view.verticalHeader().setMinimumSectionSize(1)
+        self.view.setModel(self.model)
 
         delegate = PixelDelegate(self)
         self.view.setItemDelegate(delegate)
 
-        pixelSizeLabel = QtGui.QLabel(self.tr("Pixel size:"))
+        pixelSizeLabel = QtGui.QLabel("Pixel size:")
         pixelSizeSpinBox = QtGui.QSpinBox()
-        pixelSizeSpinBox.setMinimum(1)
+        pixelSizeSpinBox.setMinimum(4)
         pixelSizeSpinBox.setMaximum(32)
         pixelSizeSpinBox.setValue(12)
 
-        fileMenu = QtGui.QMenu(self.tr("&File"), self)
-        openAction = fileMenu.addAction(self.tr("&Open..."))
-        openAction.setShortcut(QtGui.QKeySequence(self.tr("Ctrl+O")))
+        fileMenu = QtGui.QMenu("&File", self)
+        openAction = fileMenu.addAction("&Open...")
+        openAction.setShortcut("Ctrl+O")
 
-        self.printAction = fileMenu.addAction(self.tr("&Print..."))
+        self.printAction = fileMenu.addAction("&Print...")
         self.printAction.setEnabled(False)
-        self.printAction.setShortcut(QtGui.QKeySequence(self.tr("Ctrl+P")))
+        self.printAction.setShortcut("Ctrl+P")
 
-        quitAction = fileMenu.addAction(self.tr("E&xit"))
-        quitAction.setShortcut(QtGui.QKeySequence(self.tr("Ctrl+Q")))
+        quitAction = fileMenu.addAction("E&xit")
+        quitAction.setShortcut("Ctrl+Q")
 
-        helpMenu = QtGui.QMenu(self.tr("&Help"), self)
-        aboutAction = helpMenu.addAction(self.tr("&About"))
+        helpMenu = QtGui.QMenu("&Help", self)
+        aboutAction = helpMenu.addAction("&About")
 
         self.menuBar().addMenu(fileMenu)
         self.menuBar().addSeparator()
         self.menuBar().addMenu(helpMenu)
 
-        self.connect(openAction, QtCore.SIGNAL("triggered()"),
-                     self.chooseImage)
-        self.connect(self.printAction, QtCore.SIGNAL("triggered()"),
-                     self.printImage)
-        self.connect(quitAction, QtCore.SIGNAL("triggered()"),
-                     QtGui.qApp, QtCore.SLOT("quit()"))
-        self.connect(aboutAction, QtCore.SIGNAL("triggered()"),
-                     self.showAboutBox)
-        self.connect(pixelSizeSpinBox, QtCore.SIGNAL("valueChanged(int)"),
-                     delegate.setPixelSize)
-        self.connect(pixelSizeSpinBox, QtCore.SIGNAL("valueChanged(int)"),
-                     self.updateView)
+        openAction.triggered.connect(self.chooseImage)
+        self.printAction.triggered.connect(self.printImage)
+        quitAction.triggered.connect(QtGui.qApp.quit)
+        aboutAction.triggered.connect(self.showAboutBox)
+        pixelSizeSpinBox.valueChanged.connect(delegate.setPixelSize)
+        pixelSizeSpinBox.valueChanged.connect(self.updateView)
 
         controlsLayout = QtGui.QHBoxLayout()
         controlsLayout.addWidget(pixelSizeLabel)
@@ -156,45 +163,42 @@ class MainWindow(QtGui.QMainWindow):
 
         self.setCentralWidget(centralWidget)
 
-        self.setWindowTitle(self.tr("Pixelator"))
-        self.resize(640,480)
+        self.setWindowTitle("Pixelator")
+        self.resize(640, 480)
 
     def chooseImage(self):
-        fileName, ok = QtGui.QFileDialog.getOpenFileName(self, self.tr("Choose an Image"),
-                                                     self.currentPath, "*")
+        fileName,_ = QtGui.QFileDialog.getOpenFileName(self, "Choose an Image",
+                self.currentPath, '*')
 
-        if len(fileName):
+        if fileName:
             self.openImage(fileName)
 
     def openImage(self, fileName):
         image = QtGui.QImage()
 
         if image.load(fileName):
-            newModel = ImageModel(image, self)
-            self.view.setModel(newModel)
-            self.model = newModel
+            self.model.setImage(image)
 
-            if not fileName.startswith(":/"):
+            if not fileName.startswith(':/'):
                 self.currentPath = fileName
-                self.setWindowTitle(self.tr("%1 - Pixelator").arg(self.currentPath))
+                self.setWindowTitle("%s - Pixelator" % self.currentPath)
 
             self.printAction.setEnabled(True)
             self.updateView()
 
     def printImage(self):
         if self.model.rowCount(QtCore.QModelIndex()) * self.model.columnCount(QtCore.QModelIndex()) > 90000:
-            answer = QtGui.QMessageBox.question(self, self.tr("Large Image Size"),
-                                  self.tr("The printed image may be very "
-                                          "large. Are you sure that you want "
-                                          "to print it?"),
-                                  QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+            answer = QtGui.QMessageBox.question(self, "Large Image Size",
+                    "The printed image may be very large. Are you sure that "
+                    "you want to print it?",
+                    QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
             if answer == QtGui.QMessageBox.No:
                 return
 
         printer = QtGui.QPrinter(QtGui.QPrinter.HighResolution)
 
         dlg = QtGui.QPrintDialog(printer, self)
-        dlg.setWindowTitle(self.tr("Print Image"))
+        dlg.setWindowTitle("Print Image")
 
         if dlg.exec_() != QtGui.QDialog.Accepted:
             return
@@ -221,7 +225,8 @@ class MainWindow(QtGui.QMainWindow):
         option = QtGui.QStyleOptionViewItem()
         parent = QtCore.QModelIndex()
 
-        progress = QtGui.QProgressDialog(self.tr("Printing..."), self.tr("Cancel..."), 0, rows, self)
+        progress = QtGui.QProgressDialog("Printing...", "Cancel", 0, rows,
+                self)
         y = ItemSize / 2.0
 
         for row in range(rows):
@@ -235,7 +240,7 @@ class MainWindow(QtGui.QMainWindow):
             for col in range(columns):
                 option.rect = QtCore.QRect(x, y, ItemSize, ItemSize)
                 self.view.itemDelegate.paint(painter, option,
-                                             self.model.index(row, column, parent))
+                        self.model.index(row, column, parent))
                 x = x + ItemSize
 
             y = y + ItemSize
@@ -246,26 +251,27 @@ class MainWindow(QtGui.QMainWindow):
         painter.end()
 
         if progress.wasCanceled():
-            QtGui.QMessageBox.information(self, self.tr("Printing canceled"),
-                                          self.tr("The printing process was canceled."),
-                                          QtGui.QMessageBox.Cancel)
+            QtGui.QMessageBox.information(self, "Printing canceled",
+                    "The printing process was canceled.",
+                    QtGui.QMessageBox.Cancel)
 
     def showAboutBox(self):
-        QtGui.QMessageBox.about(self, self.tr("About the Pixelator example"),
-            self.tr("This example demonstrates how a standard view and a custom\n"
-                    "delegate can be used to produce a specialized representation\n"
-                    "of data in a simple custom model."))
+        QtGui.QMessageBox.about(self, "About the Pixelator example",
+                "This example demonstrates how a standard view and a custom\n"
+                "delegate can be used to produce a specialized "
+                "representation\nof data in a simple custom model.")
 
     def updateView(self):
-        for row in range(self.model.rowCount(QtCore.QModelIndex())):
-            self.view.resizeRowToContents(row)
-        for column in range(self.model.columnCount(QtCore.QModelIndex())):
-            self.view.resizeColumnToContents(column)
+        self.view.resizeColumnsToContents()
+        self.view.resizeRowsToContents()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     window = MainWindow()
     window.show()
-    window.openImage(":/images/qt.png")
+    window.openImage(':/images/qt.png')
     sys.exit(app.exec_())
