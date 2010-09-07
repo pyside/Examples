@@ -92,7 +92,6 @@ class Window(QtGui.QDialog):
             event.ignore()
 
     def setIcon(self, index):
-        print index
         icon = self.iconComboBox.itemIcon(index)
         self.trayIcon.setIcon(icon)
         self.setWindowIcon(icon)
