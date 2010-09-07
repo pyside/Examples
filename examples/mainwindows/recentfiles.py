@@ -84,44 +84,39 @@ class MainWindow(QtGui.QMainWindow):
                 "a recently used file menu in a Qt application.")
 
     def createActions(self):
-        self.newAct = QtGui.QAction("&New", self)
-        self.newAct.setShortcut(QtGui.QKeySequence.New)
-        self.newAct.setStatusTip("Create a new file")
-        self.newAct.triggered.connect(self.newFile)
+        self.newAct = QtGui.QAction("&New", self,
+                shortcut=QtGui.QKeySequence.New,
+                statusTip="Create a new file", triggered=self.newFile)
 
-        self.openAct = QtGui.QAction("&Open...", self)
-        self.openAct.setShortcut(QtGui.QKeySequence.Open)
-        self.openAct.setStatusTip("Open an existing file")
-        self.openAct.triggered.connect(self.open)
+        self.openAct = QtGui.QAction("&Open...", self,
+                shortcut=QtGui.QKeySequence.Open,
+                statusTip="Open an existing file", triggered=self.open)
 
-        self.saveAct = QtGui.QAction("&Save", self)
-        self.saveAct.setShortcut(QtGui.QKeySequence.Save)
-        self.saveAct.setStatusTip("Save the document to disk")
-        self.saveAct.triggered.connect(self.save)
+        self.saveAct = QtGui.QAction("&Save", self,
+                shortcut=QtGui.QKeySequence.Save,
+                statusTip="Save the document to disk", triggered=self.save)
 
-        self.saveAsAct = QtGui.QAction("Save &As...", self)
-        self.saveAsAct.setShortcut(QtGui.QKeySequence.SaveAs)
-        self.saveAsAct.setStatusTip("Save the document under a new name")
-        self.saveAsAct.triggered.connect(self.saveAs)
+        self.saveAsAct = QtGui.QAction("Save &As...", self,
+                shortcut=QtGui.QKeySequence.SaveAs,
+                statusTip="Save the document under a new name",
+                triggered=self.saveAs)
 
         for i in range(MainWindow.MaxRecentFiles):
-            newQAction = QtGui.QAction(self)
-            newQAction.setVisible(False)
-            newQAction.triggered.connect(self.openRecentFile)
-            self.recentFileActs.append(newQAction)
+            self.recentFileActs.append(
+                    QtGui.QAction(self, visible=False,
+                            triggered=self.openRecentFile))
 
-        self.exitAct = QtGui.QAction("E&xit", self)
-        self.exitAct.setShortcut("Ctrl+Q")
-        self.exitAct.setStatusTip("Exit the application")
-        self.exitAct.triggered.connect(QtGui.qApp.closeAllWindows)
+        self.exitAct = QtGui.QAction("E&xit", self, shortcut="Ctrl+Q",
+                statusTip="Exit the application",
+                triggered=QtGui.qApp.closeAllWindows)
 
-        self.aboutAct = QtGui.QAction("&About", self)
-        self.aboutAct.setStatusTip("Show the application's About box")
-        self.aboutAct.triggered.connect(self.about)
+        self.aboutAct = QtGui.QAction("&About", self,
+                statusTip="Show the application's About box",
+                triggered=self.about)
 
-        self.aboutQtAct = QtGui.QAction("About &Qt", self)
-        self.aboutQtAct.setStatusTip("Show the Qt library's About box")
-        self.aboutQtAct.triggered.connect(QtGui.qApp.aboutQt)
+        self.aboutQtAct = QtGui.QAction("About &Qt", self,
+                statusTip="Show the Qt library's About box",
+                triggered=QtGui.qApp.aboutQt)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
@@ -182,13 +177,10 @@ class MainWindow(QtGui.QMainWindow):
         settings = QtCore.QSettings('Trolltech', 'Recent Files Example')
         files = settings.value('recentFileList')
 
-        if files:
-            try:
-                files.remove(fileName)
-            except ValueError:
-                pass
-        else:
-            files = [""]
+        try:
+            files.remove(fileName)
+        except ValueError:
+            pass
 
         files.insert(0, fileName)
         del files[MainWindow.MaxRecentFiles:]
@@ -203,9 +195,7 @@ class MainWindow(QtGui.QMainWindow):
         settings = QtCore.QSettings('Trolltech', 'Recent Files Example')
         files = settings.value('recentFileList')
 
-        numRecentFiles = 0
-        if files:
-            numRecentFiles = min(len(files), MainWindow.MaxRecentFiles)
+        numRecentFiles = min(len(files), MainWindow.MaxRecentFiles)
 
         for i in range(numRecentFiles):
             text = "&%d %s" % (i + 1, self.strippedName(files[i]))
