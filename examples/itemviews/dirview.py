@@ -27,15 +27,22 @@ import sys
 from PySide import QtCore, QtGui
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
-    
+
     model = QtGui.QDirModel()
     tree = QtGui.QTreeView()
     tree.setModel(model)
-    
-    tree.setWindowTitle(tree.tr("Dir View"))
+
+    tree.setAnimated(False)
+    tree.setIndentation(20)
+    tree.setSortingEnabled(True)
+
+    tree.setWindowTitle("Dir View")
     tree.resize(640, 480)
     tree.show()
-    
+
     sys.exit(app.exec_())
