@@ -27,12 +27,13 @@ class FileListModel(QtCore.QAbstractListModel):
 
         if role == QtCore.Qt.DisplayRole:
             return self.fileList[index.row()]
-        elif role == QtCore.Qt.BackgroundRole:
-            batch = (index.row() / 100) % 2
+
+        if role == QtCore.Qt.BackgroundRole:
+            batch = (index.row() // 100) % 2
             if batch == 0:
                 return QtGui.qApp.palette().base()
-            else:
-                return QtGui.qApp.palette().alternateBase()
+
+            return QtGui.qApp.palette().alternateBase()
 
         return None
 
@@ -50,7 +51,7 @@ class FileListModel(QtCore.QAbstractListModel):
 
         self.endInsertRows()
 
-        self.emit(QtCore.SIGNAL('numberPopulated(int)'), itemsToFetch)
+        self.numberPopulated.emit(itemsToFetch)
 
     def setDirPath(self, path):
         dir = QtCore.QDir(path)
@@ -67,7 +68,7 @@ class Window(QtGui.QWidget):
         model = FileListModel(self)
         model.setDirPath(QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.PrefixPath))
 
-        label = QtGui.QLabel(self.tr("Directory"))
+        label = QtGui.QLabel("Directory")
         lineEdit = QtGui.QLineEdit()
         label.setBuddy(lineEdit)
 
@@ -77,9 +78,9 @@ class Window(QtGui.QWidget):
         self.logViewer = QtGui.QTextBrowser()
         self.logViewer.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred))
 
-        QtCore.QObject.connect(lineEdit, QtCore.SIGNAL('textChanged(const QString&)'), model.setDirPath)
-        QtCore.QObject.connect(lineEdit, QtCore.SIGNAL('textChanged(const QString&)'), self.logViewer, QtCore.SLOT('clear()'))
-        QtCore.QObject.connect(model, QtCore.SIGNAL('numberPopulated(int)'), self.updateLog)
+        lineEdit.textChanged.connect(model.setDirPath)
+        lineEdit.textChanged.connect(self.logViewer.clear)
+        model.numberPopulated.connect(self.updateLog)
 
         layout = QtGui.QGridLayout()
         layout.addWidget(label, 0, 0)
@@ -88,10 +89,10 @@ class Window(QtGui.QWidget):
         layout.addWidget(self.logViewer, 2, 0, 1, 2)
 
         self.setLayout(layout)
-        self.setWindowTitle(self.tr("Fetch More Example"))
+        self.setWindowTitle("Fetch More Example")
 
     def updateLog(self, number):
-        self.logViewer.append(self.tr("%(number)d items added.") % {'number':number})
+        self.logViewer.append("%d items added." % number)
 
 
 if __name__ == '__main__':
