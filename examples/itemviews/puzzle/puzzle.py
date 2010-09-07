@@ -23,7 +23,6 @@
 #
 ############################################################################
 
-import sys
 import random
 from PySide import QtCore, QtGui
 
@@ -31,8 +30,11 @@ import puzzle_rc
 
 
 class PuzzleWidget(QtGui.QWidget):
+
+    puzzleCompleted = QtCore.Signal()
+
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        super(PuzzleWidget, self).__init__(parent)
 
         self.piecePixmaps = []
         self.pieceRects = []
@@ -53,7 +55,7 @@ class PuzzleWidget(QtGui.QWidget):
         self.update()
 
     def dragEnterEvent(self, event):
-        if event.mimeData().hasFormat("image/x-puzzle-piece"):
+        if event.mimeData().hasFormat('image/x-puzzle-piece'):
             event.accept()
         else:
             event.ignore()
@@ -67,7 +69,7 @@ class PuzzleWidget(QtGui.QWidget):
     def dragMoveEvent(self, event):
         updateRect = self.highlightedRect.unite(self.targetSquare(event.pos()))
 
-        if event.mimeData().hasFormat("image/x-puzzle-piece") and self.findPiece(self.targetSquare(event.pos())) == -1:
+        if event.mimeData().hasFormat('image/x-puzzle-piece') and self.findPiece(self.targetSquare(event.pos())) == -1:
             self.highlightedRect = self.targetSquare(event.pos())
             event.setDropAction(QtCore.Qt.MoveAction)
             event.accept()
@@ -78,8 +80,8 @@ class PuzzleWidget(QtGui.QWidget):
         self.update(updateRect)
 
     def dropEvent(self, event):
-        if event.mimeData().hasFormat("image/x-puzzle-piece") and self.findPiece(self.targetSquare(event.pos())) == -1:
-            pieceData = event.mimeData().data("image/x-puzzle-piece")
+        if event.mimeData().hasFormat('image/x-puzzle-piece') and self.findPiece(self.targetSquare(event.pos())) == -1:
+            pieceData = event.mimeData().data('image/x-puzzle-piece')
             stream = QtCore.QDataStream(pieceData, QtCore.QIODevice.ReadOnly)
             square = self.targetSquare(event.pos())
             pixmap = QtGui.QPixmap()
@@ -99,17 +101,16 @@ class PuzzleWidget(QtGui.QWidget):
             if location == QtCore.QPoint(square.x() / 80, square.y() / 80):
                 self.inPlace += 1
                 if self.inPlace == 25:
-                    self.emit(QtCore.SIGNAL("puzzleCompleted()"))
+                    self.puzzleCompleted.emit()
         else:
             self.highlightedRect = QtCore.QRect()
             event.ignore()
 
     def findPiece(self, pieceRect):
-        for i in range(len(self.pieceRects)):
-            if pieceRect == self.pieceRects[i]:
-                return i
-
-        return -1
+        try:
+            return self.pieceRects.index(pieceRect)
+        except ValueError:
+            return -1
 
     def mousePressEvent(self, event):
         square = self.targetSquare(event.pos())
@@ -136,7 +137,7 @@ class PuzzleWidget(QtGui.QWidget):
         dataStream << pixmap << location
 
         mimeData = QtCore.QMimeData()
-        mimeData.setData("image/x-puzzle-piece", itemData)
+        mimeData.setData('image/x-puzzle-piece', itemData)
 
         drag = QtGui.QDrag(self)
         drag.setMimeData(mimeData)
@@ -162,18 +163,18 @@ class PuzzleWidget(QtGui.QWidget):
             painter.setPen(QtCore.Qt.NoPen)
             painter.drawRect(self.highlightedRect.adjusted(0, 0, -1, -1))
 
-        for i in range(len(self.pieceRects)):
-            painter.drawPixmap(self.pieceRects[i], self.piecePixmaps[i])
+        for i, pieceRect in enumerate(self.pieceRects):
+            painter.drawPixmap(pieceRect, self.piecePixmaps[i])
 
         painter.end()
 
     def targetSquare(self, position):
-        return QtCore.QRect(position.x() / 80 * 80, position.y() / 80 * 80, 80, 80)
+        return QtCore.QRect(position.x() // 80 * 80, position.y() // 80 * 80, 80, 80)
 
 
 class PiecesModel(QtCore.QAbstractListModel):
     def __init__(self, parent=None):
-        QtCore.QAbstractListModel.__init__(self, parent)
+        super(PiecesModel, self).__init__(parent)
 
         self.locations = []
         self.pixmaps = []
@@ -184,11 +185,13 @@ class PiecesModel(QtCore.QAbstractListModel):
 
         if role == QtCore.Qt.DecorationRole:
             return QtGui.QIcon(self.pixmaps[index.row()].scaled(
-                               60, 60, QtCore.Qt.KeepAspectRatio,
-                               QtCore.Qt.SmoothTransformation))
-        elif role == QtCore.Qt.UserRole:
+                    60, 60, QtCore.Qt.KeepAspectRatio,
+                    QtCore.Qt.SmoothTransformation))
+
+        if role == QtCore.Qt.UserRole:
             return self.pixmaps[index.row()]
-        elif role == QtCore.Qt.UserRole + 1:
+
+        if role == QtCore.Qt.UserRole + 1:
             return self.locations[index.row()]
 
         return None
@@ -206,10 +209,10 @@ class PiecesModel(QtCore.QAbstractListModel):
 
     def flags(self,index):
         if index.isValid():
-            return (QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
-                  | QtCore.Qt.ItemIsDragEnabled | QtCore.Qt.ItemIsDropEnabled)
+            return (QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable |
+                    QtCore.Qt.ItemIsDragEnabled)
 
-        return (QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsDropEnabled)
+        return QtCore.Qt.ItemIsDropEnabled
 
     def removeRows(self,row, count, parent):
         if parent.isValid():
@@ -230,7 +233,7 @@ class PiecesModel(QtCore.QAbstractListModel):
         return True
 
     def mimeTypes(self):
-        return ["image/x-puzzle-piece"]
+        return ['image/x-puzzle-piece']
 
     def mimeData(self, indexes):
         mimeData = QtCore.QMimeData()
@@ -244,11 +247,11 @@ class PiecesModel(QtCore.QAbstractListModel):
                 location = self.data(index, QtCore.Qt.UserRole + 1)
                 stream << pixmap << location
 
-        mimeData.setData("image/x-puzzle-piece", encodedData)
+        mimeData.setData('image/x-puzzle-piece', encodedData)
         return mimeData
 
     def dropMimeData(self, data, action, row, column, parent):
-        if not data.hasFormat("image/x-puzzle-piece"):
+        if not data.hasFormat('image/x-puzzle-piece'):
             return False
 
         if action == QtCore.Qt.IgnoreAction:
@@ -257,14 +260,15 @@ class PiecesModel(QtCore.QAbstractListModel):
         if column > 0:
             return False
 
-        if not parent.isValid() and row < 0:
-            endRow = len(self.pixmaps)
-        elif not parent.isValid():
-            endRow = min(row, len(self.pixmaps))
+        if not parent.isValid():
+            if row < 0:
+                endRow = len(self.pixmaps)
+            else:
+                endRow = min(row, len(self.pixmaps))
         else:
             endRow = parent.row()
 
-        encodedData = data.data("image/x-puzzle-piece")
+        encodedData = data.data('image/x-puzzle-piece')
         stream = QtCore.QDataStream(encodedData, QtCore.QIODevice.ReadOnly)
 
         while not stream.atEnd():
@@ -290,82 +294,83 @@ class PiecesModel(QtCore.QAbstractListModel):
     def supportedDropActions(self):
         return QtCore.Qt.CopyAction | QtCore.Qt.MoveAction
 
+    def addPieces(self, pixmap):
+        self.beginRemoveRows(QtCore.QModelIndex(), 0, 24)
+        self.pixmaps = []
+        self.locations = []
+        self.endRemoveRows()
+
+        for y in range(5):
+            for x in range(5):
+                pieceImage = pixmap.copy(x*80, y*80, 80, 80)
+                self.addPiece(pieceImage, QtCore.QPoint(x, y))
+
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
-        QtGui.QMainWindow.__init__(self, parent)
+        super(MainWindow, self).__init__(parent)
 
         self.puzzleImage = QtGui.QPixmap()
 
         self.setupMenus()
         self.setupWidgets()
 
-        self.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed))
-        self.setWindowTitle(self.tr("Puzzle"))
+        self.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed,
+                QtGui.QSizePolicy.Fixed))
+        self.setWindowTitle("Puzzle")
 
-    def openImage(self, path=""):
-        fileName = path
+    def openImage(self, path=None):
+        if not path:
+            path = QtGui.QFileDialog.getOpenFileName(self, "Open Image", '',
+                    "Image Files (*.png *.jpg *.bmp)")
 
-        if len(fileName) == 0:
-            fileName, ok = QtGui.QFileDialog.getOpenFileName(self,
-                            self.tr("Open Image"), "", "Image Files (*.png *.jpg *.bmp)")
-
-        if len(fileName):
+        if path:
             newImage = QtGui.QPixmap()
-            if not newImage.load(fileName):
-                QtGui.QMessageBox.warning(self, self.tr("Open Image"),
-                                          self.tr("The image file could not be loaded."),
-                                          QtGui.QMessageBox.Cancel,
-                                          QtGui.QMessageBox.NoButton)
+            if not newImage.load(path):
+                QtGui.QMessageBox.warning(self, "Open Image",
+                        "The image file could not be loaded.",
+                        QtGui.QMessageBox.Cancel)
                 return
 
             self.puzzleImage = newImage
             self.setupPuzzle()
 
     def setCompleted(self):
-        QtGui.QMessageBox.information(self, self.tr("Puzzle Completed"),
-                                      self.tr("Congratulations! You have completed "
-                                      "the puzzle!\nClick OK to start again."),
-                                      QtGui.QMessageBox.Ok)
+        QtGui.QMessageBox.information(self, "Puzzle Completed",
+                "Congratulations! You have completed the puzzle!\nClick OK "
+                "to start again.",
+                QtGui.QMessageBox.Ok)
 
         self.setupPuzzle()
 
     def setupPuzzle(self):
         size = min(self.puzzleImage.width(), self.puzzleImage.height())
         self.puzzleImage = self.puzzleImage.copy((self.puzzleImage.width()-size)/2,
-                                                 (self.puzzleImage.height() - size)/2, size,
-                                                 size).scaled(400, 400,
-                                                 QtCore.Qt.IgnoreAspectRatio,
-                                                 QtCore.Qt.SmoothTransformation)
-
-        self.model = PiecesModel(self)
-        self.piecesList.setModel(self.model)
+                (self.puzzleImage.height() - size)/2, size, size).scaled(400,
+                        400, QtCore.Qt.IgnoreAspectRatio,
+                        QtCore.Qt.SmoothTransformation)
 
         random.seed(QtGui.QCursor.pos().x() ^ QtGui.QCursor.pos().y())
 
-        for y in range(5):
-            for x in range(5):
-                pieceImage = self.puzzleImage.copy(x*80, y*80, 80, 80)
-                self.model.addPiece(pieceImage, QtCore.QPoint(x,y))
-
+        self.model.addPieces(self.puzzleImage)
         self.puzzleWidget.clear()
 
     def setupMenus(self):
-        fileMenu = self.menuBar().addMenu(self.tr("&File"))
+        fileMenu = self.menuBar().addMenu("&File")
 
-        openAction = fileMenu.addAction(self.tr("&Open..."))
-        openAction.setShortcut(QtGui.QKeySequence(self.tr("Ctrl+O")))
+        openAction = fileMenu.addAction("&Open...")
+        openAction.setShortcut("Ctrl+O")
 
-        exitAction = fileMenu.addAction(self.tr("E&xit"))
-        exitAction.setShortcut(QtGui.QKeySequence(self.tr("Ctrl+Q")))
+        exitAction = fileMenu.addAction("E&xit")
+        exitAction.setShortcut("Ctrl+Q")
 
-        gameMenu = self.menuBar().addMenu(self.tr("&Game"))
+        gameMenu = self.menuBar().addMenu("&Game")
 
-        restartAction = gameMenu.addAction(self.tr("&Restart"))
+        restartAction = gameMenu.addAction("&Restart")
 
-        self.connect(openAction, QtCore.SIGNAL("triggered()"), self.openImage)
-        self.connect(exitAction, QtCore.SIGNAL("triggered()"), QtGui.qApp, QtCore.SLOT("quit()"))
-        self.connect(restartAction, QtCore.SIGNAL("triggered()"), self.setupPuzzle)
+        openAction.triggered.connect(self.openImage)
+        exitAction.triggered.connect(QtGui.qApp.quit)
+        restartAction.triggered.connect(self.setupPuzzle)
 
     def setupWidgets(self):
         frame = QtGui.QFrame()
@@ -381,22 +386,25 @@ class MainWindow(QtGui.QMainWindow):
         self.piecesList.setAcceptDrops(True)
         self.piecesList.setDropIndicatorShown(True)
 
-        model = PiecesModel(self)
-        self.piecesList.setModel(model)
+        self.model = PiecesModel(self)
+        self.piecesList.setModel(self.model)
 
         self.puzzleWidget = PuzzleWidget()
 
-        self.connect(self.puzzleWidget, QtCore.SIGNAL("puzzleCompleted()"),
-                     self.setCompleted, QtCore.Qt.QueuedConnection)
+        self.puzzleWidget.puzzleCompleted.connect(self.setCompleted,
+                QtCore.Qt.QueuedConnection)
 
         frameLayout.addWidget(self.piecesList)
         frameLayout.addWidget(self.puzzleWidget)
         self.setCentralWidget(frame)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+
+    import sys
+
     app = QtGui.QApplication(sys.argv)
     window = MainWindow()
-    window.openImage(":/images/example.jpg")
+    window.openImage(':/images/example.jpg')
     window.show()
     sys.exit(app.exec_())
