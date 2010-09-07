@@ -129,7 +129,7 @@ class EmbeddedDialog(QtGui.QDialog):
         self.ui.layoutDirection.activated.connect(self.layoutDirectionChanged)
         self.ui.spacing.valueChanged.connect(self.spacingChanged)
         self.ui.fontComboBox.currentFontChanged.connect(self.fontChanged)
-        self.ui.style.activated["QString"].connect(self.styleChanged)
+        self.ui.style.activated[str].connect(self.styleChanged)
 
     def layoutDirectionChanged(self, index):
         if index == 0:
