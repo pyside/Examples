@@ -176,11 +176,7 @@ class TreeModel(QtCore.QAbstractItemModel):
 
         return success
 
-    def parent(self, index=None):
-
-        if index is None: # Overload with QObject.parent()
-            return QtCore.QObject.parent(self)
-
+    def parent(self, index):
         if not index.isValid():
             return QtCore.QModelIndex()
 
@@ -224,7 +220,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         result = item.setData(index.column(), value)
 
         if result:
-            self.emit(QtCore.SIGNAL('dataChanged(const QModelIndex&, const QModelIndex&)'), index, index)
+            self.dataChanged.emit(index, index)
 
         return result
 
@@ -234,7 +230,7 @@ class TreeModel(QtCore.QAbstractItemModel):
 
         result = self.rootItem.setData(section, value)
         if result:
-            self.emit(QtCore.SIGNAL('headerDataChanged(Qt::Orientation, int, int)'), orientation, section, section)
+            self.headerDataChanged.emit(orientation, section, section)
 
         return result
 
@@ -255,10 +251,7 @@ class TreeModel(QtCore.QAbstractItemModel):
 
             if lineData:
                 # Read the column data from the rest of the line.
-                columnStrings = lineData.split()
-                columnData = []
-                for column in range(len(columnStrings)):
-                    columnData.append(columnStrings[column])
+                columnData = [s for s in lineData.split('\t') if s]
 
                 if position > indentations[-1]:
                     # The last child of the current parent is now the new
@@ -289,11 +282,9 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         self.setupUi(self)
 
-        headers = []
-        headers.append(self.tr("Title"))
-        headers.append(self.tr("Description"))
+        headers = ("Title", "Description")
 
-        file = QtCore.QFile(":/default.txt")
+        file = QtCore.QFile(':/default.txt')
         file.open(QtCore.QIODevice.ReadOnly)
         model = TreeModel(headers, str(file.readAll()))
         file.close()
@@ -302,17 +293,16 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         for column in range(model.columnCount(QtCore.QModelIndex())):
             self.view.resizeColumnToContents(column)
 
-        self.connect(self.exitAction, QtCore.SIGNAL("triggered()"), QtGui.qApp, QtCore.SLOT('quit()'))
+        self.exitAction.triggered.connect(QtGui.qApp.quit)
 
-        self.connect(self.view.selectionModel(), QtCore.SIGNAL("selectionChanged()"), self.updateActions)
-        
-        self.connect(self.actionsMenu, QtCore.SIGNAL("aboutToShow()"),self.updateActions)
-        
-        self.connect(self.insertRowAction, QtCore.SIGNAL("triggered()"), self.insertRow)
-        self.connect(self.insertColumnAction, QtCore.SIGNAL("triggered()"),self.insertColumn)
-        self.connect(self.removeRowAction, QtCore.SIGNAL("triggered()"), self.removeRow)
-        self.connect(self.removeColumnAction, QtCore.SIGNAL("triggered()"), self.removeColumn)
-        self.connect(self.insertChildAction,QtCore.SIGNAL("triggered()"), self.insertChild)
+        self.view.selectionModel().selectionChanged.connect(self.updateActions)
+
+        self.actionsMenu.aboutToShow.connect(self.updateActions)
+        self.insertRowAction.triggered.connect(self.insertRow)
+        self.insertColumnAction.triggered.connect(self.insertColumn)
+        self.removeRowAction.triggered.connect(self.removeRow)
+        self.removeColumnAction.triggered.connect(self.removeColumn)
+        self.insertChildAction.triggered.connect(self.insertChild)
 
         self.updateActions()
 
@@ -364,8 +354,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
 
         for column in range(model.columnCount(index.parent())):
             child = model.index(index.row()+1, column, index.parent())
-            model.setData(child, "[No data]",
-                    QtCore.Qt.EditRole)
+            model.setData(child, "[No data]", QtCore.Qt.EditRole)
 
     def removeColumn(self, parent=QtCore.QModelIndex()):
         model = self.view.model()
@@ -401,9 +390,9 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
             row = self.view.selectionModel().currentIndex().row()
             column = self.view.selectionModel().currentIndex().column()
             if self.view.selectionModel().currentIndex().parent().isValid():
-                self.statusBar().showMessage(self.tr("Position: (%(row)d,%(column)d)") % {'row': row, 'column': column})
+                self.statusBar().showMessage("Position: (%d,%d)" % (row, column))
             else:
-                self.statusBar().showMessage(self.tr("Position: (%(row)d,%(column)d) in top level") % {'row': row,'column': column})
+                self.statusBar().showMessage("Position: (%d,%d) in top level" % (row, column))
 
 
 if __name__ == '__main__':
