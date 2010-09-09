@@ -53,8 +53,11 @@ class Dialog(QWidget, Ui_Dialog):
         self.ni = None
         self.sti = None
         self.saver = None
+        self.uiCreated = False
 
         self.setupUi(self)
+
+        self.uiCreated = True
         self.setupGeneral()
 
         self.tabWidget.currentChanged.connect(self.tabChanged)
@@ -71,7 +74,7 @@ class Dialog(QWidget, Ui_Dialog):
     def changeEvent(self, e):
         QWidget.changeEvent(self, e)
 
-        if e.type() == QEvent.LanguageChange:
+        if e.type() == QEvent.LanguageChange and self.uiCreated:
             self.retranslateUi(self)
 
     def tabChanged(self, index):
