@@ -63,13 +63,13 @@ class Arrow(QtGui.QGraphicsLineItem):
 
         centerLine = QtCore.QLineF(myStartItem.pos(), myEndItem.pos())
         endPolygon = myEndItem.polygon()
-        p1 = endPolygon.first() + myEndItem.pos()
+        p1 = endPolygon.at(0) + myEndItem.pos()
 
         intersectPoint = QtCore.QPointF()
         for i in endPolygon:
             p2 = i + myEndItem.pos()
             polyLine = QtCore.QLineF(p1, p2)
-            intersectType = polyLine.intersect(centerLine, intersectPoint)
+            intersectType, intersectPoint = polyLine.intersect(centerLine)
             if intersectType == QtCore.QLineF.BoundedIntersection:
                 break
             p1 = p2
@@ -263,7 +263,7 @@ class DiagramScene(QtGui.QGraphicsScene):
         cursor.clearSelection()
         item.setTextCursor(cursor)
 
-        if item.toPlainText():
+        if not item.toPlainText():
             self.removeItem(item)
             item.deleteLater()
 
@@ -488,7 +488,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def handleFontChange(self):
         font = self.fontCombo.currentFont()
-        font.setPointSize(self.fontSizeCombo.currentText().toInt()[0])
+        font.setPointSize(int(self.fontSizeCombo.currentText()))
         if self.boldAction.isChecked():
             font.setWeight(QtGui.QFont.Bold)
         else:
@@ -746,7 +746,7 @@ class MainWindow(QtGui.QMainWindow):
         for color, name in zip(colors, names):
             action = QtGui.QAction(self.createColorIcon(color), name, self,
                     triggered=slot)
-            action.setData(QtGui.QColor(color)) 
+            action.setData(QtGui.QColor(color))
             colorMenu.addAction(action)
             if color == defaultColor:
                 colorMenu.setDefaultAction(action)
