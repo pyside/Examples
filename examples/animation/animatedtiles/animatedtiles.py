@@ -24,7 +24,7 @@ class Pixmap(QtCore.QObject):
     def get_pos(self):
         return self.pixmap_item.pos()
 
-    pos = QtCore.QProperty(QtCore.QPointF, get_pos, set_pos)
+    pos = QtCore.Property(QtCore.QPointF, get_pos, set_pos)
 
 
 class Button(QtGui.QGraphicsWidget):
