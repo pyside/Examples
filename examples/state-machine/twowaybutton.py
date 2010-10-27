@@ -19,7 +19,8 @@ if __name__ == '__main__':
     on.assignProperty(button, 'text', 'On')
 
     off.addTransition(button, SIGNAL('clicked()'), on)
-    on.addTransition(button, SIGNAL('clicked()'), off)
+    # Let's use the new style signals just for the kicks.
+    on.addTransition(button.clicked, off)
 
     machine.addState(off)
     machine.addState(on)
