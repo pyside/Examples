@@ -99,7 +99,7 @@ class ClockWidget(QGraphicsWidget):
         painter.setFont(self._dayFont)
         painter.drawText(self._dayRect, Qt.AlignHCenter | Qt.AlignVCenter, dateTime.toString("dd"))
         painter.setFont(self._weekDayFont);
-        painter.drawText(self._weekDayRect, Qt.AlignHCenter | Qt.AlignVCenter, dateTime.toString("ddd").toUpper())
+        painter.drawText(self._weekDayRect, Qt.AlignHCenter | Qt.AlignVCenter, dateTime.toString("ddd").upper())
         painter.drawPixmap(self._eventsPixmapRect.x(), self._eventsPixmapRect.y(), self._eventsPixmap);
 
         # calculate min/hour pointer angles
