@@ -43,22 +43,14 @@ if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
 
-    view = QtDeclarative.QDeclarativeView()
-
     timer = QtCore.QTimer()
     timer.start(2000)
 
-    context = view.rootContext()
-    context.setContextProperty("timer", timer)
-
+    view = QtDeclarative.QDeclarativeView()
     view.setSource(QtCore.QUrl('view.qml'))
-    
     root = view.rootObject()
 
-    # Old-style syntax has to be used until PySide bug 451 is fixed
-    #timer.timeout.connect(root.updateRotater)
-    QtCore.QObject.connect(timer,QtCore.SIGNAL('timeout()'), root,
-                           QtCore.SLOT('updateRotater()'))
+    timer.timeout.connect(root.updateRotater)
     
     view.show()
 
