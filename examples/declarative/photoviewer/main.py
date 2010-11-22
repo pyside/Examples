@@ -189,19 +189,30 @@ class Picasa(object):
 
 if __name__ == '__main__':
     import sys
-    if len(sys.argv) != 3:
-        print "Usage: ./app [gmail-username] [password]"
-    else:
-        QtGui.QApplication.setGraphicsSystem("raster")
-        app = QtGui.QApplication(sys.argv)
+    QtGui.QApplication.setGraphicsSystem("raster")
+    app = QtGui.QApplication(sys.argv)
 
-        data = Picasa(sys.argv[1], sys.argv[2])
+    username, ok = QtGui.QInputDialog.getText(None, "Username", "Username:", QtGui.QLineEdit.Normal)
 
-        view = QtDeclarative.QDeclarativeView()
-        albums = data.getAlbumListModel()
-        view.rootContext().setContextProperty("albumModel", albums)
-        context = view.rootContext()
-        view.setSource(QUrl('photoviewer.qml'))
-        view.show()
+    if not ok:
+        print "Must provide a username"
+        sys.exit(1)
 
-        sys.exit(app.exec_())
+    password, ok = QtGui.QInputDialog.getText(None, "Password", "Password:", QtGui.QLineEdit.Password)
+
+    if not ok:
+        print "Must provide a password"
+        sys.exit(1)
+
+    data = Picasa(username, password)
+
+    view = QtDeclarative.QDeclarativeView()
+    engine = view.engine()
+    engine.quit.connect(app.quit)
+    albums = data.getAlbumListModel()
+    view.rootContext().setContextProperty("albumModel", albums)
+    context = view.rootContext()
+    view.setSource(QUrl('photoviewer.qml'))
+    view.show()
+
+    sys.exit(app.exec_())
