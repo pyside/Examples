@@ -25,13 +25,13 @@
 
 import random
 
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 import tooltips_rc
 
 
 class ShapeItem(object):
-    def __init__(self):    
+    def __init__(self):
         self.myPath = QtGui.QPainterPath()
         self.myPosition = QtCore.QPoint()
         self.myColor  = QtGui.QColor()
@@ -71,7 +71,7 @@ class SortingBox(QtGui.QWidget):
         self.circlePath = QtGui.QPainterPath()
         self.squarePath = QtGui.QPainterPath()
         self.trianglePath = QtGui.QPainterPath()
-        self.shapeItems = []        
+        self.shapeItems = []
 
         self.previousPosition = QtCore.QPoint()
 
