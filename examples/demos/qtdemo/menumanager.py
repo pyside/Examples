@@ -72,11 +72,11 @@ class MenuManager(QtCore.QObject):
             sys.exit(-1)
 
     def initHelpEngine(self):
-        self.helpRootUrl = 'qthelp://com.trolltech.qt.%d%d%d/qdoc/' % (QtCore.QT_VERSION >> 16, (QtCore.QT_VERSION >> 8) & 0xff, QtCore.QT_VERSION & 0xff)
+        self.helpRootUrl = 'qthelp://com.trolltech.qt.%d%d%d/qdoc/' % QtCore.__version_info__
 
         # Store help collection file in cache dir of assistant.
         cacheDir = QtGui.QDesktopServices.storageLocation(QtGui.QDesktopServices.DataLocation) + '/Trolltech/Assistant/'
-        helpDataFile = 'qtdemo_%s.qhc' % QtCore.QT_VERSION_STR
+        helpDataFile = 'qtdemo_%s.qhc' % QtCore.__version__
 
         dir = QtCore.QDir()
         if not dir.exists(cacheDir):
