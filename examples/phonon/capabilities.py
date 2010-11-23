@@ -26,7 +26,7 @@ import sys
 from PySide import QtCore, QtGui
 
 try:
-    from PyQt4.phonon import Phonon
+    from PySide.phonon import Phonon
 except ImportError:
     app = QtGui.QApplication(sys.argv)
     QtGui.QMessageBox.critical(None, "Phonon Capabilities",
@@ -81,7 +81,7 @@ class Window(QtGui.QWidget):
                 parameterItem.setText(0, "Parameter")
                 parameterItem.setText(1, parameter.name())
                 parameterItem.setText(2, parameter.description())
-                parameterItem.setText(3, QtCore.QVariant.typeToName(parameter.type()))
+                parameterItem.setText(3, str(parameter.type()))
                 parameterItem.setText(4, valueString)
 
         for i in range(self.effectsTreeWidget.columnCount()):

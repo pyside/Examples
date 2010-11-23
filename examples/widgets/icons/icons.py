@@ -23,12 +23,7 @@
 ##
 #############################################################################
 
-# This is only needed for Python v2 but is harmless for Python v3.
-import sip
-sip.setapi('QVariant', 2)
-
-from PyQt4 import QtCore, QtGui
-
+from PySide import QtCore, QtGui
 
 class IconSizeSpinBox(QtGui.QSpinBox):
     @staticmethod

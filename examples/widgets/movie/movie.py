@@ -23,8 +23,7 @@
 ##
 #############################################################################
 
-from PyQt4 import QtCore, QtGui
-
+from PySide import QtCore, QtGui
 
 class MoviePlayer(QtGui.QWidget):
     def __init__(self, parent=None):
@@ -187,3 +186,4 @@ if __name__ == '__main__':
     player = MoviePlayer()
     player.show()
     sys.exit(app.exec_())
+
