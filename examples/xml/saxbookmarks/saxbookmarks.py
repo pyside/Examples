@@ -223,7 +223,7 @@ class MainWindow(QtGui.QMainWindow):
     def saveAs(self):
         fileName = QtGui.QFileDialog.getSaveFileName(self,
                 "Save Bookmark File", QtCore.QDir.currentPath(),
-                "XBEL Files (*.xbel *.xml)")
+                "XBEL Files (*.xbel *.xml)")[0]
 
         if not fileName:
             return

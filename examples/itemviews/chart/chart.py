@@ -498,7 +498,7 @@ class MainWindow(QtGui.QMainWindow):
     def openFile(self, path=None):
         if not path:
             path = QtGui.QFileDialog.getOpenFileName(self,
-                    "Choose a data file", '', '*.cht')
+                    "Choose a data file", '', '*.cht')[0]
 
         if path:
             f = QtCore.QFile(path)

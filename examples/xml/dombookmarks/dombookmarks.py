@@ -40,7 +40,7 @@ class MainWindow(QtGui.QMainWindow):
     def saveAs(self):
         fileName = QtGui.QFileDialog.getSaveFileName(self,
                 "Save Bookmark File", QtCore.QDir.currentPath(),
-                "XBEL Files (*.xbel *.xml)")
+                "XBEL Files (*.xbel *.xml)")[0]
 
         if not fileName:
             return
@@ -107,7 +107,7 @@ class XbelTree(QtGui.QTreeWidget):
                 QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.bookmarkIcon.addPixmap(self.style().standardPixmap(QtGui.QStyle.SP_FileIcon))
 
-    def read(self, device):     
+    def read(self, device):
         ok, errorStr, errorLine, errorColumn = self.domDocument.setContent(device, True)
         if not ok:
             QtGui.QMessageBox.information(self.window(), "DOM Bookmarks",

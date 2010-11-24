@@ -368,7 +368,7 @@ class AddressBook(QtGui.QWidget):
             lastName = ''
 
         fileName = QtGui.QFileDialog.getSaveFileName(self, "Export Contact",
-                '', "vCard Files (*.vcf);;All Files (*)")
+                '', "vCard Files (*.vcf);;All Files (*)")[0]
 
         if not fileName:
             return
