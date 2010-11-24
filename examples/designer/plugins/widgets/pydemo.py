@@ -38,7 +38,7 @@ class PyTextViewer(QtGui.QTextEdit):
 
     # Define the author property.  This will look like a C++ property to Qt
     # Designer and a Python property to Python.
-    author = QtCore.pyqtProperty("QString", getAuthor, setAuthor, resetAuthor)
+    author = QtCore.Property("QString", getAuthor, setAuthor, resetAuthor)
 
 
 # This is the class that implements the custom widget.
@@ -66,7 +66,7 @@ class PyDemo(PyTextViewer):
 
     # The setter for the zoom property.  We also make define this as a Qt slot
     # which can be connected to Qt signals in Qt Designer.
-    @QtCore.pyqtSignature("int")
+    @QtCore.Slot(int)
     def setZoom(self, zoom):
         # Don't do anything if nothing has changed.
         if self._zoom == zoom:
@@ -90,7 +90,7 @@ class PyDemo(PyTextViewer):
 
     # Define the zoom property.  Changing the value of this in Qt Designer's
     # property editor causes the zoom level to change dynamically.
-    zoom = QtCore.pyqtProperty("int", getZoom, setZoom, resetZoom)
+    zoom = QtCore.Property("int", getZoom, setZoom, resetZoom)
 
 
 # The text displayed in the custom widget.

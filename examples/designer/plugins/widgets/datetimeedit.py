@@ -65,7 +65,7 @@ class PyDateEdit(QtGui.QDateEdit):
     #
     def getCalendarPopup(self):
         return True
-    calendarPopup = QtCore.pyqtProperty('bool',
+    calendarPopup = QtCore.Property('bool',
                                         fget=getCalendarPopup)
 
     #
@@ -86,7 +86,7 @@ class PyDateEdit(QtGui.QDateEdit):
             self.__firstDayOfWeek = QtCore.Qt.Monday
             if self.__cw:
                 self.__cw.setFirstDayOfWeek(QtCore.Qt.Monday)
-    firstDayOfWeek = QtCore.pyqtProperty('Qt::DayOfWeek',
+    firstDayOfWeek = QtCore.Property('Qt::DayOfWeek',
                                          fget=getFirstDayOfWeek,
                                          fset=setFirstDayOfWeek,
                                          freset=resetFirstDayOfWeek)
@@ -109,7 +109,7 @@ class PyDateEdit(QtGui.QDateEdit):
             self.__gridVisible = False
             if self.__cw:
                 self.__cw.setGridVisible(False)
-    gridVisible = QtCore.pyqtProperty('bool',
+    gridVisible = QtCore.Property('bool',
                                       fget=isGridVisible,
                                       fset=setGridVisible,
                                       freset=resetGridVisible)
@@ -132,7 +132,7 @@ class PyDateEdit(QtGui.QDateEdit):
             self.__horizontalHeaderFormat = QtGui.QCalendarWidget.ShortDayNames
             if self.__cw:
                 self.__cw.setHorizontalHeaderFormat(QtGui.QCalendarWidget.ShortDayNames)
-    horizontalHeaderFormat = QtCore.pyqtProperty('QCalendarWidget::HorizontalHeaderFormat',
+    horizontalHeaderFormat = QtCore.Property('QCalendarWidget::HorizontalHeaderFormat',
                                                  fget=getHorizontalHeaderFormat,
                                                  fset=setHorizontalHeaderFormat,
                                                  freset=resetHorizontalHeaderFormat)
@@ -155,7 +155,7 @@ class PyDateEdit(QtGui.QDateEdit):
             self.__verticalHeaderFormat = QtGui.QCalendarWidget.ISOWeekNumbers
             if self.__cw:
                 self.__cw.setVerticalHeaderFormat(QtGui.QCalendarWidget.ISOWeekNumbers)
-    verticalHeaderFormat = QtCore.pyqtProperty('QCalendarWidget::VerticalHeaderFormat',
+    verticalHeaderFormat = QtCore.Property('QCalendarWidget::VerticalHeaderFormat',
                                                fget=getVerticalHeaderFormat,
                                                fset=setVerticalHeaderFormat,
                                                freset=resetVerticalHeaderFormat)
@@ -178,7 +178,7 @@ class PyDateEdit(QtGui.QDateEdit):
             self.__navigationBarVisible = True
             if self.__cw:
                 self.__cw.setNavigationBarVisible(True)
-    navigationBarVisible = QtCore.pyqtProperty('bool',
+    navigationBarVisible = QtCore.Property('bool',
                                                fget=isNavigationBarVisible,
                                                fset=setNavigationBarVisible,
                                                freset=resetNavigationBarVisible)
@@ -223,7 +223,7 @@ class PyDateTimeEdit(QtGui.QDateTimeEdit):
     #
     def getCalendarPopup(self):
         return True
-    calendarPopup = QtCore.pyqtProperty('bool',
+    calendarPopup = QtCore.Property('bool',
                                         fget=getCalendarPopup)
 
     #
@@ -244,7 +244,7 @@ class PyDateTimeEdit(QtGui.QDateTimeEdit):
             self.__firstDayOfWeek = QtCore.Qt.Monday
             if self.__cw:
                 self.__cw.setFirstDayOfWeek(QtCore.Qt.Monday)
-    firstDayOfWeek = QtCore.pyqtProperty('Qt::DayOfWeek',
+    firstDayOfWeek = QtCore.Property('Qt::DayOfWeek',
                                          fget=getFirstDayOfWeek,
                                          fset=setFirstDayOfWeek,
                                          freset=resetFirstDayOfWeek)
@@ -267,7 +267,7 @@ class PyDateTimeEdit(QtGui.QDateTimeEdit):
             self.__gridVisible = False
             if self.__cw:
                 self.__cw.setGridVisible(False)
-    gridVisible = QtCore.pyqtProperty('bool',
+    gridVisible = QtCore.Property('bool',
                                       fget=isGridVisible,
                                       fset=setGridVisible,
                                       freset=resetGridVisible)
@@ -290,7 +290,7 @@ class PyDateTimeEdit(QtGui.QDateTimeEdit):
             self.__horizontalHeaderFormat = QtGui.QCalendarWidget.ShortDayNames
             if self.__cw:
                 self.__cw.setHorizontalHeaderFormat(QtGui.QCalendarWidget.ShortDayNames)
-    horizontalHeaderFormat = QtCore.pyqtProperty('QCalendarWidget::HorizontalHeaderFormat',
+    horizontalHeaderFormat = QtCore.Property('QCalendarWidget::HorizontalHeaderFormat',
                                                  fget=getHorizontalHeaderFormat,
                                                  fset=setHorizontalHeaderFormat,
                                                  freset=resetHorizontalHeaderFormat)
@@ -313,7 +313,7 @@ class PyDateTimeEdit(QtGui.QDateTimeEdit):
             self.__verticalHeaderFormat = QtGui.QCalendarWidget.ISOWeekNumbers
             if self.__cw:
                 self.__cw.setVerticalHeaderFormat(QtGui.QCalendarWidget.ISOWeekNumbers)
-    verticalHeaderFormat = QtCore.pyqtProperty('QCalendarWidget::VerticalHeaderFormat',
+    verticalHeaderFormat = QtCore.Property('QCalendarWidget::VerticalHeaderFormat',
                                                fget=getVerticalHeaderFormat,
                                                fset=setVerticalHeaderFormat,
                                                freset=resetVerticalHeaderFormat)
@@ -336,7 +336,7 @@ class PyDateTimeEdit(QtGui.QDateTimeEdit):
             self.__navigationBarVisible = True
             if self.__cw:
                 self.__cw.setNavigationBarVisible(True)
-    navigationBarVisible = QtCore.pyqtProperty('bool',
+    navigationBarVisible = QtCore.Property('bool',
                                                fget=isNavigationBarVisible,
                                                fset=setNavigationBarVisible,
                                                freset=resetNavigationBarVisible)

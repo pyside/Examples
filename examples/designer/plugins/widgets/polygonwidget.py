@@ -30,47 +30,47 @@ from PySide import QtCore, QtGui
 class PolygonWidget(QtGui.QWidget):
 
     """PolygonWidget(QtGui.QWidget)
-    
+
     Provides a custom widget to display a polygon with properties and slots
     that can be used to customize its appearance.
     """
-    
+
     def __init__(self, parent = None):
-    
+
         QtGui.QWidget.__init__(self, parent)
-        
+
         self._sides = 5
         self._innerRadius = 20
         self._outerRadius = 50
         self._angle = 0
-        
+
         self.createPath()
-        
+
         self._innerColor = QtGui.QColor(255, 255, 128)
         self._outerColor = QtGui.QColor(255, 0, 128)
-        
+
         self.createGradient()
-    
+
     def paintEvent(self, event):
-    
+
         painter = QtGui.QPainter()
         painter.begin(self)
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
         painter.setBrush(QtGui.QBrush(QtGui.QColor(192, 192, 255)))
         painter.drawRect(event.rect())
-        
+
         painter.translate(self.width()/2.0, self.height()/2.0)
         painter.rotate(self._angle)
         painter.setBrush(QtGui.QBrush(self.gradient))
         painter.drawPath(self.path)
         painter.end()
-    
+
     def sizeHint(self):
-    
+
         return QtCore.QSize(2*self._outerRadius + 20, 2*self._outerRadius + 20)
-    
+
     def createPath(self):
-    
+
         self.path = QtGui.QPainterPath()
         angle = 2*math.pi/self._sides
         self.path.moveTo(self._outerRadius, 0)
@@ -84,100 +84,100 @@ class PolygonWidget(QtGui.QWidget):
                 self._outerRadius * math.sin(step * angle)
                 )
         self.path.closeSubpath()
-    
+
     def createGradient(self):
-    
+
         center = QtCore.QPointF(0, 0)
         self.gradient = QtGui.QRadialGradient(center, self._outerRadius, center)
         self.gradient.setColorAt(0.5, QtGui.QColor(self._innerColor))
         self.gradient.setColorAt(1.0, QtGui.QColor(self._outerColor))
-    
+
     # The angle property is implemented using the getAngle() and setAngle()
     # methods.
-    
+
     def getAngle(self):
         return self._angle
-    
+
     # The setAngle() setter method is also a slot.
-    @QtCore.pyqtSignature("setAngle(int)")
+    @QtCore.Slot(int)
     def setAngle(self, angle):
         self._angle = min(max(0, angle), 360)
         self.update()
-    
-    angle = QtCore.pyqtProperty("int", getAngle, setAngle)
-    
+
+    angle = QtCore.Property("int", getAngle, setAngle)
+
     # The innerRadius property is implemented using the getInnerRadius() and
     # setInnerRadius() methods.
-    
+
     def getInnerRadius(self):
         return self._innerRadius
-    
+
     # The setInnerRadius() setter method is also a slot.
-    @QtCore.pyqtSignature("setInnerRadius(int)")
+    @QtCore.Slot(int)
     def setInnerRadius(self, radius):
         self._innerRadius = radius
         self.createPath()
         self.createGradient()
         self.update()
-    
-    innerRadius = QtCore.pyqtProperty("int", getInnerRadius, setInnerRadius)
-    
+
+    innerRadius = QtCore.Property("int", getInnerRadius, setInnerRadius)
+
     # The outerRadius property is implemented using the getOuterRadius() and
     # setOuterRadius() methods.
-    
+
     def getOuterRadius(self):
         return self._outerRadius
-    
+
     # The setOuterRadius() setter method is also a slot.
-    @QtCore.pyqtSignature("setOuterRadius(int)")
+    @QtCore.Slot(int)
     def setOuterRadius(self, radius):
         self._outerRadius = radius
         self.createPath()
         self.createGradient()
         self.update()
-    
-    outerRadius = QtCore.pyqtProperty("int", getOuterRadius, setOuterRadius)
-    
+
+    outerRadius = QtCore.Property("int", getOuterRadius, setOuterRadius)
+
     # The numberOfSides property is implemented using the getNumberOfSides()
     # and setNumberOfSides() methods.
-    
+
     def getNumberOfSides(self):
         return self._sides
-    
+
     # The setNumberOfSides() setter method is also a slot.
-    @QtCore.pyqtSignature("setNumberOfSides(int)")
+    @QtCore.Slot(int)
     def setNumberOfSides(self, sides):
         self._sides = max(3, sides)
         self.createPath()
         self.update()
-    
-    numberOfSides = QtCore.pyqtProperty("int", getNumberOfSides, setNumberOfSides)
-    
+
+    numberOfSides = QtCore.Property("int", getNumberOfSides, setNumberOfSides)
+
     # The innerColor property is implemented using the getInnerColor() and
     # setInnerColor() methods.
-    
+
     def getInnerColor(self):
         return self._innerColor
-    
+
     def setInnerColor(self, color):
         self._innerColor = max(3, color)
         self.createGradient()
         self.update()
-    
-    innerColor = QtCore.pyqtProperty("QColor", getInnerColor, setInnerColor)
-    
+
+    innerColor = QtCore.Property("QColor", getInnerColor, setInnerColor)
+
     # The outerColor property is implemented using the getOuterColor() and
     # setOuterColor() methods.
-    
+
     def getOuterColor(self):
         return self._outerColor
-    
+
     def setOuterColor(self, color):
         self._outerColor = color
         self.createGradient()
         self.update()
-    
-    outerColor = QtCore.pyqtProperty("QColor", getOuterColor, setOuterColor)
+
+    outerColor = QtCore.Property("QColor", getOuterColor, setOuterColor)
 
 
 if __name__ == "__main__":
