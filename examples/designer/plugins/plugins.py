@@ -18,12 +18,17 @@ def setEnvironment(env, var_name, dir_name):
     dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), dir_name)
 
     # Remove any existing value so that we have a controlled environment.
-    idx = env.indexOf(QtCore.QRegExp("^%s=.*" % var_name, QtCore.Qt.CaseInsensitive))
+    objToRemove = None
+    regex = QtCore.QRegExp("^%s=.*" % var_name, QtCore.Qt.CaseInsensitive)
+    for e in env:
+        if regex.indexIn(e) >= 0:
+            objToRemove = e
+            break
 
-    if idx >= 0:
-        env.removeAt(idx)
+    if objToRemove:
+        env.remove(objToRemove)
 
-    env << "%s=%s" % (var_name, dir)
+    env.append("%s=%s" % (var_name, dir))
 
 
 app = QtGui.QApplication(sys.argv)
@@ -40,7 +45,7 @@ QtGui.QMessageBox.information(None, "PyQt Designer Plugins",
         "directory contains the Python modules that implement the example "
         "custom widgets.</p>"
         "<p>All of the example custom widgets should then appear in "
-        "Designer's widget box in the <b>PyQt Examples</b> group.</p>")
+        "Designer's widget box in the <b>PySide Examples</b> group.</p>")
 
 # Tell Qt Designer where it can find the directory containing the plugins and
 # Python where it can find the widgets.
@@ -55,9 +60,9 @@ designer.setEnvironment(env)
 designer_bin = QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.BinariesPath)
 
 if sys.platform == "darwin":
-    designer_bin.append("/Designer.app/Contents/MacOS/Designer")
+    designer_bin += "/Designer.app/Contents/MacOS/Designer"
 else:
-    designer_bin.append("/designer")
+    designer_bin += "/designer"
 
 designer.start(designer_bin)
 designer.waitForFinished(-1)
