@@ -31,18 +31,18 @@ from OpenGL import GL
 class HelloGLWidget(QtOpenGL.QGLWidget):
 
     """HelloGLWidget(QtOpenGL.QGLWidget)
-    
+
     Provides a custom widget to display an OpenGL-rendered Qt logo.
     Various properties and slots are defined so that the user can rotate
     the logo, and signals are defined to enable other components to
     react to changes to its orientation.
     """
-    
+
     # We define two signals that are used to indicate changes to the
     # rotation of the logo.
     __pyqtSignals__ = ("xRotationChanged(int)", "yRotationChanged(int)",
                        "zRotationChanged(int)")
-    
+
     def __init__(self, parent=None):
         QtOpenGL.QGLWidget.__init__(self, parent)
 
@@ -61,12 +61,12 @@ class HelloGLWidget(QtOpenGL.QGLWidget):
     # The rotation of the logo about the x-axis can be controlled using the
     # xRotation property, defined using the following getter and setter
     # methods.
-    
+
     def getXRotation(self):
         return self.xRot
 
     # The setXRotation() setter method is also a slot.
-    @QtCore.pyqtSignature("setXRotation(int)")
+    @QtCore.Slot(int)
     def setXRotation(self, angle):
         angle = self.normalizeAngle(angle)
         if angle != self.xRot:
@@ -74,17 +74,17 @@ class HelloGLWidget(QtOpenGL.QGLWidget):
             self.emit(QtCore.SIGNAL("xRotationChanged(int)"), angle)
             self.updateGL()
 
-    xRotation = QtCore.pyqtProperty("int", getXRotation, setXRotation)
+    xRotation = QtCore.Property("int", getXRotation, setXRotation)
 
     # The rotation of the logo about the y-axis can be controlled using the
     # yRotation property, defined using the following getter and setter
     # methods.
-    
+
     def getYRotation(self):
         return self.yRot
 
     # The setYRotation() setter method is also a slot.
-    @QtCore.pyqtSignature("setYRotation(int)")
+    @QtCore.Slot(int)
     def setYRotation(self, angle):
         angle = self.normalizeAngle(angle)
         if angle != self.yRot:
@@ -92,17 +92,17 @@ class HelloGLWidget(QtOpenGL.QGLWidget):
             self.emit(QtCore.SIGNAL("yRotationChanged(int)"), angle)
             self.updateGL()
 
-    yRotation = QtCore.pyqtProperty("int", getYRotation, setYRotation)
-        
+    yRotation = QtCore.Property("int", getYRotation, setYRotation)
+
     # The rotation of the logo about the z-axis can be controlled using the
     # zRotation property, defined using the following getter and setter
     # methods.
-    
+
     def getZRotation(self):
         return self.zRot
 
     # The setZRotation() setter method is also a slot.
-    @QtCore.pyqtSignature("setZRotation(int)")
+    @QtCore.Slot(int)
     def setZRotation(self, angle):
         angle = self.normalizeAngle(angle)
         if angle != self.zRot:
@@ -110,7 +110,7 @@ class HelloGLWidget(QtOpenGL.QGLWidget):
             self.emit(QtCore.SIGNAL("zRotationChanged(int)"), angle)
             self.updateGL()
 
-    zRotation = QtCore.pyqtProperty("int", getZRotation, setZRotation)
+    zRotation = QtCore.Property("int", getZRotation, setZRotation)
 
     def minimumSizeHint(self):
         return QtCore.QSize(50, 50)
@@ -119,7 +119,7 @@ class HelloGLWidget(QtOpenGL.QGLWidget):
         return QtCore.QSize(200, 200)
 
     def initializeGL(self):
-        self.qglClearColor(self.trolltechPurple.dark())
+        self.qglClearColor(self.trolltechPurple.darker())
         self.object = self.makeObject()
         GL.glShadeModel(GL.GL_SMOOTH)
         GL.glEnable(GL.GL_DEPTH_TEST)
@@ -225,7 +225,7 @@ class HelloGLWidget(QtOpenGL.QGLWidget):
         GL.glVertex3d(x1, y1, +0.05)
 
     def extrude(self, x1, y1, x2, y2):
-        self.qglColor(self.trolltechGreen.dark(250 + int(100 * x1)))
+        self.qglColor(self.trolltechGreen.darker(250 + int(100 * x1)))
 
         GL.glVertex3d(x1, y1, +0.05)
         GL.glVertex3d(x2, y2, +0.05)
