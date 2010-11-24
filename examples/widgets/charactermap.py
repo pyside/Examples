@@ -71,20 +71,24 @@ class CharacterWidget(QtGui.QWidget):
         widgetPosition = self.mapFromGlobal(event.globalPos())
         key = (widgetPosition.y() / self.squareSize) * self.columns + widgetPosition.x() / self.squareSize
 
-        text = "<p>Character: <span style=\"font-size: 24pt; font-family: %s\">" % (self.displayFont.family()) + \
-                chr(key) + \
-                "</span><p>Value: 0x" + \
-		chr(key)
+        if 0 < key < 128:
+            ch = chr(key)
+        else:
+            ch = ' '
+        text = '<p>Character: <span style="font-size: 24pt; font-family: %s">%s</span><p>Value: %s' % \
+                (self.displayFont.family(), ch, hex(key))
         QtGui.QToolTip.showText(event.globalPos(), text, self)
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton:
             self.lastKey = (event.y() / self.squareSize) * self.columns + event.x() / self.squareSize
-            try:
-                c = chr(self.lastKey)
-            	self.characterSelected.emit(c)
-            except:
-		pass
+            c = chr(self.lastKey)
+            self.characterSelected.emit(c)
+            #try:
+                #c = chr(self.lastKey)
+                #self.characterSelected.emit(c)
+            #except:
+                #pass
             self.update()
         else:
             super(CharacterWidget, self).mousePressEvent(event)
@@ -121,9 +125,13 @@ class CharacterWidget(QtGui.QWidget):
                             row * self.squareSize + 1, self.squareSize,
                             self.squareSize, QtCore.Qt.red)
 
-                painter.drawText(column * self.squareSize + (self.squareSize / 2) - fontMetrics.width(chr(key)) / 2,
-                        row * self.squareSize + 4 + fontMetrics.ascent(),
-                        chr(key))
+                if 0 < key < 256:
+                    ch = chr(key)
+                else:
+                    ch = ' '
+                x = column * self.squareSize + (self.squareSize / 2) - fontMetrics.width(ch) / 2
+                y = row * self.squareSize + 4 + fontMetrics.ascent()
+                painter.drawText(x, y, ch)
 
 
 class MainWindow(QtGui.QMainWindow):
