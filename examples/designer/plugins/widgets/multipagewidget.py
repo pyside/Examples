@@ -10,7 +10,7 @@ from PySide import QtCore, QtGui
 #----------------------------------------------------------------------------#
 class PyMultiPageWidget(QtGui.QWidget):
     __pyqtSignals__ = ('currentIndexChanged(int)',
-                       'pageTitleChanged(const QString &)')    
+                       'pageTitleChanged(const QString &)')
 
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -21,7 +21,7 @@ class PyMultiPageWidget(QtGui.QWidget):
         # of the designer and you can't change the current page via the
         # combo box.
         # MAGIC
-        self.comboBox.setObjectName('__qt__passive_comboBox')        
+        self.comboBox.setObjectName('__qt__passive_comboBox')
         self.stackWidget = QtGui.QStackedWidget()
         self.connect(self.comboBox, QtCore.SIGNAL('activated(int)'), self.setCurrentIndex)
         self.layout = QtGui.QVBoxLayout()
@@ -38,21 +38,21 @@ class PyMultiPageWidget(QtGui.QWidget):
     def widget(self, index):
         return self.stackWidget.widget(index)
 
-    @QtCore.pyqtSignature('QWidget *')
+    @QtCore.Slot(QtGui.QWidget)
     def addPage(self, page):
         self.insertPage(self.count(), page)
 
-    @QtCore.pyqtSignature('int, QWidget *')
+    @QtCore.Slot(int, QtGui.QWidget)
     def insertPage(self, index, page):
         page.setParent(self.stackWidget)
         self.stackWidget.insertWidget(index, page)
         title = page.windowTitle()
-        if title.isEmpty():
-            title = QtCore.QCoreApplication.translate('PyMultiPageWidget','Page %1').arg(self.comboBox.count() + 1)
+        if not title:
+            title = QtCore.QCoreApplication.translate('PyMultiPageWidget', 'Page %d' % (self.comboBox.count() + 1))
             page.setWindowTitle(title)
         self.comboBox.insertItem(index, title)
 
-    @QtCore.pyqtSignature('int')
+    @QtCore.Slot(int)
     def removePage(self, index):
         widget = self.stackWidget.widget(index)
         self.stackWidget.removeWidget(widget)
@@ -60,8 +60,8 @@ class PyMultiPageWidget(QtGui.QWidget):
 
     def getPageTitle(self):
         return self.stackWidget.currentWidget().windowTitle()
-    
-    @QtCore.pyqtSignature('QString const &')
+
+    @QtCore.Slot(str)
     def setPageTitle(self, newTitle):
         self.comboBox.setItemText(self.getCurrentIndex(), newTitle)
         self.stackWidget.currentWidget().setWindowTitle(newTitle)
@@ -70,15 +70,15 @@ class PyMultiPageWidget(QtGui.QWidget):
     def getCurrentIndex(self):
         return self.stackWidget.currentIndex()
 
-    @QtCore.pyqtSignature('int')
+    @QtCore.Slot(int)
     def setCurrentIndex(self, index):
         if index != self.getCurrentIndex():
             self.stackWidget.setCurrentIndex(index)
             self.comboBox.setCurrentIndex(index)
             self.emit(QtCore.SIGNAL('currentIndexChanged(int)'), index)
 
-    pageTitle = QtCore.pyqtProperty('QString', fget=getPageTitle, fset=setPageTitle, stored=False)
-    currentIndex = QtCore.pyqtProperty('int', fget=getCurrentIndex, fset=setCurrentIndex)
+    pageTitle = QtCore.Property('QString', fget=getPageTitle, fset=setPageTitle, stored=False)
+    currentIndex = QtCore.Property('int', fget=getCurrentIndex, fset=setCurrentIndex)
 
 #============================================================================#
 # Main for testing the class                                                 #
