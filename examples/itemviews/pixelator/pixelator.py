@@ -148,8 +148,8 @@ class MainWindow(QtGui.QMainWindow):
         self.printAction.triggered.connect(self.printImage)
         quitAction.triggered.connect(QtGui.qApp.quit)
         aboutAction.triggered.connect(self.showAboutBox)
-        pixelSizeSpinBox.valueChanged.connect(delegate.setPixelSize)
-        pixelSizeSpinBox.valueChanged.connect(self.updateView)
+        pixelSizeSpinBox.valueChanged[int].connect(delegate.setPixelSize)
+        pixelSizeSpinBox.valueChanged[int].connect(self.updateView)
 
         controlsLayout = QtGui.QHBoxLayout()
         controlsLayout.addWidget(pixelSizeLabel)
