@@ -45,7 +45,7 @@ class Button(QtGui.QToolButton):
 
 class Calculator(QtGui.QDialog):
     NumDigitButtons = 10
-    
+
     def __init__(self, parent=None):
         super(Calculator, self).__init__(parent)
 
@@ -67,7 +67,7 @@ class Calculator(QtGui.QDialog):
         self.display.setFont(font)
 
         self.digitButtons = []
-        
+
         for i in range(Calculator.NumDigitButtons):
             self.digitButtons.append(self.createButton(str(i),
                     self.digitClicked))
@@ -160,7 +160,7 @@ class Calculator(QtGui.QDialog):
                 return
 
             result = math.sqrt(operand)
-        elif clickedOperator == "x\262":
+        elif clickedOperator == u"x\262":
             result = math.pow(operand, 2.0)
         elif clickedOperator == "1/x":
             if operand == 0.0:
