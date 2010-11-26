@@ -58,19 +58,15 @@ class ImageDelegate(QtGui.QItemDelegate):
 
     def setEditorData(self, editor, index):
         comboBox = editor
-        if not comboBox:
-            return
-
-        pos = comboBox.findText(index.model().data(index),
-                QtCore.Qt.MatchExactly)
-        comboBox.setCurrentIndex(pos)
+        if comboBox:
+            pos = comboBox.findText(index.model().data(index),
+                    QtCore.Qt.MatchExactly)
+            comboBox.setCurrentIndex(pos)
 
     def setModelData(self, editor, model, index):
         comboBox = editor
-        if not comboBox:
-            return
-
-        model.setData(index, comboBox.currentText())
+        if comboBox:
+            model.setData(index, comboBox.currentText())
 
     def emitCommitData(self):
         self.commitData.emit(self.sender())
@@ -185,10 +181,7 @@ class MainWindow(QtGui.QMainWindow):
                 "in different modes (active, normal, disabled and selected) "
                 "and states (on and off) based on a set of images.")
 
-    def changeStyle(self, checked):
-        if not checked:
-            return
-
+    def changeStyle(self):
         action = self.sender()
         style = QtGui.QStyleFactory.create(action.data())
         if not style:
@@ -216,10 +209,7 @@ class MainWindow(QtGui.QMainWindow):
         metric_value = style.pixelMetric(metric)
         button.setText(label % (metric_value, metric_value))
 
-    def changeSize(self, checked=True):
-        if not checked:
-            return
-
+    def changeSize(self):
         if self.otherRadioButton.isChecked():
             extent = self.otherSpinBox.value()
         else:
@@ -272,7 +262,7 @@ class MainWindow(QtGui.QMainWindow):
         self.previewArea.setIcon(icon)
 
     def addImage(self):
-        fileNames = QtGui.QFileDialog.getOpenFileNames(self, "Open Images",
+        fileNames, filters = QtGui.QFileDialog.getOpenFileNames(self, "Open Images",
                 '', "Images (*.png *.xpm *.jpg);;All Files (*)")
 
         for fileName in fileNames:
