@@ -57,14 +57,11 @@ def main(argv=None):
     scriptFileName = './calculator.js'
     scriptFile = QFile(scriptFileName)
     scriptFile.open(QIODevice.ReadOnly)
-    engine.evaluate(scriptFile.readAll(), scriptFileName)
+    engine.evaluate(unicode(scriptFile.readAll()), scriptFileName)
     scriptFile.close()
 
     loader = QUiLoader()
-    uiFile = QFile(':/calculator.ui')
-    uiFile.open(QIODevice.ReadOnly)
-    ui = loader.load(uiFile)
-    uiFile.close()
+    ui = loader.load(':/calculator.ui')
 
     ctor = engine.evaluate('Calculator')
     scriptUi = engine.newQObject(ui, QScriptEngine.ScriptOwnership)
