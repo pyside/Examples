@@ -168,7 +168,7 @@ class Window(QtGui.QWidget):
             self.glWidgets.append([])
             for j in range(Window.NumColumns):
                 self.glWidgets[i].append(None)
-        
+
         for i in range(Window.NumRows):
             for j in range(Window.NumColumns):
                 clearColor = QtGui.QColor()
