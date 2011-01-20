@@ -56,6 +56,14 @@ class RenderThread(QtCore.QThread):
         for i in range(RenderThread.ColormapSize):
             self.colormap.append(self.rgbFromWaveLength(380.0 + (i * 400.0 / RenderThread.ColormapSize)))
 
+    def stop(self):
+        self.mutex.lock()
+        self.abort = True
+        self.condition.wakeOne()
+        self.mutex.unlock()
+
+        self.wait()
+
     def render(self, centerX, centerY, scaleFactor, resultSize):
         locker = QtCore.QMutexLocker(self.mutex)
 
@@ -307,7 +315,6 @@ if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     widget = MandelbrotWidget()
     widget.show()
-    res = app.exec_()
-    widget.thread.abort = True
-    widget.thread.wait()
-    sys.exit(res)
+    r = app.exec_()
+    widget.thread.stop()
+    sys.exit(r)
