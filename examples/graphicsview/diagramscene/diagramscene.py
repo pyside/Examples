@@ -137,7 +137,7 @@ class DiagramItem(QtGui.QGraphicsPolygonItem):
         self.arrows = []
 
         self.diagramType = diagramType
-        self.contextMenu = contextMenu
+        self.myContextMenu = contextMenu
 
         path = QtGui.QPainterPath()
         if self.diagramType == self.StartEnd:
@@ -450,7 +450,7 @@ class MainWindow(QtGui.QMainWindow):
         self.handleFontChange()
 
     def sceneScaleChanged(self, scale):
-        newScale = scale.left(scale.indexOf("%")).toDouble()[0] / 100.0
+        newScale = int(scale[:-1]) / 100.0
         oldMatrix = self.view.matrix()
         self.view.resetMatrix()
         self.view.translate(oldMatrix.dx(), oldMatrix.dy())
