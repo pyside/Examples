@@ -52,6 +52,8 @@ class GLWidget(QtOpenGL.QGLWidget):
         ( ( -1, -1, +1 ), ( +1, -1, +1 ), ( +1, +1, +1 ), ( -1, +1, +1 ) )
     )
 
+    clicked = QtCore.Signal()
+
     def __init__(self, parent, shareWidget):
         QtOpenGL.QGLWidget.__init__(self, parent, shareWidget)
 
@@ -62,12 +64,9 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.clearColor = QtGui.QColor()
         self.lastPos = QtCore.QPoint()
 
-    def __del__(self):
-        # For some reason, GLWidget is defined to be None when this is
-        # called. We access the class variables via the instance's __class__
-        # attribute.
-        self.__class__.refCount -= 1
-        if self.__class__.refCount == 0:
+    def freeGLResources(self):
+        GLWidget.refCount -= 1
+        if GLWidget.refCount == 0:
             self.makeCurrent()
             glDeleteLists(self.__class__.sharedObject, 1)
 
@@ -89,6 +88,9 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def initializeGL(self):
         if not GLWidget.sharedObject:
+            self.textures = []
+            for i in range(6):
+                self.textures.append(self.bindTexture(QtGui.QPixmap(":/images/side%d.png" % (i + 1))))
             GLWidget.sharedObject = self.makeObject()
         GLWidget.refCount += 1
 
@@ -130,14 +132,14 @@ class GLWidget(QtOpenGL.QGLWidget):
         self.lastPos = QtCore.QPoint(event.pos())
 
     def mouseReleaseEvent(self, event):
-        self.emit(QtCore.SIGNAL("clicked()"))
+        self.clicked.emit()
 
     def makeObject(self):
         dlist = glGenLists(1)
         glNewList(dlist, GL_COMPILE)
 
         for i in range(6):
-            self.bindTexture(QtGui.QPixmap(":/images/side%d.png" % (i + 1)))
+            glBindTexture(GL_TEXTURE_2D, self.textures[i])
 
             glBegin(GL_QUADS)
             for j in range(4):
@@ -181,15 +183,15 @@ class Window(QtGui.QWidget):
                 self.glWidgets[i][j].rotateBy(+42 * 16, +42 * 16, -21 * 16)
                 mainLayout.addWidget(self.glWidgets[i][j], i, j)
 
-                self.connect(self.glWidgets[i][j], QtCore.SIGNAL("clicked()"),
-                             self.setCurrentGlWidget)
+                self.glWidgets[i][j].clicked.connect(self.setCurrentGlWidget)
+                QtGui.qApp.lastWindowClosed.connect(self.glWidgets[i][j].freeGLResources)
 
         self.setLayout(mainLayout)
 
         self.currentGlWidget = self.glWidgets[0][0]
 
         timer = QtCore.QTimer(self)
-        self.connect(timer, QtCore.SIGNAL("timeout()"), self.rotateOneStep)
+        timer.timeout.connect(self.rotateOneStep)
         timer.start(20)
 
         self.setWindowTitle(self.tr("Textures"))
