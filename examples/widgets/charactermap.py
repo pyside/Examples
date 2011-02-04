@@ -45,6 +45,13 @@ class CharacterWidget(QtGui.QWidget):
         self.adjustSize()
         self.update()
 
+    def updateSize(self, fontSize):
+        fontSize = int(fontSize)
+        self.displayFont.setPointSize(fontSize)
+        self.squareSize = max(24, QtGui.QFontMetrics(self.displayFont).xHeight() * 3)
+        self.adjustSize()
+        self.update()
+
     def updateStyle(self, fontStyle):
         fontDatabase = QtGui.QFontDatabase()
         oldStrategy = self.displayFont.styleStrategy()
@@ -71,10 +78,8 @@ class CharacterWidget(QtGui.QWidget):
         widgetPosition = self.mapFromGlobal(event.globalPos())
         key = (widgetPosition.y() / self.squareSize) * self.columns + widgetPosition.x() / self.squareSize
 
-        if 0 < key < 128:
-            ch = chr(key)
-        else:
-            ch = ' '
+
+        ch = unichr(key)
         text = '<p>Character: <span style="font-size: 24pt; font-family: %s">%s</span><p>Value: %s' % \
                 (self.displayFont.family(), ch, hex(key))
         QtGui.QToolTip.showText(event.globalPos(), text, self)
@@ -82,7 +87,7 @@ class CharacterWidget(QtGui.QWidget):
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton:
             self.lastKey = (event.y() / self.squareSize) * self.columns + event.x() / self.squareSize
-            c = chr(self.lastKey)
+            c = unichr(self.lastKey)
             self.characterSelected.emit(c)
             #try:
                 #c = chr(self.lastKey)
@@ -125,10 +130,8 @@ class CharacterWidget(QtGui.QWidget):
                             row * self.squareSize + 1, self.squareSize,
                             self.squareSize, QtCore.Qt.red)
 
-                if 0 < key < 256:
-                    ch = chr(key)
-                else:
-                    ch = ' '
+                ch = unichr(key)
+
                 x = column * self.squareSize + (self.squareSize / 2) - fontMetrics.width(ch) / 2
                 y = row * self.squareSize + 4 + fontMetrics.ascent()
                 painter.drawText(x, y, ch)
@@ -163,8 +166,10 @@ class MainWindow(QtGui.QMainWindow):
         self.clipboard = QtGui.QApplication.clipboard()
 
         self.fontCombo.currentFontChanged.connect(self.findStyles)
+        self.fontCombo.currentFontChanged.connect(self.findSizes)
         self.fontCombo.activated[str].connect(self.characterWidget.updateFont)
         self.styleCombo.activated[str].connect(self.characterWidget.updateStyle)
+        self.sizeCombo.currentIndexChanged[str].connect(self.characterWidget.updateSize)
         self.characterWidget.characterSelected.connect(self.insertCharacter)
         clipboardButton.clicked.connect(self.updateClipboard)
 
