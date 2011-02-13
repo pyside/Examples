@@ -73,6 +73,11 @@ class MainWindow(QMainWindow):
         self.editAction = self.createAction("&Edit Entry...", toolMenu, self.addressWidget.editEntry)
         toolMenu.addSeparator()
         self.removeAction = self.createAction("&Remove Entry", toolMenu, self.addressWidget.removeEntry)
+        
+        # Disable the edit and remove menu items initally, as there are
+        # no items yet.
+        self.editAction.setEnabled(False)
+        self.removeAction.setEnabled(False)
 
         # Wire up the updateActions slot
         self.addressWidget.selectionChanged.connect(self.updateActions)
