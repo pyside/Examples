@@ -45,47 +45,38 @@ class HapticButton(QWidget):
       self.setMinimumSize(100, 100)
 
    def mousePressEvent(self, qMouseEvent):
-      if self.m_checkable:
-          self.m_checked = not self.m_checked
-          self.toggled.emit(self.m_checked)
-      else:
-          self.clicked.emit()
+      self.clicked.emit()
 
    def paintEvent(self, qPaintEvent):
       paint = QPainter(self)
 
-      r = QRect(0, 0, self.width()-1, self.height()-1)
+      r = QRect(1, 1, self.width()-2, self.height()-2)
       paint.drawRoundedRect(r, 10, 10)
       paint.drawText(r, Qt.AlignCenter, self.m_label)
-
-   def setCheckable(self, isCheckable):
-      self.m_checkable = isCheckable
-
 
 class Dialog(QDialog):
 
    def __init__(self):
       QDialog.__init__(self)
       self.m_rumble = QFeedbackHapticsEffect()
-      self.m_rumble.setAttackIntensity(0)
+      self.m_rumble.setAttackIntensity(0.1)
       self.m_rumble.setAttackTime(250)
       self.m_rumble.setIntensity(1)
-      self.m_rumble.setDuration(100)
+      self.m_rumble.setDuration(1000)
       self.m_rumble.setFadeTime(250)
-      self.m_rumble.setFadeIntensity(0)
+      self.m_rumble.setFadeIntensity(0.1)
 
       self.m_ocean = QFeedbackHapticsEffect()
-      self.m_ocean.setAttackIntensity(0)
+      self.m_ocean.setAttackIntensity(0.1)
       self.m_ocean.setAttackTime(450)
       self.m_ocean.setIntensity(0.8)
-      self.m_ocean.setDuration(150)
+      self.m_ocean.setDuration(6000)
       self.m_ocean.setFadeTime(900)
       self.m_ocean.setFadeIntensity(0.05)
       self.m_ocean.setPeriod(1500)
 
       self.m_btnRumble = HapticButton("Rumble!")
       self.m_btnOcean = HapticButton("Ocean")
-      self.m_btnOcean.setCheckable(True)
       self.m_btnButtonClick = HapticButton("Click")
       self.m_btnNegativeEffect = HapticButton("Oops!")
       self.topLayout = QGridLayout(self)
@@ -95,7 +86,7 @@ class Dialog(QDialog):
       self.topLayout.addWidget(self.m_btnNegativeEffect, 1, 1)
 
       self.m_btnRumble.clicked.connect(self.playRumble)
-      self.m_btnOcean.toggled[bool].connect(self.playOcean)
+      self.m_btnOcean.clicked.connect(self.playOcean)
       self.m_btnButtonClick.clicked.connect(self.playButtonClick)
       self.m_btnNegativeEffect.clicked.connect(self.playNegativeEffect)
 
@@ -109,11 +100,11 @@ class Dialog(QDialog):
       self.m_rumble.start()
       print "Play rumble"
 
-   def playOcean(self, toggleState):
-      if toggleState:
+   def playOcean(self):
+       if self.m_ocean.state() == QFeedbackEffect.Stopped:
          self.m_ocean.start()
          print "Ocean start"
-      else:
+       else:
          self.m_ocean.stop()
          print "Ocean stop"
 
