@@ -32,12 +32,27 @@ littleUnsigned16 = struct.Struct('<H')
 
 class Generator(QIODevice):
 
-    def __init__(self, fmt, durationUs, frequency, parent):
+    def __init__(self, fmt, durationUs, frequency, parent, filename=None):
         QIODevice.__init__(self, parent)
         self.pos = 0
         self.buf = []
 
         self.generateData(fmt, durationUs, frequency)
+        if filename:
+            self.dump(filename, fmt)
+
+    def dump(self, filename, fmt):
+
+        import wave
+
+        handle = wave.open(filename, 'wb')
+
+        handle.setnchannels(fmt.channels())
+        handle.setsampwidth(fmt.sampleSize()/8)
+        handle.setframerate(fmt.sampleRate())
+        handle.writeframes(''.join(self.buf))
+
+        handle.close()
 
     def start(self):
         self.open(QIODevice.ReadOnly)
@@ -116,7 +131,7 @@ class Generator(QIODevice):
 
 class AudioTest(QMainWindow):
 
-    def __init__(self):
+    def __init__(self, filename=None):
         QMainWindow.__init__(self)
         self.pullTimer = QTimer(self)
 
@@ -132,6 +147,7 @@ class AudioTest(QMainWindow):
         self.fmt = QAudioFormat()
         self.pullMode = False
         self.buf = QByteArray(BUFFER_SIZE, 0)
+        self.dump = filename
 
         self.initializeWindow()
         self.initializeAudio()
@@ -179,7 +195,7 @@ class AudioTest(QMainWindow):
             self.fmt = info.nearestFormat(self.fmt)
 
         self.generator = Generator(self.fmt, DURATION_SECONDS * 1000000,
-                                   TONE_FREQUENCY_HZ, self)
+                                   TONE_FREQUENCY_HZ, self, self.dump)
 
         self.createAudioOutput()
 
@@ -256,7 +272,12 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName('Audio Output Test')
 
-    window = AudioTest()
+    try:
+        filename = sys.argv[1]
+    except IndexError:
+        filename = None
+
+    window = AudioTest(filename=filename)
     window.show()
 
     return app.exec_()
