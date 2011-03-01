@@ -250,8 +250,8 @@ class Window(QWidget):
 
     def deleteTodo(self):
         items = self.listWidget.selectedItems()
-        if len(items) > 0:
-            item = items.at(0).data(Qt.UserRole)
+        if items:
+            item = items[0].data(Qt.UserRole)
             if isinstance(item, QOrganizerTodo):
                 theTodo = item
                 self.manager.removeItem(theTodo.id())
