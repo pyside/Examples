@@ -67,6 +67,12 @@ class TapSensorFilter(QTapFilter):
             output = "Y neg"
         elif tapdir == QTapReading.Z_Neg:
             output = "Z neg"
+        elif tapdir == QTapReading.X_Both:
+            output = "X (both)"
+        elif tapdir == QTapReading.Y_Both:
+            output = "Y (both)"
+        elif tapdir == QTapReading.Z_Both:
+            output = "Z (both)"
         elif tapdir == QTapReading.Undefined:
             output = "Undefined"
         else:
@@ -77,7 +83,8 @@ class TapSensorFilter(QTapFilter):
             print "Double "
         else:
             print "Single "
-        print " (%.2f ms since last, " % (diff / 1000), "%.2f Hz)" % (1000000.0 / diff),
+        print output
+        print " (%.2f ms since last, " % (diff / 1000.0), "%.2f Hz)" % (1000000.0 / diff),
         return False # don't store the reading in the sensor
 
 if __name__ == "__main__":
@@ -85,21 +92,26 @@ if __name__ == "__main__":
     rate_val = 0
 
     doublesensor = QTapSensor()
+    doublesensor.connectToBackend()    
     if rate_val > 0:
         doublesensor.setDataRate(rate_val)
 
-    filter = TapSensorFilter()
-    doublesensor.addFilter(filter)
+    filterSensor = TapSensorFilter()
+    doublesensor.addFilter(filterSensor)
+    doublesensor.setProperty("returnDoubleTapEvents", True)
     doublesensor.start()
     if not doublesensor.isActive():
         qWarning("Tapsensor (double) didn't start!")
         exit()
 
     singlesensor = QTapSensor()
+    singlesensor.connectToBackend()
     if rate_val > 0:
         singlesensor.setDataRate(rate_val)
 
-    singlesensor.addFilter(filter)
+    filterSensor = TapSensorFilter()
+    singlesensor.addFilter(filterSensor)
+    singlesensor.setProperty("returnDoubleTapEvents", False)
     singlesensor.start()
     if not singlesensor.isActive():
         qWarning("Tapsensor (single) didn't start!")

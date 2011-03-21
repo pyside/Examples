@@ -57,7 +57,7 @@ class MagRawFilter(QMagnetometerFilter):
     def filter(self, reading):
         diff = ( reading.timestamp() - self.stamp )
         stamp = reading.timestamp()
-        print "Raw magnetic flux density: %.2f x" % (reading.x() * 1000000),  " %.2f y" % (reading.y() * 1000000), " %.2f z uT" % (reading.z() * 1000000), " calibration: %.2f" % reading.calibrationLevel(),  " (%1 ms since last, " % (diff / 1000),  "%2 Hz)" % (1000000.0 / diff)
+        print "Raw magnetic flux density: %.2f x" % (reading.x() * 1000000),  " %.2f y" % (reading.y() * 1000000), " %.2f z uT" % (reading.z() * 1000000), " calibration: %.2f" % reading.calibrationLevel(),  " (%.2f ms since last, " % (diff / 1000),  "%.2f Hz)" % (1000000.0 / diff)
         return False
 
 if __name__ == "__main__":
