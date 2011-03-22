@@ -37,7 +37,7 @@
 """
 
 
-from PySide.QtGui import QWidget, QListWidgetItem, QListWidget, QRadioButton, QGroupBox, QPushButton, QButtonGroup, QVBoxLayout, QLabel, QStackedLayout, QComboBox
+from PySide.QtGui import QWidget, QListWidgetItem, QListWidget, QRadioButton, QGroupBox, QPushButton, QButtonGroup, QVBoxLayout, QLabel, QStackedLayout, QComboBox, QGridLayout
 from PySide.QtCore import QCoreApplication, Qt
 from QtMobility.ServiceFramework import QServiceManager, QServiceInterfaceDescriptor
 
@@ -45,7 +45,7 @@ class ServiceBrowser(QWidget):
     def __init__(self, parent = None):
         QWidget.__init__(self, parent)
         self.serviceManager = QServiceManager(self)
-        self.registerExampleServices();
+        self.registerExampleServices()
         self.initWidgets()
         self.reloadServicesList()
         self.setWindowTitle(self.tr("Services Browser"))
@@ -62,10 +62,10 @@ class ServiceBrowser(QWidget):
         self.reloadAttributesRadioButtonText()
         if descriptor.isValid():
             self.defaultInterfaceButton.setText(self.tr("Set as default implementation for %s" % str(descriptor.interfaceName())))
-        self.defaultInterfaceButton.setEnabled(True);
+        self.defaultInterfaceButton.setEnabled(True)
 
     def reloadServicesList(self):
-        self.servicesListWidget.clear();
+        self.servicesListWidget.clear()
         services = self.serviceManager.findServices()
         for serv in services:
             self.servicesListWidget.addItem(serv)
@@ -120,7 +120,7 @@ class ServiceBrowser(QWidget):
             self.attributesListWidget.addItem(self.tr("(Error loading service plugin)"))
             return
 
-        metaObject = implementationRef.metaObject();
+        metaObject = implementationRef.metaObject()
         self.attributesGroup.setTitle(self.tr("Invokable attributes for %s class" % metaObject.className()))
         for i in range(metaObject.methodCount()):
             method = metaObject.method(i)
@@ -170,7 +170,7 @@ class ServiceBrowser(QWidget):
         self.interfacesListWidget.addItem(self.tr("(Select a service)"))
         self.attributesListWidget = QListWidget()
         self.attributesListWidget.addItem(self.tr("(Select an interface implementation)"))
-        self.interfacesListWidget.setMinimumWidth(450);
+        self.interfacesListWidget.setMinimumWidth(450)
         self.servicesListWidget.currentItemChanged.connect(self.reloadInterfaceImplementationsList)
         self.interfacesListWidget.currentItemChanged.connect(self.currentInterfaceImplChanged)
         self.defaultInterfaceButton = QPushButton(self.tr("Set as default implementation"))
@@ -203,18 +203,11 @@ class ServiceBrowser(QWidget):
         attributesLayout.addWidget(self.selectedImplRadioButton)
         attributesLayout.addWidget(self.defaultImplRadioButton)
 
-        layout = QVBoxLayout()
-        stackedLayout = QStackedLayout()
-        stackedLayout.addWidget(self.servicesGroup);
-        stackedLayout.addWidget(self.interfacesGroup)
-        stackedLayout.addWidget(self.attributesGroup);
+        self.attributesGroup.setLayout(attributesLayout)
 
-        pageComboBox = QComboBox()
-        pageComboBox.addItem(self.tr("Services"))
-        pageComboBox.addItem(self.tr("Interfaces"))
-        pageComboBox.addItem(self.tr("Attributes"))
-        pageComboBox.activated[int].connect(stackedLayout.setCurrentIndex)
+        layout = QGridLayout()
+        layout.addWidget(self.servicesGroup, 0, 0)
+        layout.addWidget(self.attributesGroup, 0, 1, 2, 1)
+        layout.addWidget(self.interfacesGroup, 1, 0)
 
-        layout.addWidget(pageComboBox)
-        layout.addLayout(stackedLayout)
         self.setLayout(layout)
