@@ -1,4 +1,5 @@
 
+import os
 import sys
 
 from PySide.QtCore import QUrl
@@ -30,7 +31,7 @@ def main():
     app = QApplication([])
     app.setApplicationName('Simple Audio player')
 
-    window = AudioTest(sys.argv[1])
+    window = AudioTest(os.path.abspath(sys.argv[1]))
     window.show()
 
     return app.exec_()
