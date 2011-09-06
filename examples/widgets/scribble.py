@@ -207,7 +207,7 @@ class MainWindow(QtGui.QMainWindow):
                 triggered=self.open)
 
         for format in QtGui.QImageWriter.supportedImageFormats():
-            text = format.toUpper() + "..."
+            text = str(format.toUpper() + "...")
 
             action = QtGui.QAction(text, self, triggered=self.save)
             action.setData(format)
