@@ -79,7 +79,6 @@ class SystemInfoModel(QtCore.QObject):
     def setupGeneral(self):
         self._currentLanguage = self.systemInfo.currentLanguage()
         self._availableLanguages = self.systemInfo.availableLanguages()
-        self.emit(QtCore.SIGNAL('changed()'))
 
     def setupDevice(self):
         self.deviceInfo = QSystemDeviceInfo(self)
@@ -115,13 +114,11 @@ class SystemInfoModel(QtCore.QObject):
 
         self._bluetoothState = self.deviceInfo.currentBluetoothPowerState()
         self.deviceInfo.bluetoothStateChanged.connect(self.updateBluetoothState)
-        self.emit(QtCore.SIGNAL('changed()'))
 
     def setupDisplay(self):
         self.displayInfo = QSystemDisplayInfo()
         self._displayBrightness = self.displayInfo.displayBrightness(0)
         self._colorDepth = self.displayInfo.colorDepth(0)
-        self.emit(QtCore.SIGNAL('changed()'))
 
     def updateBluetoothState(self, on):
         self._bluetoothState = on
