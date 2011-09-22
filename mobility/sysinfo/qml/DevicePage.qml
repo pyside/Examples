@@ -68,6 +68,6 @@ Page {
         }
     }
     ScrollDecorator {
-        flickableItem: flickableColumn
+        flickableItem: flickableDevice
     }
 }

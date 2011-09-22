@@ -3,8 +3,9 @@ import com.nokia.meego 1.0
 
 Page {
     id: tabBarPage
-   
+    anchors.margins: UiConstants.DefaultMargin
     orientationLock: PageOrientation.LockLandscape
+
     tools: ToolBarLayout {
         id: toolBarLayout
         ButtonRow {

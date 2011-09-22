@@ -3,6 +3,7 @@ import com.nokia.meego 1.0
 
 Page {
     id: displayPage
+    anchors.margins: UiConstants.DefaultMargin
     orientationLock: PageOrientation.LockLandscape
     Flickable {
         id: flickableDisplay
@@ -52,6 +53,6 @@ Page {
         }
     }
     ScrollDecorator {
-        flickableItem: flickableColumn
+        flickableItem: flickableDisplay
     }
 }

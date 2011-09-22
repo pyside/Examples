@@ -15,6 +15,10 @@ class SystemInfoModel(QtCore.QObject):
 
     def __init__(self):
         super(SystemInfoModel, self).__init__()
+        self.systemInfo = QSystemInfo(self)
+        self.setupGeneral()
+        self.setupDevice()
+        self.setupDisplay()
 
     @QtCore.Property(str, notify=changed)
     def currentLanguage(self):
@@ -72,14 +76,7 @@ class SystemInfoModel(QtCore.QObject):
     def bluetoothState(self):
         return self._bluetoothState
 
-    def setupAll(self):
-        self.setupGeneral()
-        self.setupDevice()
-        self.setupDisplay()
-
     def setupGeneral(self):
-        self.systemInfo = QSystemInfo(self)
-
         self._currentLanguage = self.systemInfo.currentLanguage()
         self._availableLanguages = self.systemInfo.availableLanguages()
         self.emit(QtCore.SIGNAL('changed()'))
@@ -185,19 +182,20 @@ class SystemInfoUI(QtCore.QObject):
     def __init__(self):
         super(SystemInfoUI, self).__init__()
         self.view = QtDeclarative.QDeclarativeView()
-        self.glw = QtOpenGL.QGLWidget()
-        self.view.setViewport(self.glw)
-        
-        #self.view.setSource(os.path.join('qml','main.qml'))
-        self.view.setSource('main.qml')
         self.rc = self.view.rootContext()
+
         self.model = SystemInfoModel()
-        self.model.setupAll()
         self.rc.setContextProperty('dataModel', self.model)
-        self.view.showFullScreen()
+
+        self.view.setSource('main.qml')
+
+        if "-no-fs" in sys.argv:
+            self.view.show()
+        else:
+            self.view.showFullScreen()
+
         self.systemInfo = QSystemInfo(self)
-   
-    
+
 if __name__ == "__main__":
     app = QtGui.QApplication([])
     ui = SystemInfoUI()

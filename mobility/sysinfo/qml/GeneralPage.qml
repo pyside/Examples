@@ -4,12 +4,10 @@ import com.nokia.meego 1.0
 Page {
     id: generalPage
     orientationLock: PageOrientation.LockLandscape
+    anchors.margins: UiConstants.DefaultMargin
 
     Column {
-        anchors.top: parent.top
-        anchors.topMargin: 20
-        anchors.left: parent.left
-        anchors.leftMargin: 20
+        anchors.fill: parent
         spacing: 25
         Row {
             spacing: 20
