@@ -64,10 +64,7 @@ Page {
                 Label { text: "Input method " }
                 Label { id: labelInputMethod; text: dataModel.inputMethod }
             }
-            Row {
-                Label { text: "Bluetooth power: " }
-                Label { id: labelBluetoothPower; text: dataModel.bluetoothPower }
-            }
+            RadioButton { text: "Bluetooth on"; checked: dataModel.bluetoothState }
         }
     }
     ScrollDecorator {

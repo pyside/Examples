@@ -16,36 +16,61 @@ class SystemInfoModel(QtCore.QObject):
     def __init__(self):
         super(SystemInfoModel, self).__init__()
 
-    def _currentLanguage(self): return self.__currentLanguage
-    def _displayBrightness(self): return self.__displayBrightness
-    def _colorDepth(self): return self.__colorDepth
-    def _imsi(self): return self.__imsi
-    def _imei(self): return self.__imei
-    def _manufacturer(self): return self.__manufacturer
-    def _product(self): return self.__product
-    def _model(self): return self.__model
-    def _profile(self): return self.__profile
-    def _inputMethod(self): return self.__inputMethod
-    def _bluetoothPower(self): return self.__bluetoothPower
-    def _availableLanguages(self): return self.__availableLanguages
-    def _deviceLock(self): return self.__deviceLock
+    @QtCore.Property(str, notify=changed)
+    def currentLanguage(self):
+        return self._currentLanguage
 
-    #@QtCore.Property(str, notify=changed)
-    #def currentLanguage(self):
-        #return self.__currentLanguage
+    @QtCore.Property("QStringList", notify=changed)
+    def availableLanguages(self):
+        return self._availableLanguages
 
-    currentLanguage = QtCore.Property(str, _currentLanguage, notify=changed)
-    displayBrightness = QtCore.Property(int, _displayBrightness, notify=changed)
-    colorDepth = QtCore.Property(int, _colorDepth, notify=changed)
-    imei = QtCore.Property(str, _imei, notify=changed)
-    imsi = QtCore.Property(str, _imsi, notify=changed)
-    manufacturer = QtCore.Property(str, _manufacturer, notify=changed)
-    product = QtCore.Property(str, _product, notify=changed)
-    model = QtCore.Property(str, _model, notify=changed)
-    profile = QtCore.Property(str, _profile, notify=changed)
-    inputMethod = QtCore.Property(str, _inputMethod, notify=changed)
-    deviceLock = QtCore.Property(bool, _deviceLock, notify=changed)
-    availableLanguages = QtCore.Property("QStringList", _availableLanguages, notify=changed)
+    @QtCore.Property(int, notify=changed)
+    def displayBrightness(self):
+        return self._displayBrightness
+
+    @QtCore.Property(int, notify=changed)
+    def colorDepth(self):
+        return self._colorDepth
+
+    @QtCore.Property(str, notify=changed)
+    def imei(self):
+        return self._imei
+
+    @QtCore.Property(str, notify=changed)
+    def imsi(self):
+        return self._imsi
+
+    @QtCore.Property(str, notify=changed)
+    def manufacturer(self):
+        return self._manufacturer
+
+    @QtCore.Property(str, notify=changed)
+    def product(self):
+        return self._product
+
+    @QtCore.Property(str, notify=changed)
+    def model(self):
+        return self._model
+
+    @QtCore.Property(str, notify=changed)
+    def profile(self):
+        return self._profile
+
+    @QtCore.Property(str, notify=changed)
+    def inputMethod(self):
+        return self._inputMethod
+
+    @QtCore.Property(bool, notify=changed)
+    def deviceLock(self):
+        return self._deviceLock
+
+    @QtCore.Property(str, notify=changed)
+    def simStatus(self):
+        return self._simStatus
+
+    @QtCore.Property(bool, notify=changed)
+    def bluetoothState(self):
+        return self._bluetoothState
 
     def setupAll(self):
         self.setupGeneral()
@@ -55,23 +80,22 @@ class SystemInfoModel(QtCore.QObject):
     def setupGeneral(self):
         self.systemInfo = QSystemInfo(self)
 
-        self.__currentLanguage = self.systemInfo.currentLanguage()
-        self.__availableLanguages = self.systemInfo.availableLanguages()
-        print self.__availableLanguages
+        self._currentLanguage = self.systemInfo.currentLanguage()
+        self._availableLanguages = self.systemInfo.availableLanguages()
         self.emit(QtCore.SIGNAL('changed()'))
 
     def setupDevice(self):
         self.di = QSystemDeviceInfo(self)
-        self.__batteryLevel = self.di.batteryLevel()
+        self._batteryLevel = self.di.batteryLevel()
         self.di.batteryLevelChanged.connect(self.updateBatteryStatus)
         self.di.batteryStatusChanged.connect(self.displayBatteryStatus)
         self.di.powerStateChanged.connect(self.updatePowerState)
-        self.__imei = self.di.imei()
-        self.__imsi = self.di.imsi()
-        self.__manufacturer = self.di.manufacturer()
-        self.__model = self.di.model()
-        self.__product = self.di.productName()
-        self.__deviceLock = self.di.isDeviceLocked()
+        self._imei = self.di.imei()
+        self._imsi = self.di.imsi()
+        self._manufacturer = self.di.manufacturer()
+        self._model = self.di.model()
+        self._product = self.di.productName()
+        self._deviceLock = self.di.isDeviceLocked()
 
         methods = self.di.inputMethodType()
         inputs = []
@@ -88,23 +112,28 @@ class SystemInfoModel(QtCore.QObject):
         if methods & QSystemDeviceInfo.Mouse:
             inputs.append("Mouse")
 
-        self.__inputMethod = " ".join(inputs)
+        self._inputMethod = " ".join(inputs)
         self.updateSimStatus()
         self.updateProfile()
 
         #self.di.currentProfileChanged.connect(self.onProfileChanged)
 
         self.emit(QtCore.SIGNAL('changed()'))
-    
+        self._bluetoothState = self.di.currentBluetoothPowerState()
+        self.di.bluetoothStateChanged.connect(self.updateBluetoothState)
+
     def setupDisplay(self):
         self.di = QSystemDisplayInfo()
-        self.__displayBrightness = self.di.displayBrightness(0)
-        self.__colorDepth = self.di.colorDepth(0)
+        self._displayBrightness = self.di.displayBrightness(0)
+        self._colorDepth = self.di.colorDepth(0)
         self.emit(QtCore.SIGNAL('changed()'))
 
-    
+    def updateBluetoothState(self, on):
+        self._bluetoothState = on
+        self.changed.emit()
+
     def updateBatteryStatus(self, status):
-        self.__batteryLevel = status
+        self._batteryLevel = status
         self.emit(QtCore.SIGNAL('changed()'))
 
     def displayBatteryStatus(self, status):
@@ -112,7 +141,6 @@ class SystemInfoModel(QtCore.QObject):
 
     def updatePowerState(self, newState):
         pass
-
 
     def updateSimStatus(self):
         if self.di:
@@ -128,7 +156,7 @@ class SystemInfoModel(QtCore.QObject):
             else:
                 simstring = ""
 
-            self.__simStatus = simstring
+            self._simStatus = simstring
 
 
     def updateProfile(self):
@@ -151,7 +179,7 @@ class SystemInfoModel(QtCore.QObject):
             elif current ==  QSystemDeviceInfo.CustomProfile:
                 profilestring = "custom";
 
-            self.__profile = profilestring
+            self._profile = profilestring
 
 class SystemInfoUI(QtCore.QObject):
     def __init__(self):
