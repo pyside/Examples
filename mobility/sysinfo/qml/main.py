@@ -82,19 +82,19 @@ class SystemInfoModel(QtCore.QObject):
         self.emit(QtCore.SIGNAL('changed()'))
 
     def setupDevice(self):
-        self.di = QSystemDeviceInfo(self)
-        self._batteryLevel = self.di.batteryLevel()
-        self.di.batteryLevelChanged.connect(self.updateBatteryStatus)
-        self.di.batteryStatusChanged.connect(self.displayBatteryStatus)
-        self.di.powerStateChanged.connect(self.updatePowerState)
-        self._imei = self.di.imei()
-        self._imsi = self.di.imsi()
-        self._manufacturer = self.di.manufacturer()
-        self._model = self.di.model()
-        self._product = self.di.productName()
-        self._deviceLock = self.di.isDeviceLocked()
+        self.deviceInfo = QSystemDeviceInfo(self)
+        self._batteryLevel = self.deviceInfo.batteryLevel()
+        self.deviceInfo.batteryLevelChanged.connect(self.updateBatteryStatus)
+        self.deviceInfo.batteryStatusChanged.connect(self.displayBatteryStatus)
+        self.deviceInfo.powerStateChanged.connect(self.updatePowerState)
+        self._imei = self.deviceInfo.imei()
+        self._imsi = self.deviceInfo.imsi()
+        self._manufacturer = self.deviceInfo.manufacturer()
+        self._model = self.deviceInfo.model()
+        self._product = self.deviceInfo.productName()
+        self._deviceLock = self.deviceInfo.isDeviceLocked()
 
-        methods = self.di.inputMethodType()
+        methods = self.deviceInfo.inputMethodType()
         inputs = []
         if methods & QSystemDeviceInfo.Keys:
             inputs.append("Keys")
@@ -113,16 +113,14 @@ class SystemInfoModel(QtCore.QObject):
         self.updateSimStatus()
         self.updateProfile()
 
-        #self.di.currentProfileChanged.connect(self.onProfileChanged)
-
+        self._bluetoothState = self.deviceInfo.currentBluetoothPowerState()
+        self.deviceInfo.bluetoothStateChanged.connect(self.updateBluetoothState)
         self.emit(QtCore.SIGNAL('changed()'))
-        self._bluetoothState = self.di.currentBluetoothPowerState()
-        self.di.bluetoothStateChanged.connect(self.updateBluetoothState)
 
     def setupDisplay(self):
-        self.di = QSystemDisplayInfo()
-        self._displayBrightness = self.di.displayBrightness(0)
-        self._colorDepth = self.di.colorDepth(0)
+        self.displayInfo = QSystemDisplayInfo()
+        self._displayBrightness = self.displayInfo.displayBrightness(0)
+        self._colorDepth = self.displayInfo.colorDepth(0)
         self.emit(QtCore.SIGNAL('changed()'))
 
     def updateBluetoothState(self, on):
@@ -140,8 +138,8 @@ class SystemInfoModel(QtCore.QObject):
         pass
 
     def updateSimStatus(self):
-        if self.di:
-            status = self.di.simStatus()
+        if self.deviceInfo:
+            status = self.deviceInfo.simStatus()
             if status == QSystemDeviceInfo.SimLocked:
                 simstring = "Sim Locked";
             elif status == QSystemDeviceInfo.SimNotAvailable:
@@ -157,8 +155,8 @@ class SystemInfoModel(QtCore.QObject):
 
 
     def updateProfile(self):
-        if self.di:
-            current = self.di.currentProfile()
+        if self.deviceInfo:
+            current = self.deviceInfo.currentProfile()
             if current == QSystemDeviceInfo.UnknownProfile:
                 profilestring = "Unknown"
             elif current == QSystemDeviceInfo.SilentProfile:
