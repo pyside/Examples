@@ -18,9 +18,13 @@ Page {
         }
     }
     TabGroup {
+        anchors.fill: parent
         currentTab: generalTab
         GeneralPage { id: generalTab }
         DevicePage { id: deviceTab }
         DisplayPage { id: displayTab }
+        StoragePage { id: storageTab }
+        NetworkPage { id: networkTab }
+        ScreenSaverPage { id: screenSaverTab }
     }
 }
