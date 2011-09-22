@@ -5,4 +5,6 @@ Page {
     id: screenSaverTab
     orientationLock: PageOrientation.LockLandscape
     anchors.margins: UiConstants.DefaultMargin
+
+    RadioButton { text: "Screen saver inhibited"; checked: dataModel.screenSaverInhibited }
 }

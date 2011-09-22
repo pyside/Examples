@@ -19,6 +19,7 @@ class SystemInfoModel(QtCore.QObject):
         self.setupGeneral()
         self.setupDevice()
         self.setupDisplay()
+        self.setupScreenSaver()
 
     @QtCore.Property(str, notify=changed)
     def currentLanguage(self):
@@ -76,6 +77,10 @@ class SystemInfoModel(QtCore.QObject):
     def bluetoothState(self):
         return self._bluetoothState
 
+    @QtCore.Property(bool, notify=changed)
+    def screenSaverInhibited(self):
+        return self._screenSaverInhibited
+
     def setupGeneral(self):
         self._currentLanguage = self.systemInfo.currentLanguage()
         self._availableLanguages = self.systemInfo.availableLanguages()
@@ -119,6 +124,10 @@ class SystemInfoModel(QtCore.QObject):
         self.displayInfo = QSystemDisplayInfo()
         self._displayBrightness = self.displayInfo.displayBrightness(0)
         self._colorDepth = self.displayInfo.colorDepth(0)
+
+    def setupScreenSaver(self):
+        self.saverInfo = QSystemScreenSaver(self)
+        self._screenSaverInhibited = self.saverInfo.screenSaverInhibited()
 
     def updateBluetoothState(self, on):
         self._bluetoothState = on
