@@ -19,6 +19,7 @@ class SystemInfoModel(QtCore.QObject):
         self.setupGeneral()
         self.setupDevice()
         self.setupDisplay()
+        self.setupStorage()
         self.setupScreenSaver()
 
     @QtCore.Property(str, notify=changed)
@@ -77,6 +78,10 @@ class SystemInfoModel(QtCore.QObject):
     def bluetoothState(self):
         return self._bluetoothState
 
+    @QtCore.Property("QStringList", notify=changed)
+    def volumeNames(self):
+        return self._volumeNames
+
     @QtCore.Property(bool, notify=changed)
     def screenSaverInhibited(self):
         return self._screenSaverInhibited
@@ -124,6 +129,50 @@ class SystemInfoModel(QtCore.QObject):
         self.displayInfo = QSystemDisplayInfo()
         self._displayBrightness = self.displayInfo.displayBrightness(0)
         self._colorDepth = self.displayInfo.colorDepth(0)
+
+    def setupStorage(self):
+        self.storageInfo = QSystemStorageInfo()
+        self._volumeNames = self.storageInfo.logicalDrives()
+
+    @QtCore.Slot(str, result=str)
+    def storageType(self, volumeName):
+        names = {
+            QSystemStorageInfo.InternalDrive: "Internal",
+            QSystemStorageInfo.RemovableDrive: "Removable",
+            QSystemStorageInfo.CdromDrive: "CD-Rom",
+            QSystemStorageInfo.RemoteDrive: "Network",
+        }
+
+        volType = self.storageInfo.typeForDrive(volumeName)
+
+        return names.get(volType, "Unknown")
+
+    @QtCore.Slot(str, result=str)
+    def totalStorageSize(self, volumeName):
+        return self.convert_bytes(self.storageInfo.totalDiskSpace(volumeName))
+
+    @QtCore.Slot(str, result=str)
+    def availableStorageSize(self, volumeName):
+        return self.convert_bytes(self.storageInfo.availableDiskSpace(volumeName))
+
+    def convert_bytes(self, bytes):
+        # From http://www.5dollarwhitebox.org/drupal/node/84
+        bytes = float(bytes)
+        if bytes >= 1099511627776:
+            terabytes = bytes / 1099511627776
+            size = '%.2fT' % terabytes
+        elif bytes >= 1073741824:
+            gigabytes = bytes / 1073741824
+            size = '%.2fG' % gigabytes
+        elif bytes >= 1048576:
+            megabytes = bytes / 1048576
+            size = '%.2fM' % megabytes
+        elif bytes >= 1024:
+            kilobytes = bytes / 1024
+            size = '%.2fK' % kilobytes
+        else:
+            size = '%.2fb' % bytes
+        return size
 
     def setupScreenSaver(self):
         self.saverInfo = QSystemScreenSaver(self)
