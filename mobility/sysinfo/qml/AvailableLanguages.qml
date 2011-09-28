@@ -9,7 +9,7 @@ Page {
     ListView {
         anchors.fill: parent
         anchors.centerIn: parent
-        model: dataModel.availableManagers
+        model: sysinfo.availableManagers
         delegate: Button {
             text: modelData
             onClicked: {

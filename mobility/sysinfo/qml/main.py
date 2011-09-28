@@ -238,7 +238,7 @@ class SystemInfoUI(QtCore.QObject):
         self.rc = self.view.rootContext()
 
         self.model = SystemInfoModel()
-        self.rc.setContextProperty('dataModel', self.model)
+        self.rc.setContextProperty('sysinfo', self.model)
 
         self.view.setSource('main.qml')
 

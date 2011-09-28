@@ -20,7 +20,7 @@ Page {
 
             Repeater {
 
-                model: dataModel.volumeNames
+                model: sysinfo.volumeNames
 
                 Column {
 
@@ -37,15 +37,15 @@ Page {
                     Row {
                         spacing: 30
                         Label {
-                            text: "Type: " + dataModel.storageType(modelData)
+                            text: "Type: " + sysinfo.storageType(modelData)
                         }
 
                         Label {
-                            text: "Total size: " + dataModel.totalStorageSize(modelData)
+                            text: "Total size: " + sysinfo.totalStorageSize(modelData)
                         }
 
                         Label {
-                            text: "Available: " + dataModel.availableStorageSize(modelData)
+                            text: "Available: " + sysinfo.availableStorageSize(modelData)
                         }
                     }
                 }

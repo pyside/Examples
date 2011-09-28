@@ -12,7 +12,7 @@ Page {
         Row {
             spacing: 20
             Label { text: "Current language:" }
-            Label { id: currentLanguage; text: dataModel.currentLanguage }
+            Label { id: currentLanguage; text: sysinfo.currentLanguage }
         }
         Row {
             spacing: 20

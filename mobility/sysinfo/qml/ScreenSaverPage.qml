@@ -6,5 +6,5 @@ Page {
     orientationLock: PageOrientation.LockLandscape
     anchors.margins: UiConstants.DefaultMargin
 
-    RadioButton { text: "Screen saver inhibited"; checked: dataModel.screenSaverInhibited }
+    RadioButton { text: "Screen saver inhibited"; checked: sysinfo.screenSaverInhibited }
 }

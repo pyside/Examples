@@ -20,11 +20,11 @@ Page {
             spacing: 25
             Row {
                 Label { text: "Brightness: "  }
-                Label { id: labelBrightness; text: dataModel.displayBrightness }
+                Label { id: labelBrightness; text: sysinfo.displayBrightness }
             }
             Row {
                 Label { text: "Color depth: " }
-                Label { id: labelColorDepth; text: dataModel.colorDepth }
+                Label { id: labelColorDepth; text: sysinfo.colorDepth }
             }
 /*          Row {
                 Label { text: "Orientation: " }

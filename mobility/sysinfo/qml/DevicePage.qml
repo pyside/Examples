@@ -34,37 +34,37 @@ Page {
             }
             Row { 
                 Label { text: "IMEI: "  }
-                Label { id: labelIMEI; text: dataModel.imei }
+                Label { id: labelIMEI; text: sysinfo.imei }
             }
             Row {
                 Label { text: "IMSI: " }
-                Label { id: labelIMSI; text: dataModel.imsi }
+                Label { id: labelIMSI; text: sysinfo.imsi }
             }
             Row {
                 Label { text: "Manufacturer: " }
-                Label { id: labelManufacturer; text: dataModel.manufacturer }
+                Label { id: labelManufacturer; text: sysinfo.manufacturer }
             }
             Row {
                 Label { text: "Model: " }
-                Label { id: labelModel; text: dataModel.model }
+                Label { id: labelModel; text: sysinfo.model }
             }
             Row {
                 Label { text: "Product: " }
-                Label { id: labelProduct; text: dataModel.product }
+                Label { id: labelProduct; text: sysinfo.product }
             }
             Row {
-                Button { id: buttonLock; iconSource: "../general_unlock.png"; checked: dataModel.deviceLock }
+                Button { id: buttonLock; iconSource: "../general_unlock.png"; checked: sysinfo.deviceLock }
                 Label { text: "Device lock"; anchors.verticalCenter: parent.verticalCenter }
             }
             Row {
                 Label { text: "Current profile: " }
-                Label { id: labelProfile; text: dataModel.profile }
+                Label { id: labelProfile; text: sysinfo.profile }
             }
             Row {
                 Label { text: "Input method " }
-                Label { id: labelInputMethod; text: dataModel.inputMethod }
+                Label { id: labelInputMethod; text: sysinfo.inputMethod }
             }
-            RadioButton { text: "Bluetooth on"; checked: dataModel.bluetoothState }
+            RadioButton { text: "Bluetooth on"; checked: sysinfo.bluetoothState }
         }
     }
     ScrollDecorator {
