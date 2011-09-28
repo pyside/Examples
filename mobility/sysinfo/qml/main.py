@@ -20,6 +20,7 @@ class SystemInfoModel(QtCore.QObject):
         self.setupDevice()
         self.setupDisplay()
         self.setupStorage()
+        self.setupNetwork()
         self.setupScreenSaver()
 
     @QtCore.Property(str, notify=changed)
@@ -81,6 +82,10 @@ class SystemInfoModel(QtCore.QObject):
     @QtCore.Property("QStringList", notify=changed)
     def volumeNames(self):
         return self._volumeNames
+
+    @QtCore.Property("QStringList", notify=changed)
+    def networksNames(self):
+        return ["Wlan", "Ethernet", "Gsm", "Cdma", "Wcdma"]
 
     @QtCore.Property(bool, notify=changed)
     def screenSaverInhibited(self):
@@ -173,6 +178,80 @@ class SystemInfoModel(QtCore.QObject):
         else:
             size = '%.2fb' % bytes
         return size
+
+    def setupNetwork(self):
+        self.networkInfo = QSystemNetworkInfo()
+
+    def modeEnumForName(self, name):
+        try:
+            mode = getattr(QSystemNetworkInfo, name.capitalize() + "Mode")
+        except AttributeError as e:
+            print e
+            return None
+
+        return mode
+
+    @QtCore.Slot(str, result=str)
+    def networkStatus(self, modeName):
+        mode = self.modeEnumForName(modeName)
+        status = self.networkInfo.networkStatus(mode)
+        statusName = str(status).split('.')[-1]
+        # Split the CamelCase enum name
+        import re
+        return re.sub(r'([a-z])([A-Z])', r'\1 \2', statusName)
+
+    @QtCore.Slot(str, result=str)
+    def networkName(self, modeName):
+        mode = self.modeEnumForName(modeName)
+        name = self.networkInfo.networkName(mode)
+        return name if name else "<Unknown>"
+
+    @QtCore.Slot(str, result=str)
+    def networkInterfaceName(self, modeName):
+        mode = self.modeEnumForName(modeName)
+        name = self.networkInfo.interfaceForMode(mode).humanReadableName()
+        return name if name else "<Unknown>"
+
+    @QtCore.Slot(str, result=str)
+    def networkMacAddress(self, modeName):
+        mode = self.modeEnumForName(modeName)
+        mac = self.networkInfo.macAddress(mode)
+        return mac if mac else "<Unknown>"
+
+    @QtCore.Slot(str, result=int)
+    def networkSignalStrength(self, modeName):
+        mode = self.modeEnumForName(modeName)
+        return self.networkInfo.networkSignalStrength(mode)
+
+    @QtCore.Slot(result=str)
+    def cellId(self):
+        cell = self.networkInfo.cellId()
+        return str(cell) if cell != -1 else "<Unavailable>"
+
+    @QtCore.Slot(result=str)
+    def locationAreaCode(self):
+        code = self.networkInfo.locationAreaCode()
+        return str(code) if code != -1 else "<Unavailable>"
+
+    @QtCore.Slot(result=str)
+    def currentMCC(self):
+        code = self.networkInfo.currentMobileCountryCode()
+        return code if code else "<Unavailable>"
+
+    @QtCore.Slot(result=str)
+    def currentMNC(self):
+        code = self.networkInfo.currentMobileNetworkCode()
+        return code if code else "<Unavailable>"
+
+    @QtCore.Slot(result=str)
+    def homeMCC(self):
+        code = self.networkInfo.homeMobileCountryCode()
+        return code if code else "<Unavailable>"
+
+    @QtCore.Slot(result=str)
+    def homeMNC(self):
+        code = self.networkInfo.homeMobileNetworkCode()
+        return code if code else "<Unavailable>"
 
     def setupScreenSaver(self):
         self.saverInfo = QSystemScreenSaver(self)
