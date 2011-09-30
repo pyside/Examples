@@ -89,7 +89,7 @@ def main():
 
     url = QUrl('main.qml')
     view.setSource(url)
-    view.show()
+    view.showFullScreen()
 
     app.exec_()
 
