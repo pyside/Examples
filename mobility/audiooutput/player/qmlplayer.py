@@ -28,64 +28,33 @@
  Nokia at qt-info@nokia.com.
 '''
 
+import os
+import sys
+
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtDeclarative import *
-from QtMobility.Feedback import *
+from QtMobility.MultimediaKit import *
 
-class EffectPlayer(QObject):
+class Player(QObject):
 
-    def __init__(self, parent=None):
+    def __init__(self, filename, parent=None):
         QObject.__init__(self, parent)
 
-        self.m_rumble = QFeedbackHapticsEffect()
-        self.m_rumble.setAttackIntensity(0.1)
-        self.m_rumble.setAttackTime(250)
-        self.m_rumble.setIntensity(1)
-        self.m_rumble.setDuration(1000)
-        self.m_rumble.setFadeTime(250)
-        self.m_rumble.setFadeIntensity(0.1)
-
-        self.m_ocean = QFeedbackHapticsEffect()
-        self.m_ocean.setAttackIntensity(0.1)
-        self.m_ocean.setAttackTime(450)
-        self.m_ocean.setIntensity(0.8)
-        self.m_ocean.setDuration(6000)
-        self.m_ocean.setFadeTime(900)
-        self.m_ocean.setFadeIntensity(0.05)
-        self.m_ocean.setPeriod(1500)
+        self.source = QUrl.fromLocalFile(os.path.abspath(filename))
+        self.player = QMediaPlayer()
+        self.player.setMedia(self.source)
 
     @Slot()
-    def playRumble(self):
-        print "Starting rumble effect"
-        self.m_rumble.start()
-
-    @Slot()
-    def playOcean(self):
-       if self.m_ocean.state() == QFeedbackEffect.Stopped:
-         self.m_ocean.start()
-         print "Ocean start"
-       else:
-         self.m_ocean.stop()
-         print "Ocean stop"
-
-    @Slot()
-    def playButtonClick(self):
-        QFeedbackEffect.playThemeEffect(QFeedbackEffect.ThemeBasicButton)
-        print "Play button click"
-
-    @Slot()
-    def playNegativeEffect(self):
-        QFeedbackEffect.playThemeEffect(QFeedbackEffect.ThemeNegativeTacticon)
-        print "Play negative button click"
-
+    def play(self):
+        self.player.play()
 
 def main():
     app = QApplication([])
     view = QDeclarativeView()
-    player = EffectPlayer()
+    player = Player(sys.argv[1])
     context = view.rootContext()
-    context.setContextProperty("effectPlayer", player)
+    context.setContextProperty("player", player)
 
     url = QUrl('main.qml')
     view.setSource(url)
