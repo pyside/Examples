@@ -206,7 +206,7 @@ class Dialog(QWidget, Ui_Dialog):
 
     def netStatusComboActivated(self, index):
         status = ""
-        reIndex = index
+        reIndex = QSystemNetworkInfo.NetworkMode(index)
         self.displayNetworkStatus(self.ni.networkStatus(reIndex))
         self.macAddressLabel.setText(self.ni.macAddress(reIndex))
         strength = self.ni.networkSignalStrength(reIndex)

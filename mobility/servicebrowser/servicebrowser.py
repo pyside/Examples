@@ -89,7 +89,7 @@ class ServiceBrowser(QWidget):
         for desc in descriptors:
             text = "%s %d.%d" % (desc.interfaceName(), desc.majorVersion(), desc.minorVersion())
 
-            if len(serviceName) == 0:
+            if not serviceName:
                 text += " (" + desc.serviceName() + ")"
 
             defaultInterfaceImpl = self.serviceManager.interfaceDefault(desc.interfaceName())
