@@ -195,7 +195,11 @@ class MainWindow(QtGui.QMainWindow):
         settings = QtCore.QSettings('Trolltech', 'Recent Files Example')
         files = settings.value('recentFileList')
 
-        numRecentFiles = min(len(files), MainWindow.MaxRecentFiles)
+        files_no = 0
+        if files:
+            files_no = len(files)
+
+        numRecentFiles = min(files_no, MainWindow.MaxRecentFiles)
 
         for i in range(numRecentFiles):
             text = "&%d %s" % (i + 1, self.strippedName(files[i]))
