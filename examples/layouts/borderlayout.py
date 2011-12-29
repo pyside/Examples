@@ -39,7 +39,7 @@ class BorderLayout(QtGui.QLayout):
     def __init__(self, parent=None, margin=0, spacing=-1):
         super(BorderLayout, self).__init__(parent)
 
-        self.setMargin(margin)
+        self.setContentsMargins(margin, margin, margin, margin)
         self.setSpacing(spacing)
         self.list = []
 
