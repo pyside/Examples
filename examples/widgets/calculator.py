@@ -316,9 +316,9 @@ class Calculator(QtGui.QDialog):
             self.sumSoFar += rightOperand
         elif pendingOperator == "-":
             self.sumSoFar -= rightOperand
-        elif pendingOperator == "\327":
+        elif pendingOperator == u"\327":
             self.factorSoFar *= rightOperand
-        elif pendingOperator == "\367":
+        elif pendingOperator == u"\367":
             if rightOperand == 0.0:
                 return False
 
