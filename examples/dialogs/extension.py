@@ -37,7 +37,7 @@ class FindDialog(QtGui.QDialog):
         moreButton.toggled.connect(extension.setVisible)
 
         extensionLayout = QtGui.QVBoxLayout()
-        extensionLayout.setMargin(0)
+        extensionLayout.setContentsMargins(0, 0, 0, 0)
         extensionLayout.addWidget(wholeWordsCheckBox)
         extensionLayout.addWidget(backwardCheckBox)
         extensionLayout.addWidget(searchSelectionCheckBox)
