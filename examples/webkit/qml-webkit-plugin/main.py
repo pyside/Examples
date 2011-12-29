@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 '''QML PLugin for WebKit.
 
