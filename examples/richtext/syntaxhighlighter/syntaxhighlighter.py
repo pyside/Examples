@@ -34,7 +34,7 @@ class MainWindow(QtGui.QMainWindow):
         if fileName!="":
             inFile = QtCore.QFile(fileName)
             if inFile.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
-                self.editor.setPlainText(inFile.readAll())
+                self.editor.setPlainText(unicode(inFile.readAll()))
     
     def setupEditor(self):
         variableFormat = QtGui.QTextCharFormat()
