@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #Author velociraptor Genjix <aphidia@hotmail.com>
 
 from PySide.QtGui import *
@@ -66,7 +67,7 @@ class TrafficLight(QWidget):
         vbox = QVBoxLayout(self)
         widget = TrafficLightWidget()
         vbox.addWidget(widget)
-        vbox.setMargin(0)
+        vbox.setContentsMargins(0, 0, 0, 0)
 
         machine = QStateMachine(self)
         redGoingYellow = createLightState(widget.redLight, 1000)

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #Author velociraptor Genjix <aphidia@hotmail.com>
 
 
