@@ -77,7 +77,7 @@ class MainWindow(QtGui.QMainWindow):
         currentText = self.textEdit.toPlainText()
 
         for action in self.saveAsActs:
-            codecName = action.data()
+            codecName = str(action.data())
             codec = QtCore.QTextCodec.codecForName(codecName)
             action.setVisible(codec and codec.canEncode(currentText))
 
