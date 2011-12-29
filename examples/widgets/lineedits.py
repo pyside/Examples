@@ -140,7 +140,7 @@ class Window(QtGui.QWidget):
 
     def validatorChanged(self, index):
         if index == 0:
-            self.validatorLineEdit.setValidator(0)
+            self.validatorLineEdit.setValidator(None)
         elif index == 1:
             self.validatorLineEdit.setValidator(QtGui.QIntValidator(self.validatorLineEdit))
         elif index == 2:
