@@ -200,7 +200,7 @@ class Dialog(QtGui.QDialog):
         fileName, filtr = QtGui.QFileDialog.getOpenFileName(self,
                 "QFileDialog.getOpenFileName()",
                 self.openFileNameLabel.text(),
-                "All Files (*);;Text Files (*.txt)", options)
+                "All Files (*);;Text Files (*.txt)", "", options)
         if fileName:
             self.openFileNameLabel.setText(fileName)
 
@@ -210,7 +210,7 @@ class Dialog(QtGui.QDialog):
             options |= QtGui.QFileDialog.DontUseNativeDialog
         files, filtr = QtGui.QFileDialog.getOpenFileNames(self,
                 "QFileDialog.getOpenFileNames()", self.openFilesPath,
-                "All Files (*);;Text Files (*.txt)", options)
+                "All Files (*);;Text Files (*.txt)", "", options)
         if files:
             self.openFilesPath = files[0]
             self.openFileNamesLabel.setText("[%s]" % ', '.join(files))
@@ -222,7 +222,7 @@ class Dialog(QtGui.QDialog):
         fileName, filtr = QtGui.QFileDialog.getSaveFileName(self,
                 "QFileDialog.getSaveFileName()",
                 self.saveFileNameLabel.text(),
-                "All Files (*);;Text Files (*.txt)", options)
+                "All Files (*);;Text Files (*.txt)", "", options)
         if fileName:
             self.saveFileNameLabel.setText(fileName)
 
