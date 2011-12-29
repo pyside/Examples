@@ -61,7 +61,7 @@ class MainWindow(QtGui.QMainWindow):
         fileName, filtr = QtGui.QFileDialog.getOpenFileName(self)
         if fileName:
             self.loadFile(fileName)
-        	
+
     def save(self):
         if self.curFile:
             self.saveFile(self.curFile)
@@ -175,7 +175,7 @@ class MainWindow(QtGui.QMainWindow):
             self.setWindowTitle("Recent Files")
 
         settings = QtCore.QSettings('Trolltech', 'Recent Files Example')
-        files = settings.value('recentFileList')
+        files = list(settings.value('recentFileList', []))
 
         try:
             files.remove(fileName)
