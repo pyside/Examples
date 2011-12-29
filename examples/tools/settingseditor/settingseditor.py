@@ -96,12 +96,12 @@ class MainWindow(QtGui.QMainWindow):
 
         self.autoRefreshAct = QtGui.QAction("&Auto-Refresh", self,
                 shortcut="Ctrl+A", checkable=True, enabled=False)
-        self.autoRefreshAct.triggered.connect(self.settingsTree.setAutoRefresh)
-        self.autoRefreshAct.triggered.connect(self.refreshAct.setDisabled)
+        self.autoRefreshAct.triggered[bool].connect(self.settingsTree.setAutoRefresh)
+        self.autoRefreshAct.triggered[bool].connect(self.refreshAct.setDisabled)
 
         self.fallbacksAct = QtGui.QAction("&Fallbacks", self,
-                shortcut="Ctrl+F", checkable=True, enabled=False,
-                triggered=self.settingsTree.setFallbacksEnabled)
+                shortcut="Ctrl+F", checkable=True, enabled=False)
+        self.fallbacksAct.triggered[bool].connect(self.settingsTree.setFallbacksEnabled)
 
         self.aboutAct = QtGui.QAction("&About", self, triggered=self.about)
 
