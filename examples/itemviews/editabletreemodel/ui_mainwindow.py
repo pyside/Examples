@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'mainwindow.ui'
 #
-# Created: Fri Mar 27 22:12:50 2009
-#      by: PyQt4 UI code generator 4.4.4
+# Created: Thu Dec 29 13:22:05 2011
+#      by: pyside-uic 0.2.13 running on PySide 1.0.9
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -16,7 +16,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.vboxlayout = QtGui.QVBoxLayout(self.centralwidget)
-        self.vboxlayout.setMargin(0)
+        self.vboxlayout.setContentsMargins(0, 0, 0, 0)
         self.vboxlayout.setSpacing(0)
         self.vboxlayout.setObjectName("vboxlayout")
         self.view = QtGui.QTreeView(self.centralwidget)

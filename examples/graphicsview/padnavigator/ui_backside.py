@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'backside.ui'
 #
-# Created: Mon Jul  6 16:11:23 2009
-#      by: PyQt4 UI code generator 4.6-snapshot-20090706
+# Created: Thu Dec 29 14:48:20 2011
+#      by: pyside-uic 0.2.13 running on PySide 1.0.9
 #
 # WARNING! All changes made in this file will be lost!
 
