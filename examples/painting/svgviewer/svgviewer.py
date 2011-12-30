@@ -56,7 +56,7 @@ class MainWindow(QtGui.QMainWindow):
     def openFile(self, path=""):
         if path=="":
             fileName = QtGui.QFileDialog.getOpenFileName(self, self.tr("Open SVG File"),
-                                                         self.currentPath, "*.svg")
+                                                         self.currentPath, "*.svg")[0]
         else:
             fileName = path
 
@@ -64,7 +64,7 @@ class MainWindow(QtGui.QMainWindow):
             self.area.openFile(fileName)
             if not fileName.startswith(":/"):
                 self.currentPath = fileName
-                self.setWindowTitle(self.tr("%1 - SVGViewer").arg(self.currentPath))
+                self.setWindowTitle(self.tr("%s - SVGViewer") % self.currentPath)
 
     def setRenderer(self, action):
         if action == self.nativeAction:
