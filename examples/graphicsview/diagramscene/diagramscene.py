@@ -409,7 +409,7 @@ class MainWindow(QtGui.QMainWindow):
         self.scene.setMode(self.pointerTypeGroup.checkedId())
 
     def bringToFront(self):
-        if not scene.selectedItems():
+        if not self.scene.selectedItems():
             return
 
         selectedItem = self.scene.selectedItems()[0]
@@ -422,7 +422,7 @@ class MainWindow(QtGui.QMainWindow):
         selectedItem.setZValue(zValue)
 
     def sendToBack(self):
-        if not scene.selectedItems():
+        if not self.scene.selectedItems():
             return
 
         selectedItem = self.scene.selectedItems()[0]
