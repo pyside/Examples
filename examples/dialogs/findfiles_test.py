@@ -18,7 +18,6 @@ def test_basic_search(qtbot, tmpdir):
     window = Window() 
     window.show()
     qtbot.addWidget(window)
-    qtbot.stopForInteraction()
     
     window.fileComboBox.clear()
     qtbot.keyClicks(window.fileComboBox, '*.avi')
