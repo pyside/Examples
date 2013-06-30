@@ -27,7 +27,7 @@ class MenuContentItem(DemoItem):
 
     def prepare(self):
         if not self.prepared:
-            self.prepared= True
+            self.prepared = True
             self.createContent()
 
     def animationStopped(self, id):
@@ -45,7 +45,8 @@ class MenuContentItem(DemoItem):
     def loadDescription(self, startPara, nrPara):
         readme = QtCore.QFile(self.readmePath)
         if not readme.open(QtCore.QFile.ReadOnly):
-            Colors.debug("- MenuContentItem.loadDescription: Could not load:", self.readmePath)
+            Colors.debug("- MenuContentItem.loadDescription: Could not load:",
+                         self.readmePath)
             return ""
 
         in_str = QtCore.QTextStream(readme)
@@ -74,20 +75,25 @@ class MenuContentItem(DemoItem):
         self.heading = HeadingItem(self.name, self.scene(), self)
         para1 = self.loadDescription(0, 1)
         if not para1:
-            para1 = Colors.contentColor + "Could not load description. Ensure that the documentation for Qt is built."
+            para1 = Colors.contentColor + "Could not load description. Ensure "
+            "that the documentation for Qt is built."
         bgcolor = Colors.sceneBg1.darker(200)
         bgcolor.setAlpha(100)
         self.description1 = DemoTextItem(para1, Colors.contentFont(),
-                Colors.heading, 500, self.scene(), self,
-                DemoTextItem.STATIC_TEXT)
+                                         Colors.heading, 500, self.scene(),
+                                         self, DemoTextItem.STATIC_TEXT)
         self.description2 = DemoTextItem(self.loadDescription(1, 2),
-                Colors.contentFont(), Colors.heading, 250, self.scene(), self,
-                DemoTextItem.STATIC_TEXT)
+                                         Colors.contentFont(), Colors.heading,
+                                         250, self.scene(), self,
+                                         DemoTextItem.STATIC_TEXT)
 
         # Place the items on screen.
         self.heading.setPos(0, 3)
-        self.description1.setPos(0, self.heading.pos().y() + self.heading.boundingRect().height() + 10)
-        self.description2.setPos(0, self.description1.pos().y() + self.description1.boundingRect().height() + 15)
+        self.description1.setPos(0, self.heading.pos().y()
+                                 + self.heading.boundingRect().height() + 10)
+        self.description2.setPos(0, self.description1.pos().y()
+                                 + self.description1.boundingRect().height()
+                                 + 15)
 
     def boundingRect(self):
         return QtCore.QRectF(0, 0, 500, 350)

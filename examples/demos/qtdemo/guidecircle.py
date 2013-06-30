@@ -12,7 +12,8 @@ class GuideCircle(Guide):
     CW = 1
     CCW = -1
 
-    def __init__(self, rect, startAngle=0.0, span=360.0, dir=CCW, follows=None):
+    def __init__(self, rect, startAngle=0.0, span=360.0, dir=CCW,
+                 follows=None):
         super(GuideCircle, self).__init__(follows)
 
         self.radiusX = rect.width() / 2.0
@@ -34,15 +35,26 @@ class GuideCircle(Guide):
         return abs(self.radiusX * self.spanRad)
 
     def startPos(self):
-        return QtCore.QPointF((self.posX + self.radiusX + self.radiusX * math.cos(self.startAngleRad)) * self.scaleX,
-                (self.posY + self.radiusY + self.radiusY * math.sin(self.startAngleRad)) * self.scaleY)
+        return QtCore.QPointF((
+            self.posX + self.radiusX + self.radiusX * math.cos(
+                self.startAngleRad)) * self.scaleX, (
+                    self.posY + self.radiusY + self.radiusY * math.sin(
+                        self.startAngleRad)) * self.scaleY)
 
     def endPos(self):
-        return QtCore.QPointF((self.posX + self.radiusX + self.radiusX * math.cos(self.endAngleRad)) * self.scaleX,
-                (self.posY + self.radiusY + self.radiusY * math.sin(self.endAngleRad)) * self.scaleY)
+        return QtCore.QPointF((
+            self.posX + self.radiusX + self.radiusX * math.cos(
+                self.endAngleRad)) * self.scaleX, (
+                    self.posY + self.radiusY + self.radiusY * math.sin(
+                        self.endAngleRad)) * self.scaleY)
 
     def guide(self, item, moveSpeed):
         frame = item.guideFrame - self.startLength
-        end = QtCore.QPointF((self.posX + self.radiusX + self.radiusX * math.cos(self.startAngleRad + (frame * self.stepAngleRad))) * self.scaleX,
-                (self.posY + self.radiusY + self.radiusY * math.sin(self.startAngleRad + (frame * self.stepAngleRad))) * self.scaleY)
+        end = QtCore.QPointF((
+            self.posX + self.radiusX + self.radiusX * math.cos(
+                self.startAngleRad + (frame * self.stepAngleRad)))
+            * self.scaleX, (
+                self.posY + self.radiusY + self.radiusY * math.sin(
+                    self.startAngleRad + (frame * self.stepAngleRad)))
+                    * self.scaleY)
         self.move(item, end, moveSpeed)

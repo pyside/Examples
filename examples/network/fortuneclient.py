@@ -22,8 +22,9 @@ class Client(QtGui.QDialog):
         hostLabel.setBuddy(self.hostLineEdit)
         portLabel.setBuddy(self.portLineEdit)
 
-        self.statusLabel = QtGui.QLabel("This examples requires that you run "
-                "the Fortune Server example as well.")
+        self.statusLabel = QtGui.QLabel(
+            "This examples requires that you run the Fortune Server example "
+            "as well.")
 
         self.getFortuneButton = QtGui.QPushButton("Get Fortune")
         self.getFortuneButton.setDefault(True)
@@ -33,7 +34,7 @@ class Client(QtGui.QDialog):
 
         buttonBox = QtGui.QDialogButtonBox()
         buttonBox.addButton(self.getFortuneButton,
-                QtGui.QDialogButtonBox.ActionRole)
+                            QtGui.QDialogButtonBox.ActionRole)
         buttonBox.addButton(quitButton, QtGui.QDialogButtonBox.RejectRole)
 
         self.tcpSocket = QtNetwork.QTcpSocket(self)
@@ -62,7 +63,7 @@ class Client(QtGui.QDialog):
         self.blockSize = 0
         self.tcpSocket.abort()
         self.tcpSocket.connectToHost(self.hostLineEdit.text(),
-                int(self.portLineEdit.text()))
+                                     int(self.portLineEdit.text()))
 
     def readFortune(self):
         instr = QtCore.QDataStream(self.tcpSocket)
@@ -98,23 +99,26 @@ class Client(QtGui.QDialog):
         if socketError == QtNetwork.QAbstractSocket.RemoteHostClosedError:
             pass
         elif socketError == QtNetwork.QAbstractSocket.HostNotFoundError:
-            QtGui.QMessageBox.information(self, "Fortune Client",
-                    "The host was not found. Please check the host name and "
-                    "port settings.")
+            QtGui.QMessageBox.information(
+                self, "Fortune Client",
+                "The host was not found. Please check the host name and port "
+                "settings.")
         elif socketError == QtNetwork.QAbstractSocket.ConnectionRefusedError:
-            QtGui.QMessageBox.information(self, "Fortune Client",
-                    "The connection was refused by the peer. Make sure the "
-                    "fortune server is running, and check that the host name "
-                    "and port settings are correct.")
+            QtGui.QMessageBox.information(
+                self, "Fortune Client",
+                "The connection was refused by the peer. Make sure the "
+                "fortune server is running, and check that the host name and "
+                "port settings are correct.")
         else:
-            QtGui.QMessageBox.information(self, "Fortune Client",
-                    "The following error occurred: %s." % self.tcpSocket.errorString())
+            QtGui.QMessageBox.information(
+                self, "Fortune Client", "The following error occurred: %s."
+                % self.tcpSocket.errorString())
 
         self.getFortuneButton.setEnabled(True)
 
     def enableGetFortuneButton(self):
         self.getFortuneButton.setEnabled(bool(self.hostLineEdit.text() and
-                self.portLineEdit.text()))
+                                              self.portLineEdit.text()))
 
 
 if __name__ == '__main__':

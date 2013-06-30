@@ -33,14 +33,14 @@ class ColorItem(QtGui.QGraphicsItem):
         super(ColorItem, self).__init__()
 
         self.color = QtGui.QColor(QtCore.qrand() % 256, QtCore.qrand() % 256,
-                QtCore.qrand() % 256)
+                                  QtCore.qrand() % 256)
 
         self.setToolTip(
-            "QColor(%d, %d, %d)\nClick and drag this color onto the robot!" % 
-              (self.color.red(), self.color.green(), self.color.blue())
+            "QColor(%d, %d, %d)\nClick and drag this color onto the robot!" %
+            (self.color.red(), self.color.green(), self.color.blue())
         )
         self.setCursor(QtCore.Qt.OpenHandCursor)
-    
+
     def boundingRect(self):
         return QtCore.QRectF(-15.5, -15.5, 34, 34)
 
@@ -60,7 +60,10 @@ class ColorItem(QtGui.QGraphicsItem):
         self.setCursor(QtCore.Qt.ClosedHandCursor)
 
     def mouseMoveEvent(self, event):
-        if QtCore.QLineF(QtCore.QPointF(event.screenPos()), QtCore.QPointF(event.buttonDownScreenPos(QtCore.Qt.LeftButton))).length() < QtGui.QApplication.startDragDistance():
+        if QtCore.QLineF(
+            QtCore.QPointF(event.screenPos()),
+            QtCore.QPointF(event.buttonDownScreenPos(QtCore.Qt.LeftButton))).\
+                length() < QtGui.QApplication.startDragDistance():
             return
 
         drag = QtGui.QDrag(event.widget())
@@ -71,11 +74,13 @@ class ColorItem(QtGui.QGraphicsItem):
         if ColorItem.n > 2 and QtCore.qrand() % 3 == 0:
             image = QtGui.QImage(':/images/head.png')
             mime.setImageData(image)
-            drag.setPixmap(QtGui.QPixmap.fromImage(image).scaled(30,40))
+            drag.setPixmap(QtGui.QPixmap.fromImage(image).scaled(30, 40))
             drag.setHotSpot(QtCore.QPoint(15, 30))
         else:
             mime.setColorData(self.color)
-            mime.setText("#%02x%02x%02x" % (self.color.red(), self.color.green(), self.color.blue()))
+            mime.setText("#%02x%02x%02x" % (self.color.red(),
+                                            self.color.green(),
+                                            self.color.blue()))
 
             pixmap = QtGui.QPixmap(34, 34)
             pixmap.fill(QtCore.Qt.white)
@@ -110,7 +115,7 @@ class RobotPart(QtGui.QGraphicsItem):
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasColor() or \
-          (isinstance(self, RobotHead) and event.mimeData().hasImage()):
+                (isinstance(self, RobotHead) and event.mimeData().hasImage()):
             event.setAccepted(True)
             self.dragOver = True
             self.update()
@@ -120,7 +125,7 @@ class RobotPart(QtGui.QGraphicsItem):
     def dragLeaveEvent(self, event):
         self.dragOver = False
         self.update()
- 
+
     def dropEvent(self, event):
         self.dragOver = False
         if event.mimeData().hasColor():
@@ -137,10 +142,10 @@ class RobotHead(RobotPart):
 
     def paint(self, painter, option, widget=None):
         if not self.pixmap:
-            painter.setBrush(self.dragOver and self.color.lighter(130) 
-                                            or self.color)
+            painter.setBrush(self.dragOver and self.color.lighter(130)
+                             or self.color)
             painter.drawRoundedRect(-10, -30, 20, 30, 25, 25,
-                    QtCore.Qt.RelativeSize)
+                                    QtCore.Qt.RelativeSize)
             painter.setBrush(QtCore.Qt.white)
             painter.drawEllipse(-7, -3 - 20, 7, 7)
             painter.drawEllipse(0, -3 - 20, 7, 7)
@@ -160,10 +165,10 @@ class RobotTorso(RobotPart):
         return QtCore.QRectF(-30, -20, 60, 60)
 
     def paint(self, painter, option, widget=None):
-        painter.setBrush(self.dragOver and self.color.lighter(130) 
-                                        or self.color)
+        painter.setBrush(self.dragOver and self.color.lighter(130)
+                         or self.color)
         painter.drawRoundedRect(-20, -20, 40, 60, 25, 25,
-                QtCore.Qt.RelativeSize)
+                                QtCore.Qt.RelativeSize)
         painter.drawEllipse(-25, -20, 20, 20)
         painter.drawEllipse(5, -20, 20, 20)
         painter.drawEllipse(-20, 22, 20, 20)
@@ -175,9 +180,10 @@ class RobotLimb(RobotPart):
         return QtCore.QRectF(-5, -5, 40, 10)
 
     def paint(self, painter, option, widget=None):
-        painter.setBrush(self.dragOver and self.color.lighter(130) or self.color)
+        painter.setBrush(self.dragOver and self.color.lighter(130)
+                         or self.color)
         painter.drawRoundedRect(self.boundingRect(), 50, 50,
-                QtCore.Qt.RelativeSize)
+                                QtCore.Qt.RelativeSize)
         painter.drawEllipse(-5, -5, 10, 10)
 
 
@@ -185,35 +191,35 @@ class Robot(RobotPart):
     def __init__(self):
         super(Robot, self).__init__()
 
-        self.torsoItem         = RobotTorso(self)
-        self.headItem          = RobotHead(self.torsoItem)
-        self.upperLeftArmItem  = RobotLimb(self.torsoItem)
-        self.lowerLeftArmItem  = RobotLimb(self.upperLeftArmItem)
+        self.torsoItem = RobotTorso(self)
+        self.headItem = RobotHead(self.torsoItem)
+        self.upperLeftArmItem = RobotLimb(self.torsoItem)
+        self.lowerLeftArmItem = RobotLimb(self.upperLeftArmItem)
         self.upperRightArmItem = RobotLimb(self.torsoItem)
         self.lowerRightArmItem = RobotLimb(self.upperRightArmItem)
         self.upperRightLegItem = RobotLimb(self.torsoItem)
         self.lowerRightLegItem = RobotLimb(self.upperRightLegItem)
-        self.upperLeftLegItem  = RobotLimb(self.torsoItem)
-        self.lowerLeftLegItem  = RobotLimb(self.upperLeftLegItem)
+        self.upperLeftLegItem = RobotLimb(self.torsoItem)
+        self.lowerLeftLegItem = RobotLimb(self.upperLeftLegItem)
 
         self.timeline = QtCore.QTimeLine()
         settings = [
-        #             item               position    rotation at
-        #                                 x    y    time 0  /  1
-            ( self.headItem,              0,  -18,      20,   -20 ),
-            ( self.upperLeftArmItem,    -15,  -10,     190,   180 ),
-            ( self.lowerLeftArmItem,     30,    0,      50,    10 ),
-            ( self.upperRightArmItem,    15,  -10,     300,   310 ),
-            ( self.lowerRightArmItem,    30,    0,       0,   -70 ),
-            ( self.upperRightLegItem,    10,   32,      40,   120 ),
-            ( self.lowerRightLegItem,    30,    0,      10,    50 ),
-            ( self.upperLeftLegItem,    -10,   32,     150,    80 ),
-            ( self.lowerLeftLegItem,     30,    0,      70,    10 ),
-            ( self.torsoItem,             0,    0,       5,   -20 )
+            #         item               position    rotation at
+            #                             x    y    time 0  /  1
+            (self.headItem,              0,  -18,      20,   -20),
+            (self.upperLeftArmItem,    -15,  -10,     190,   180),
+            (self.lowerLeftArmItem,     30,    0,      50,    10),
+            (self.upperRightArmItem,    15,  -10,     300,   310),
+            (self.lowerRightArmItem,    30,    0,       0,   -70),
+            (self.upperRightLegItem,    10,   32,      40,   120),
+            (self.lowerRightLegItem,    30,    0,      10,    50),
+            (self.upperLeftLegItem,    -10,   32,     150,    80),
+            (self.lowerLeftLegItem,     30,    0,      70,    10),
+            (self.torsoItem,             0,    0,       5,   -20)
         ]
         self.animations = []
-        for item, pos_x, pos_y, rotation1, rotation2 in settings: 
-            item.setPos(pos_x,pos_y)
+        for item, pos_x, pos_y, rotation1, rotation2 in settings:
+            item.setPos(pos_x, pos_y)
             animation = QtGui.QGraphicsItemAnimation()
             animation.setItem(item)
             animation.setTimeLine(self.timeline)
@@ -221,7 +227,7 @@ class Robot(RobotPart):
             animation.setRotationAt(1, rotation2)
             self.animations.append(animation)
         self.animations[0].setScaleAt(1, 1.1, 1.1)
-    
+
         self.timeline.setUpdateInterval(1000 / 25)
         self.timeline.setCurveShape(QtCore.QTimeLine.SineCurve)
         self.timeline.setLoopCount(0)
@@ -235,7 +241,7 @@ class Robot(RobotPart):
         pass
 
 
-if __name__== '__main__':
+if __name__ == '__main__':
 
     import sys
     import math

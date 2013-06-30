@@ -5,6 +5,7 @@
 from PySide.QtGui import *
 from PySide.QtCore import *
 
+
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)

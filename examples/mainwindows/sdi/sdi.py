@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 
 ############################################################################
-# 
+#
 #  Copyright (C) 2004-2005 Trolltech AS. All rights reserved.
-# 
+#
 #  This file is part of the example classes of the Qt Toolkit.
-# 
+#
 #  This file may be used under the terms of the GNU General Public
 #  License version 2.0 as published by the Free Software Foundation
 #  and appearing in the file LICENSE.GPL included in the packaging of
 #  self file.  Please review the following information to ensure GNU
 #  General Public Licensing requirements will be met:
 #  http://www.trolltech.com/products/qt/opensource.html
-# 
+#
 #  If you are unsure which license is appropriate for your use, please
 #  review the following information:
 #  http://www.trolltech.com/products/qt/licensing.html or contact the
 #  sales department at sales@trolltech.com.
-# 
+#
 #  This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 #  WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-# 
+#
 ############################################################################
 
 # This is only needed for Python v2 but is harmless for Python v3.
@@ -68,8 +68,10 @@ class MainWindow(QtGui.QMainWindow):
                 existing.activateWindow()
                 return
 
-            if self.isUntitled and self.textEdit.document().isEmpty() and not self.isWindowModified():
-                self.loadFile(fileName)
+            if self.isUntitled \
+                and self.textEdit.document().isEmpty() \
+                    and not self.isWindowModified():
+                        self.loadFile(fileName)
             else:
                 other = MainWindow(fileName)
                 if other.isUntitled:
@@ -88,16 +90,17 @@ class MainWindow(QtGui.QMainWindow):
 
     def saveAs(self):
         fileName, filtr = QtGui.QFileDialog.getSaveFileName(self, "Save As",
-                self.curFile)
+                                                            self.curFile)
         if not fileName:
             return False
 
         return self.saveFile(fileName)
 
     def about(self):
-        QtGui.QMessageBox.about(self, "About SDI",
-                "The <b>SDI</b> example demonstrates how to write single "
-                "document interface applications using Qt.")
+        QtGui.QMessageBox.about(
+            self, "About SDI",
+            "The <b>SDI</b> example demonstrates how to write single document "
+            "interface applications using Qt.")
 
     def documentWasModified(self):
         self.setWindowModified(True)
@@ -115,55 +118,68 @@ class MainWindow(QtGui.QMainWindow):
 
         self.readSettings()
 
-        self.textEdit.document().contentsChanged.connect(self.documentWasModified)
+        self.textEdit.document().contentsChanged.connect(
+            self.documentWasModified)
 
     def createActions(self):
-        self.newAct = QtGui.QAction(QtGui.QIcon(':/images/new.png'), "&New",
-                self, shortcut=QtGui.QKeySequence.New,
-                statusTip="Create a new file", triggered=self.newFile)
+        self.newAct = \
+            QtGui.QAction(QtGui.QIcon(':/images/new.png'), "&New", self,
+                          shortcut=QtGui.QKeySequence.New,
+                          statusTip="Create a new file",
+                          triggered=self.newFile)
 
-        self.openAct = QtGui.QAction(QtGui.QIcon(':/images/open.png'),
-                "&Open...", self, shortcut=QtGui.QKeySequence.Open,
-                statusTip="Open an existing file", triggered=self.open)
+        self.openAct = \
+            QtGui.QAction(QtGui.QIcon(':/images/open.png'), "&Open...", self,
+                          shortcut=QtGui.QKeySequence.Open,
+                          statusTip="Open an existing file",
+                          triggered=self.open)
 
-        self.saveAct = QtGui.QAction(QtGui.QIcon(':/images/save.png'),
-                "&Save", self, shortcut=QtGui.QKeySequence.Save,
-                statusTip="Save the document to disk", triggered=self.save)
+        self.saveAct = \
+            QtGui.QAction(QtGui.QIcon(':/images/save.png'), "&Save", self,
+                          shortcut=QtGui.QKeySequence.Save,
+                          statusTip="Save the document to disk",
+                          triggered=self.save)
 
-        self.saveAsAct = QtGui.QAction("Save &As...", self,
-                shortcut=QtGui.QKeySequence.SaveAs,
-                statusTip="Save the document under a new name",
-                triggered=self.saveAs)
+        self.saveAsAct = \
+            QtGui.QAction("Save &As...", self,
+                          shortcut=QtGui.QKeySequence.SaveAs,
+                          statusTip="Save the document under a new name",
+                          triggered=self.saveAs)
 
-        self.closeAct = QtGui.QAction("&Close", self, shortcut="Ctrl+W",
-                statusTip="Close this window", triggered=self.close)
+        self.closeAct = \
+            QtGui.QAction("&Close", self, shortcut="Ctrl+W",
+                          statusTip="Close this window", triggered=self.close)
 
-        self.exitAct = QtGui.QAction("E&xit", self, shortcut="Ctrl+Q",
-                statusTip="Exit the application",
-                triggered=QtGui.qApp.closeAllWindows)
+        self.exitAct = \
+            QtGui.QAction("E&xit", self, shortcut="Ctrl+Q",
+                          statusTip="Exit the application",
+                          triggered=QtGui.qApp.closeAllWindows)
 
-        self.cutAct = QtGui.QAction(QtGui.QIcon(':/images/cut.png'), "Cu&t",
-                self, enabled=False, shortcut=QtGui.QKeySequence.Cut,
-                statusTip="Cut the current selection's contents to the clipboard",
-                triggered=self.textEdit.cut)
+        self.cutAct = \
+            QtGui.QAction(QtGui.QIcon(':/images/cut.png'), "Cu&t", self,
+                          enabled=False, shortcut=QtGui.QKeySequence.Cut,
+                          statusTip="Cut the current selection's contents to "
+                          "the clipboard", triggered=self.textEdit.cut)
 
-        self.copyAct = QtGui.QAction(QtGui.QIcon(':/images/copy.png'),
-                "&Copy", self, enabled=False, shortcut=QtGui.QKeySequence.Copy,
-                statusTip="Copy the current selection's contents to the clipboard",
-                triggered=self.textEdit.copy)
+        self.copyAct = \
+            QtGui.QAction(QtGui.QIcon(':/images/copy.png'), "&Copy", self,
+                          enabled=False, shortcut=QtGui.QKeySequence.Copy,
+                          statusTip="Copy the current selection's contents to "
+                          "the clipboard", triggered=self.textEdit.copy)
 
-        self.pasteAct = QtGui.QAction(QtGui.QIcon(':/images/paste.png'),
-                "&Paste", self, shortcut=QtGui.QKeySequence.Paste,
-                statusTip="Paste the clipboard's contents into the current selection",
-                triggered=self.textEdit.paste)
+        self.pasteAct = \
+            QtGui.QAction(QtGui.QIcon(':/images/paste.png'), "&Paste", self,
+                          shortcut=QtGui.QKeySequence.Paste,
+                          statusTip="Paste the clipboard's contents into the "
+                          "current selection", triggered=self.textEdit.paste)
 
-        self.aboutAct = QtGui.QAction("&About", self,
-                statusTip="Show the application's About box",
-                triggered=self.about)
+        self.aboutAct = \
+            QtGui.QAction("&About", self, statusTip="Show the application's "
+                          "About box", triggered=self.about)
 
-        self.aboutQtAct = QtGui.QAction("About &Qt", self,
-                statusTip="Show the Qt library's About box",
-                triggered=QtGui.qApp.aboutQt)
+        self.aboutQtAct = \
+            QtGui.QAction("About &Qt", self, statusTip="Show the Qt library's "
+                          "About box", triggered=QtGui.qApp.aboutQt)
 
         self.textEdit.copyAvailable.connect(self.cutAct.setEnabled)
         self.textEdit.copyAvailable.connect(self.copyAct.setEnabled)
@@ -217,11 +233,11 @@ class MainWindow(QtGui.QMainWindow):
 
     def maybeSave(self):
         if self.textEdit.document().isModified():
-            ret = QtGui.QMessageBox.warning(self, "SDI",
-                    "The document has been modified.\nDo you want to save "
-                    "your changes?",
-                    QtGui.QMessageBox.Save | QtGui.QMessageBox.Discard |
-                    QtGui.QMessageBox.Cancel)
+            ret = QtGui.QMessageBox.warning(
+                self, "SDI", "The document has been modified.\nDo you want to "
+                "save your changes?", QtGui.QMessageBox.Save |
+                QtGui.QMessageBox.Discard |
+                QtGui.QMessageBox.Cancel)
             if ret == QtGui.QMessageBox.Save:
                 return self.save()
             elif ret == QtGui.QMessageBox.Cancel:
@@ -230,9 +246,10 @@ class MainWindow(QtGui.QMainWindow):
 
     def loadFile(self, fileName):
         file = QtCore.QFile(fileName)
-        if not file.open( QtCore.QFile.ReadOnly | QtCore.QFile.Text):
-            QtGui.QMessageBox.warning(self, "SDI",
-                    "Cannot read file %s:\n%s." % (fileName, file.errorString()))
+        if not file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
+            QtGui.QMessageBox.warning(
+                self, "SDI", "Cannot read file %s:\n%s."
+                % (fileName, file.errorString()))
             return
 
         instr = QtCore.QTextStream(file)
@@ -245,9 +262,10 @@ class MainWindow(QtGui.QMainWindow):
 
     def saveFile(self, fileName):
         file = QtCore.QFile(fileName)
-        if not file.open( QtCore.QFile.WriteOnly | QtCore.QFile.Text):
-            QtGui.QMessageBox.warning(self, "SDI",
-                    "Cannot write file %s:\n%s." % (fileName, file.errorString()))
+        if not file.open(QtCore.QFile.WriteOnly | QtCore.QFile.Text):
+            QtGui.QMessageBox.warning(
+                self, "SDI", "Cannot write file %s:\n%s."
+                % (fileName, file.errorString()))
             return False
 
         outstr = QtCore.QTextStream(file)
@@ -279,7 +297,8 @@ class MainWindow(QtGui.QMainWindow):
         canonicalFilePath = QtCore.QFileInfo(fileName).canonicalFilePath()
 
         for widget in QtGui.qApp.topLevelWidgets():
-            if isinstance(widget, MainWindow) and widget.curFile == canonicalFilePath:
+            if isinstance(widget,
+                          MainWindow) and widget.curFile == canonicalFilePath:
                 return widget
 
         return None

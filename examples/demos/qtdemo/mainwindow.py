@@ -67,7 +67,8 @@ class MainWindow(QtGui.QGraphicsView):
         elif Colors.openGlRendering:
             from PySide import QtOpenGL
 
-            viewport = QtOpenGL.QGLWidget(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers))
+            viewport = QtOpenGL.QGLWidget(
+                QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers))
 
             if Colors.noScreenSync:
                 viewport.format().setSwapInterval(0)
@@ -86,7 +87,7 @@ class MainWindow(QtGui.QGraphicsView):
         self.switchTimerOnOff(True)
         self.demoStartTime.restart()
         MenuManager.instance().itemSelected(MenuManager.ROOT,
-                Colors.rootMenuName)
+                                            Colors.rootMenuName)
         Colors.debug("- starting demo")
 
     def enableMask(self, enable):
@@ -94,27 +95,27 @@ class MainWindow(QtGui.QGraphicsView):
             self.clearMask()
         else:
             region = QtGui.QPolygon([
-                    # North side.
-                    0, 0,
-                    800, 0,
-                    # East side.
-                    # 800, 70,
-                    # 790, 90,
-                    # 790, 480,
-                    # 800, 500,
-                    800, 600,
-                    # South side.
-                    700, 600,
-                    670, 590,
-                    130, 590,
-                    100, 600,
-                    0, 600,
-                    # West side.
-                    # 0, 550,
-                    # 10, 530,
-                    # 10, 520,
-                    # 0, 520,
-                    0, 0])
+                # North side.
+                0, 0,
+                800, 0,
+                # East side.
+                # 800, 70,
+                # 790, 90,
+                # 790, 480,
+                # 800, 500,
+                800, 600,
+                # South side.
+                700, 600,
+                670, 590,
+                130, 590,
+                100, 600,
+                0, 600,
+                # West side.
+                # 0, 550,
+                # 10, 530,
+                # 10, 520,
+                # 0, 520,
+                0, 0])
 
             self.setMask(QtCore.QRegion(region))
 
@@ -210,28 +211,31 @@ class MainWindow(QtGui.QGraphicsView):
     def setupSceneItems(self):
         if Colors.showFps:
             self.fpsLabel = DemoTextItem("FPS: --", Colors.buttonFont(),
-                    QtCore.Qt.white, -1, self.scene, None,
-                    DemoTextItem.DYNAMIC_TEXT)
+                                         QtCore.Qt.white, -1, self.scene, None,
+                                         DemoTextItem.DYNAMIC_TEXT)
             self.fpsLabel.setZValue(100)
-            self.fpsLabel.setPos(Colors.stageStartX,
-                    600 - QtGui.QFontMetricsF(Colors.buttonFont()).height() - 5)
+            self.fpsLabel.setPos(
+                Colors.stageStartX, 600 - QtGui.QFontMetricsF(
+                    Colors.buttonFont()).height() - 5)
 
-        self.trolltechLogo = ImageItem(QtGui.QImage(':/images/trolltech-logo.png'),
-                1000, 1000, self.scene, None, True, 0.5)
-        self.qtLogo = ImageItem(QtGui.QImage(':/images/qtlogo_small.png'), 1000,
-                1000, self.scene, None, True, 0.5)
+        self.trolltechLogo = ImageItem(
+            QtGui.QImage(':/images/trolltech-logo.png'),
+            1000, 1000, self.scene, None, True, 0.5)
+        self.qtLogo = ImageItem(QtGui.QImage(':/images/qtlogo_small.png'),
+                                1000, 1000, self.scene, None, True, 0.5)
         self.trolltechLogo.setZValue(100)
         self.qtLogo.setZValue(100)
         self.pausedLabel = DemoTextItem("PAUSED", Colors.buttonFont(),
-                QtCore.Qt.white, -1, self.scene, None)
+                                        QtCore.Qt.white, -1, self.scene, None)
         self.pausedLabel.setZValue(100)
         fm = QtGui.QFontMetricsF(Colors.buttonFont())
         self.pausedLabel.setPos(Colors.stageWidth - fm.width("PAUSED"),
-                590 - fm.height())
+                                590 - fm.height())
         self.pausedLabel.setRecursiveVisible(False)
 
     def checkAdapt(self):
-        if self.doneAdapt or Colors.noTimerUpdate or self.demoStartTime.elapsed() < 2000:
+        if self.doneAdapt or Colors.noTimerUpdate \
+                or self.demoStartTime.elapsed() < 2000:
             return
 
         self.doneAdapt = True
@@ -256,14 +260,15 @@ class MainWindow(QtGui.QGraphicsView):
 
             if self.fpsMedian < 20:
                 Colors.noAnimations = True
-                Colors.debug("- benchmark adaption: animations switched off (fps < 20)")
+                Colors.debug(
+                    "- benchmark adaption: animations switched off (fps < 20)")
 
             Colors.adapted = True
 
     def drawBackgroundToPixmap(self):
         r = self.scene.sceneRect()
         self.background = QtGui.QPixmap(QtCore.qRound(r.width()),
-                QtCore.qRound(r.height()))
+                                        QtCore.qRound(r.height()))
         self.background.fill(QtCore.Qt.black)
         painter = QtGui.QPainter(self.background)
 
@@ -306,26 +311,26 @@ class MainWindow(QtGui.QGraphicsView):
             w = QtGui.QWidget()
             s += "\nColor bit depth: %d" % w.depth()
             s += "\nWanted FPS: %d" % Colors.fps
-            s += "\nBenchmarked FPS: ";
+            s += "\nBenchmarked FPS: "
             if Colors.benchmarkFps != -1:
                 s += "%d" % Colors.benchmarkFps
             else:
                 s += "not calculated"
-            s += "\nAnimations: ";
+            s += "\nAnimations: "
             s += ["on", "off"][Colors.noAnimations]
-            s += "\nBlending: ";
+            s += "\nBlending: "
             s += ["on", "off"][Colors.useEightBitPalette]
-            s += "\nTicker: ";
+            s += "\nTicker: "
             s += ["on", "off"][Colors.noTicker]
-            s += "\nPixmaps: ";
+            s += "\nPixmaps: "
             s += ["off", "on"][Colors.usePixmaps]
-            s += "\nRescale images on resize: ";
+            s += "\nRescale images on resize: "
             s += ["on", "off"][Colors.noRescale]
-            s += "\nTimer based updates: ";
+            s += "\nTimer based updates: "
             s += ["on", "off"][Colors.noTimerUpdate]
-            s += "\nSeparate loop: ";
+            s += "\nSeparate loop: "
             s += ["no", "yes"][Colors.useLoop]
-            s += "\nScreen sync: ";
+            s += "\nScreen sync: "
             s += ["yes", "no"][Colors.noScreenSync]
             QtGui.QMessageBox.information(None, "Current configuration", s)
 
@@ -367,7 +372,7 @@ class MainWindow(QtGui.QGraphicsView):
             r = self.scene.sceneRect()
             ttb = self.trolltechLogo.boundingRect()
             self.trolltechLogo.setPos(int((r.width() - ttb.width()) / 2),
-                    595 - ttb.height())
+                                      595 - ttb.height())
             qtb = self.qtLogo.boundingRect()
             self.qtLogo.setPos(802 - qtb.width(), 0)
 

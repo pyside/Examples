@@ -194,19 +194,22 @@ class ConfigDialog(QtGui.QDialog):
         configButton.setIcon(QtGui.QIcon(':/images/config.png'))
         configButton.setText("Configuration")
         configButton.setTextAlignment(QtCore.Qt.AlignHCenter)
-        configButton.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        configButton.setFlags(
+            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
         updateButton = QtGui.QListWidgetItem(self.contentsWidget)
         updateButton.setIcon(QtGui.QIcon(':/images/update.png'))
         updateButton.setText("Update")
         updateButton.setTextAlignment(QtCore.Qt.AlignHCenter)
-        updateButton.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        updateButton.setFlags(
+            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
         queryButton = QtGui.QListWidgetItem(self.contentsWidget)
         queryButton.setIcon(QtGui.QIcon(':/images/query.png'))
         queryButton.setText("Query")
         queryButton.setTextAlignment(QtCore.Qt.AlignHCenter)
-        queryButton.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        queryButton.setFlags(
+            QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
         self.contentsWidget.currentItemChanged.connect(self.changePage)
 
@@ -217,4 +220,4 @@ if __name__ == '__main__':
 
     app = QtGui.QApplication(sys.argv)
     dialog = ConfigDialog()
-    sys.exit(dialog.exec_())    
+    sys.exit(dialog.exec_())

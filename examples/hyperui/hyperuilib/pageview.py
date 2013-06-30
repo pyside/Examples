@@ -50,7 +50,8 @@ class PageSlot(QGraphicsWidget):
         self._contents = contents
         if contents:
             contents.setParentItem(self)
-            contents.setGeometry(0, 0, self.size().width(), self.size().height())
+            contents.setGeometry(0, 0, self.size().width(),
+                                 self.size().height())
 
     def resizeEvent(self, event):
         QGraphicsWidget.resizeEvent(self, event)
@@ -87,11 +88,13 @@ class PageView(QGraphicsWidget):
                                   Resource.pixmap("top_bt_back_disabled.png"))
 
         self._optionsButton = Button(Resource.pixmap("top_bt_options.png"),
-                                     QPixmap(),
-                                     Resource.pixmap("top_bt_options_disabled.png"))
+                                     QPixmap(), Resource.pixmap(
+                                     "top_bt_options_disabled.png"))
 
-        self.connect(self._backButton, SIGNAL("clicked()"), SLOT("backClicked()"))
-        self.connect(self._optionsButton, SIGNAL("clicked()"), SLOT("optionsClicked()"))
+        self.connect(self._backButton, SIGNAL("clicked()"),
+                     SLOT("backClicked()"))
+        self.connect(self._optionsButton, SIGNAL("clicked()"),
+                     SLOT("optionsClicked()"))
 
         topLayout.addItem(self._optionsButton)
         topLayout.addStretch(1)

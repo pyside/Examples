@@ -78,7 +78,8 @@ class PieView(QtGui.QAbstractItemView):
 
         if wx < self.totalSize:
             cx = wx - self.totalSize/2
-            cy = self.totalSize/2 - wy; # positive cy for items above the center
+            # positive cy for items above the center
+            cy = self.totalSize/2 - wy
 
             # Determine the distance from the center point of the pie chart.
             d = (cx**2 + cy**2)**0.5
@@ -102,7 +103,8 @@ class PieView(QtGui.QAbstractItemView):
                 if value > 0.0:
                     sliceAngle = 360*value/self.totalValue
 
-                    if angle >= startAngle and angle < (startAngle + sliceAngle):
+                    if angle >= startAngle \
+                            and angle < (startAngle + sliceAngle):
                         return self.model().index(row, 1, self.rootIndex())
 
                     startAngle += sliceAngle
@@ -145,15 +147,18 @@ class PieView(QtGui.QAbstractItemView):
 
             listItem = 0
             for row in range(index.row()-1, -1, -1):
-                if self.model().data(self.model().index(row, 1, self.rootIndex())) > 0.0:
+                if self.model().data(self.model().index(row, 1,
+                                     self.rootIndex())) > 0.0:
                     listItem += 1
 
             if index.column() == 0:
 
-                itemHeight = QtGui.QFontMetrics(self.viewOptions().font).height()
+                itemHeight = QtGui.QFontMetrics(
+                    self.viewOptions().font).height()
                 return QtCore.QRect(self.totalSize,
-                             int(self.margin + listItem*itemHeight),
-                             self.totalSize - self.margin, int(itemHeight))
+                                    int(self.margin + listItem*itemHeight),
+                                    self.totalSize - self.margin,
+                                    int(itemHeight))
             elif index.column() == 1:
                 return self.viewport().rect()
 
@@ -182,8 +187,9 @@ class PieView(QtGui.QAbstractItemView):
                     slicePath = QtGui.QPainterPath()
                     slicePath.moveTo(self.totalSize/2, self.totalSize/2)
                     slicePath.arcTo(self.margin, self.margin,
-                            self.margin+self.pieSize, self.margin+self.pieSize,
-                            startAngle, angle)
+                                    self.margin+self.pieSize,
+                                    self.margin+self.pieSize,
+                                    startAngle, angle)
                     slicePath.closeSubpath()
 
                     return QtGui.QRegion(slicePath.toFillPolygon().toPolygon())
@@ -201,13 +207,14 @@ class PieView(QtGui.QAbstractItemView):
         self.origin = event.pos()
         if not self.rubberBand:
             self.rubberBand = QtGui.QRubberBand(QtGui.QRubberBand.Rectangle,
-                    self)
+                                                self)
         self.rubberBand.setGeometry(QtCore.QRect(self.origin, QtCore.QSize()))
         self.rubberBand.show()
 
     def mouseMoveEvent(self, event):
         if self.rubberBand:
-            self.rubberBand.setGeometry(QtCore.QRect(self.origin, event.pos()).normalized())
+            self.rubberBand.setGeometry(QtCore.QRect(self.origin,
+                                                     event.pos()).normalized())
 
         super(PieView, self).mouseMoveEvent(event)
 
@@ -227,20 +234,23 @@ class PieView(QtGui.QAbstractItemView):
 
             if current.row() > 0:
                 current = self.model().index(current.row() - 1,
-                        current.column(), self.rootIndex())
+                                             current.column(),
+                                             self.rootIndex())
             else:
                 current = self.model().index(0, current.column(),
-                        self.rootIndex())
+                                             self.rootIndex())
 
         elif cursorAction == QtGui.QAbstractItemView.MoveRight or \
-             cursorAction == QtGui.QAbstractItemView.MoveDown:
+                cursorAction == QtGui.QAbstractItemView.MoveDown:
 
             if current.row() < rows(current) - 1:
                 current = self.model().index(current.row() + 1,
-                        current.column(), self.rootIndex())
+                                             current.column(),
+                                             self.rootIndex())
             else:
                 current = self.model().index(rows(current) - 1,
-                        current.column(), self.rootIndex())
+                                             current.column(),
+                                             self.rootIndex())
 
         self.viewport().update()
         return current
@@ -251,9 +261,11 @@ class PieView(QtGui.QAbstractItemView):
         state = option.state
 
         background = option.palette.base()
-        foreground = QtGui.QPen(option.palette.color(QtGui.QPalette.WindowText))
+        foreground = QtGui.QPen(option.palette.color(
+            QtGui.QPalette.WindowText))
         textPen = QtGui.QPen(option.palette.color(QtGui.QPalette.Text))
-        highlightedPen = QtGui.QPen(option.palette.color(QtGui.QPalette.HighlightedText))
+        highlightedPen = QtGui.QPen(option.palette.color(
+            QtGui.QPalette.HighlightedText))
 
         painter = QtGui.QPainter(self.viewport())
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
@@ -263,14 +275,15 @@ class PieView(QtGui.QAbstractItemView):
 
         # Viewport rectangles
         pieRect = QtCore.QRect(self.margin, self.margin, self.pieSize,
-                self.pieSize)
-        keyPoint = QtCore.QPoint(self.totalSize - self.horizontalScrollBar().value(),
-                self.margin - self.verticalScrollBar().value())
+                               self.pieSize)
+        keyPoint = QtCore.QPoint(
+            self.totalSize - self.horizontalScrollBar().value(),
+            self.margin - self.verticalScrollBar().value())
 
         if self.validItems > 0:
             painter.save()
             painter.translate(pieRect.x() - self.horizontalScrollBar().value(),
-                    pieRect.y() - self.verticalScrollBar().value())
+                              pieRect.y() - self.verticalScrollBar().value())
             painter.drawEllipse(0, 0, self.pieSize, self.pieSize)
             startAngle = 0.0
 
@@ -284,19 +297,19 @@ class PieView(QtGui.QAbstractItemView):
 
                     colorIndex = self.model().index(row, 0, self.rootIndex())
                     color = self.model().data(colorIndex,
-                            QtCore.Qt.DecorationRole)
+                                              QtCore.Qt.DecorationRole)
 
                     if self.currentIndex() == index:
-                        painter.setBrush(QtGui.QBrush(color,
-                                QtCore.Qt.Dense4Pattern))
+                        painter.setBrush(
+                            QtGui.QBrush(color, QtCore.Qt.Dense4Pattern))
                     elif selections.isSelected(index):
-                        painter.setBrush(QtGui.QBrush(color,
-                                QtCore.Qt.Dense3Pattern))
+                        painter.setBrush(
+                            QtGui.QBrush(color, QtCore.Qt.Dense3Pattern))
                     else:
                         painter.setBrush(QtGui.QBrush(color))
 
                     painter.drawPie(0, 0, self.pieSize, self.pieSize,
-                            int(startAngle*16), int(angle*16))
+                                    int(startAngle*16), int(angle*16))
 
                     startAngle += angle
 
@@ -376,8 +389,9 @@ class PieView(QtGui.QAbstractItemView):
         # Use content widget coordinates because we will use the itemRegion()
         # function to check for intersections.
 
-        contentsRect = rect.translated(self.horizontalScrollBar().value(),
-                self.verticalScrollBar().value()).normalized()
+        contentsRect = rect.translated(
+            self.horizontalScrollBar().value(),
+            self.verticalScrollBar().value()).normalized()
 
         rows = self.model().rowCount(self.rootIndex())
         columns = self.model().columnCount(self.rootIndex())
@@ -387,8 +401,9 @@ class PieView(QtGui.QAbstractItemView):
             for column in range(columns):
                 index = self.model().index(row, column, self.rootIndex())
                 region = self.itemRegion(index)
-                if not region.intersected(QtGui.QRegion(contentsRect)).isEmpty():
-                    indexes.append(index)
+                if not region.intersected(
+                        QtGui.QRegion(contentsRect)).isEmpty():
+                        indexes.append(index)
 
         if len(indexes) > 0:
             firstRow = indexes[0].row()
@@ -415,9 +430,11 @@ class PieView(QtGui.QAbstractItemView):
 
     def updateGeometries(self):
         self.horizontalScrollBar().setPageStep(self.viewport().width())
-        self.horizontalScrollBar().setRange(0, max(0, 2*self.totalSize - self.viewport().width()))
+        self.horizontalScrollBar().setRange(0, max(
+            0, 2*self.totalSize - self.viewport().width()))
         self.verticalScrollBar().setPageStep(self.viewport().height())
-        self.verticalScrollBar().setRange(0, max(0, self.totalSize - self.viewport().height()))
+        self.verticalScrollBar().setRange(
+            0, max(0, self.totalSize - self.viewport().height()))
 
     def verticalOffset(self):
         return self.verticalScrollBar().value()
@@ -425,9 +442,10 @@ class PieView(QtGui.QAbstractItemView):
     def visualRect(self, index):
         rect = self.itemRect(index)
         if rect.isValid():
-            return QtCore.QRect(rect.left() - self.horizontalScrollBar().value(),
-                         rect.top() - self.verticalScrollBar().value(),
-                         rect.width(), rect.height())
+            return QtCore.QRect(
+                rect.left() - self.horizontalScrollBar().value(),
+                rect.top() - self.verticalScrollBar().value(),
+                rect.width(), rect.height())
         else:
             return rect
 
@@ -497,8 +515,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def openFile(self, path=None):
         if not path:
-            path = QtGui.QFileDialog.getOpenFileName(self,
-                    "Choose a data file", '', '*.cht')[0]
+            path = QtGui.QFileDialog.getOpenFileName(
+                self, "Choose a data file", '', '*.cht')[0]
 
         if path:
             f = QtCore.QFile(path)
@@ -506,9 +524,9 @@ class MainWindow(QtGui.QMainWindow):
             if f.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
                 stream = QtCore.QTextStream(f)
 
-                self.model.removeRows(0,
-                        self.model.rowCount(QtCore.QModelIndex()),
-                        QtCore.QModelIndex())
+                self.model.removeRows(
+                    0, self.model.rowCount(QtCore.QModelIndex()),
+                    QtCore.QModelIndex())
 
                 row = 0
                 line = stream.readLine()
@@ -516,13 +534,15 @@ class MainWindow(QtGui.QMainWindow):
                     self.model.insertRows(row, 1, QtCore.QModelIndex())
 
                     pieces = line.split(',')
-                    self.model.setData(self.model.index(row, 0, QtCore.QModelIndex()),
-                                pieces[0])
-                    self.model.setData(self.model.index(row, 1, QtCore.QModelIndex()),
-                                float(pieces[1]))
-                    self.model.setData(self.model.index(row, 0, QtCore.QModelIndex()),
-                                QtGui.QColor(pieces[2]),
-                                QtCore.Qt.DecorationRole)
+                    self.model.setData(
+                        self.model.index(row, 0, QtCore.QModelIndex()),
+                        pieces[0])
+                    self.model.setData(
+                        self.model.index(row, 1, QtCore.QModelIndex()),
+                        float(pieces[1]))
+                    self.model.setData(
+                        self.model.index(row, 0, QtCore.QModelIndex()),
+                        QtGui.QColor(pieces[2]), QtCore.Qt.DecorationRole)
 
                     row += 1
                     line = stream.readLine()
@@ -531,8 +551,8 @@ class MainWindow(QtGui.QMainWindow):
                 self.statusBar().showMessage("Loaded %s" % path, 2000)
 
     def saveFile(self):
-        fileName = QtGui.QFileDialog.getSaveFileName(self, "Save file as", '',
-                '*.cht')
+        fileName = QtGui.QFileDialog.getSaveFileName(
+            self, "Save file as", '', '*.cht')
 
         if fileName:
             f = QtCore.QFile(fileName)
@@ -541,12 +561,15 @@ class MainWindow(QtGui.QMainWindow):
                 for row in range(self.model.rowCount(QtCore.QModelIndex())):
                     pieces = []
 
-                    pieces.append(self.model.data(self.model.index(row, 0, QtCore.QModelIndex()),
-                            QtCore.Qt.DisplayRole))
-                    pieces.append(str(self.model.data(self.model.index(row, 1, QtCore.QModelIndex()),
-                            QtCore.Qt.DisplayRole)))
-                    pieces.append(self.model.data(self.model.index(row, 0, QtCore.QModelIndex()),
-                            QtCore.Qt.DecorationRole).name())
+                    pieces.append(self.model.data(
+                        self.model.index(row, 0, QtCore.QModelIndex()),
+                        QtCore.Qt.DisplayRole))
+                    pieces.append(str(self.model.data(
+                        self.model.index(row, 1, QtCore.QModelIndex()),
+                        QtCore.Qt.DisplayRole)))
+                    pieces.append(self.model.data(
+                        self.model.index(row, 0, QtCore.QModelIndex()),
+                        QtCore.Qt.DecorationRole).name())
 
                     f.write(QtCore.QByteArray(','.join(pieces)))
                     f.write('\n')

@@ -39,6 +39,7 @@
 
 from PySide import QtCore, QtGui, QtDeclarative
 
+
 class Console(QtCore.QObject):
     """Output stuff on the console."""
 
@@ -47,14 +48,15 @@ class Console(QtCore.QObject):
     def output(self, s):
         """
         An overloaded output function.
-        
+
         At the moment, QML is unable to handle overloaded slots correctly
         and is very finicky about the order in which the slots are declared.
         See http://bugreports.qt.nokia.com/browse/QTBUG-11604 for details.
         As a temporary solution, use separate functions with one slot per
         function.
         """
-	print s
+
+        print s
 
     @QtCore.Slot(str)
     def outputStr(self, s):
@@ -83,4 +85,3 @@ if __name__ == '__main__':
     view.show()
 
     sys.exit(app.exec_())
-

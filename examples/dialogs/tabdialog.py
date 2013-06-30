@@ -37,7 +37,8 @@ class TabDialog(QtGui.QDialog):
         tabWidget.addTab(PermissionsTab(fileInfo), "Permissions")
         tabWidget.addTab(ApplicationsTab(fileInfo), "Applications")
 
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox = QtGui.QDialogButtonBox(
+            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
 
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
@@ -68,11 +69,13 @@ class GeneralTab(QtGui.QWidget):
 
         lastReadLabel = QtGui.QLabel("Last Read:")
         lastReadValueLabel = QtGui.QLabel(fileInfo.lastRead().toString())
-        lastReadValueLabel.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
+        lastReadValueLabel.setFrameStyle(
+            QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
 
         lastModLabel = QtGui.QLabel("Last Modified:")
         lastModValueLabel = QtGui.QLabel(fileInfo.lastModified().toString())
-        lastModValueLabel.setFrameStyle(QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
+        lastModValueLabel.setFrameStyle(
+            QtGui.QFrame.Panel | QtGui.QFrame.Sunken)
 
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addWidget(fileNameLabel)
@@ -154,11 +157,12 @@ class ApplicationsTab(QtGui.QWidget):
         alwaysCheckBox = QtGui.QCheckBox()
 
         if fileInfo.suffix():
-            alwaysCheckBox = QtGui.QCheckBox("Always use this application to "
-                    "open files with the extension '%s'" % fileInfo.suffix())
+            alwaysCheckBox = QtGui.QCheckBox(
+                "Always use this application to open files with the extension "
+                "'%s'" % fileInfo.suffix())
         else:
-            alwaysCheckBox = QtGui.QCheckBox("Always use this application to "
-                    "open this type of file")
+            alwaysCheckBox = QtGui.QCheckBox(
+                "Always use this application to open this type of file")
 
         layout = QtGui.QVBoxLayout()
         layout.addWidget(topLabel)

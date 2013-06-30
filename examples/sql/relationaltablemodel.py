@@ -55,7 +55,9 @@ def createView(title, model):
 def createRelationalTables():
     query = QtSql.QSqlQuery()
 
-    query.exec_("create table employee(id int, name varchar(20), city int, country int)")
+    query.exec_("create table employee(id int, name varchar(20), city int, "
+                
+                "country int)")
     query.exec_("insert into employee values(1, 'Espen', 5000, 47)")
     query.exec_("insert into employee values(2, 'Harald', 80000, 49)")
     query.exec_("insert into employee values(3, 'Sam', 100, 41)")

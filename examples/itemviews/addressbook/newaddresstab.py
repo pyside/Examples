@@ -38,7 +38,7 @@
 **
 *****************************************************************************
 ** February 2011
-** - addressbook example ported to PySide by Arun Srinivasan 
+** - addressbook example ported to PySide by Arun Srinivasan
 **   <rulfzid@gmail.com>
 **************************************************************************"""
 
@@ -46,6 +46,7 @@ from PySide.QtCore import (Qt, Signal)
 from PySide.QtGui import (QWidget, QLabel, QPushButton, QVBoxLayout)
 
 from adddialogwidget import AddDialogWidget
+
 
 class NewAddressTab(QWidget):
     """ An extra tab that prompts the user to add new contacts.
@@ -58,7 +59,7 @@ class NewAddressTab(QWidget):
         super(NewAddressTab, self).__init__(parent)
 
         descriptionLabel = QLabel("There are no contacts in your address book."
-                                   "\nClick Add to add new contacts.")
+                                  "\nClick Add to add new contacts.")
 
         addButton = QPushButton("Add")
 
@@ -87,7 +88,7 @@ if __name__ == "__main__":
 
     import sys
     from PySide.QtGui import QApplication
-    
+
     app = QApplication(sys.argv)
     newAddressTab = NewAddressTab()
     newAddressTab.sendDetails.connect(printAddress)

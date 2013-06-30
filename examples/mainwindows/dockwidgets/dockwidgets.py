@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 
 ############################################################################
-# 
+#
 #  Copyright (C) 2004-2005 Trolltech AS. All rights reserved.
-# 
+#
 #  This file is part of the example classes of the Qt Toolkit.
-# 
+#
 #  This file may be used under the terms of the GNU General Public
 #  License version 2.0 as published by the Free Software Foundation
 #  and appearing in the file LICENSE.GPL included in the packaging of
 #  this file.  Please review the following information to ensure GNU
 #  General Public Licensing requirements will be met:
 #  http://www.trolltech.com/products/qt/opensource.html
-# 
+#
 #  If you are unsure which license is appropriate for your use, please
 #  review the following information:
 #  http://www.trolltech.com/products/qt/licensing.html or contact the
 #  sales department at sales@trolltech.com.
-# 
+#
 #  This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 #  WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-# 
+#
 ############################################################################
 
 # This is only needed for Python v2 but is harmless for Python v3.
@@ -80,11 +80,11 @@ class MainWindow(QtGui.QMainWindow):
         cursor.insertText("Some Country")
         cursor.setPosition(topFrame.lastPosition())
         cursor.insertText(QtCore.QDate.currentDate().toString("d MMMM yyyy"),
-                textFormat)
+                          textFormat)
         cursor.insertBlock()
         cursor.insertBlock()
         cursor.insertText("Dear ", textFormat)
-        cursor.insertText("NAME", italicFormat)   
+        cursor.insertText("NAME", italicFormat)
         cursor.insertText(",", textFormat)
         for i in range(3):
             cursor.insertBlock()
@@ -93,7 +93,7 @@ class MainWindow(QtGui.QMainWindow):
             cursor.insertBlock()
         cursor.insertText("The Boss", textFormat)
         cursor.insertBlock()
-        cursor.insertText("ADDRESS", italicFormat)  
+        cursor.insertText("ADDRESS", italicFormat)
 
     def print_(self):
         document = self.textEdit.document()
@@ -108,15 +108,16 @@ class MainWindow(QtGui.QMainWindow):
         self.statusBar().showMessage("Ready", 2000)
 
     def save(self):
-        filename, filtr = QtGui.QFileDialog.getSaveFileName(self,
-                "Choose a file name", '.', "HTML (*.html *.htm)")
+        filename, filtr = QtGui.QFileDialog.getSaveFileName(
+            self, "Choose a file name", '.', "HTML (*.html *.htm)")
         if not filename:
             return
 
         file = QtCore.QFile(filename)
         if not file.open(QtCore.QFile.WriteOnly | QtCore.QFile.Text):
-            QtGui.QMessageBox.warning(self, "Dock Widgets",
-                    "Cannot write file %s:\n%s." % (filename, file.errorString()))
+            QtGui.QMessageBox.warning(
+                self, "Dock Widgets", "Cannot write file %s:\n%s."
+                % (filename, file.errorString()))
             return
 
         out = QtCore.QTextStream(file)
@@ -158,49 +159,59 @@ class MainWindow(QtGui.QMainWindow):
             return
         cursor.beginEditBlock()
         cursor.movePosition(QtGui.QTextCursor.PreviousBlock,
-                QtGui.QTextCursor.MoveAnchor, 2)
+                            QtGui.QTextCursor.MoveAnchor, 2)
         cursor.insertBlock()
         cursor.insertText(paragraph)
         cursor.insertBlock()
         cursor.endEditBlock()
 
     def about(self):
-        QtGui.QMessageBox.about(self, "About Dock Widgets",
-                "The <b>Dock Widgets</b> example demonstrates how to use "
-                "Qt's dock widgets. You can enter your own text, click a "
-                "customer to add a customer name and address, and click "
-                "standard paragraphs to add them.")
+        QtGui.QMessageBox.about(
+            self, "About Dock Widgets",
+            "The <b>Dock Widgets</b> example demonstrates how to use "
+            "Qt's dock widgets. You can enter your own text, click a "
+            "customer to add a customer name and address, and click "
+            "standard paragraphs to add them.")
 
     def createActions(self):
-        self.newLetterAct = QtGui.QAction(QtGui.QIcon(':/images/new.png'),
-                "&New Letter", self, shortcut=QtGui.QKeySequence.New,
-                statusTip="Create a new form letter",
-                triggered=self.newLetter)
+        self.newLetterAct = \
+            QtGui.QAction(QtGui.QIcon(':/images/new.png'), "&New Letter", self,
+                          shortcut=QtGui.QKeySequence.New,
+                          statusTip="Create a new form letter",
+                          triggered=self.newLetter)
 
-        self.saveAct = QtGui.QAction(QtGui.QIcon(':/images/save.png'),
-                "&Save...", self, shortcut=QtGui.QKeySequence.Save,
-                statusTip="Save the current form letter",
-                triggered=self.save)
+        self.saveAct = \
+            QtGui.QAction(QtGui.QIcon(':/images/save.png'), "&Save...", self,
+                          shortcut=QtGui.QKeySequence.Save,
+                          statusTip="Save the current form letter",
+                          triggered=self.save)
 
-        self.printAct = QtGui.QAction(QtGui.QIcon(':/images/print.png'),
-                "&Print...", self, shortcut=QtGui.QKeySequence.Print,
-                statusTip="Print the current form letter",
-                triggered=self.print_)
+        self.printAct = \
+            QtGui.QAction(QtGui.QIcon(':/images/print.png'), "&Print...", self,
+                          shortcut=QtGui.QKeySequence.Print,
+                          statusTip="Print the current form letter",
+                          triggered=self.print_)
 
-        self.undoAct = QtGui.QAction(QtGui.QIcon(':/images/undo.png'),
-                "&Undo", self, shortcut=QtGui.QKeySequence.Undo,
-                statusTip="Undo the last editing action", triggered=self.undo)
+        self.undoAct = \
+            QtGui.QAction(QtGui.QIcon(':/images/undo.png'), "&Undo", self,
+                          shortcut=QtGui.QKeySequence.Undo,
+                          statusTip="Undo the last editing action",
+                          triggered=self.undo)
 
-        self.quitAct = QtGui.QAction("&Quit", self, shortcut="Ctrl+Q",
-                statusTip="Quit the application", triggered=self.close)
+        self.quitAct = \
+            QtGui.QAction("&Quit", self, shortcut="Ctrl+Q",
+                          statusTip="Quit the application",
+                          triggered=self.close)
 
-        self.aboutAct = QtGui.QAction("&About", self,
-                statusTip="Show the application's About box",
-                triggered=self.about)
+        self.aboutAct = \
+            QtGui.QAction("&About", self,
+                          statusTip="Show the application's About box",
+                          triggered=self.about)
 
-        self.aboutQtAct = QtGui.QAction("About &Qt", self,
-                statusTip="Show the Qt library's About box",
-                triggered=QtGui.qApp.aboutQt)
+        self.aboutQtAct = \
+            QtGui.QAction("About &Qt", self,
+                          statusTip="Show the Qt library's About box",
+                          triggered=QtGui.qApp.aboutQt)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
@@ -235,7 +246,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def createDockWindows(self):
         dock = QtGui.QDockWidget("Customers", self)
-        dock.setAllowedAreas(QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
+        dock.setAllowedAreas(
+            QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
         self.customerList = QtGui.QListWidget(dock)
         self.customerList.addItems((
             "John Doe, Harmony Enterprises, 12 Lakeside, Ambleton",
@@ -253,21 +265,21 @@ class MainWindow(QtGui.QMainWindow):
         self.paragraphsList.addItems((
             "Thank you for your payment which we have received today.",
             "Your order has been dispatched and should be with you within "
-                "28 days.",
+            "28 days.",
             "We have dispatched those items that were in stock. The rest of "
-                "your order will be dispatched once all the remaining items "
-                "have arrived at our warehouse. No additional shipping "
-                "charges will be made.",
+            "your order will be dispatched once all the remaining items "
+            "have arrived at our warehouse. No additional shipping "
+            "charges will be made.",
             "You made a small overpayment (less than $5) which we will keep "
-                "on account for you, or return at your request.",
+            "on account for you, or return at your request.",
             "You made a small underpayment (less than $1), but we have sent "
-                "your order anyway. We'll add this underpayment to your next "
-                "bill.",
+            "your order anyway. We'll add this underpayment to your next "
+            "bill.",
             "Unfortunately you did not send enough money. Please remit an "
-                "additional $. Your order will be dispatched as soon as the "
-                "complete amount has been received.",
+            "additional $. Your order will be dispatched as soon as the "
+            "complete amount has been received.",
             "You made an overpayment (more than $5). Do you wish to buy more "
-                "items, or should we return the excess to you?"))
+            "items, or should we return the excess to you?"))
         dock.setWidget(self.paragraphsList)
         self.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock)
         self.viewMenu.addAction(dock.toggleViewAction())

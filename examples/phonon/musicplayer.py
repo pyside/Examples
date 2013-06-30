@@ -28,10 +28,11 @@ try:
     from PySide.phonon import Phonon
 except ImportError:
     app = QtGui.QApplication(sys.argv)
-    QtGui.QMessageBox.critical(None, "Music Player",
-            "Your Qt installation does not have Phonon support.",
-            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
-            QtGui.QMessageBox.NoButton)
+    QtGui.QMessageBox.critical(
+        None, "Music Player",
+        "Your Qt installation does not have Phonon support.",
+        QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
+        QtGui.QMessageBox.NoButton)
     sys.exit(1)
 
 
@@ -46,25 +47,28 @@ class MainWindow(QtGui.QMainWindow):
         self.mediaObject.setTickInterval(1000)
 
         self.connect(self.mediaObject, QtCore.SIGNAL('tick(qint64)'),
-                self.tick)
-        self.connect(self.mediaObject,
-                QtCore.SIGNAL('stateChanged(Phonon::State, Phonon::State)'),
-                self.stateChanged)
-        self.connect(self.metaInformationResolver,
-                QtCore.SIGNAL('stateChanged(Phonon::State, Phonon::State)'),
-                self.metaStateChanged)
-        self.connect(self.mediaObject,
-                QtCore.SIGNAL('currentSourceChanged(Phonon::MediaSource)'),
-                self.sourceChanged)
+                     self.tick)
+        self.connect(
+            self.mediaObject,
+            QtCore.SIGNAL('stateChanged(Phonon::State, Phonon::State)'),
+            self.stateChanged)
+        self.connect(
+            self.metaInformationResolver,
+            QtCore.SIGNAL('stateChanged(Phonon::State, Phonon::State)'),
+            self.metaStateChanged)
+        self.connect(
+            self.mediaObject,
+            QtCore.SIGNAL('currentSourceChanged(Phonon::MediaSource)'),
+            self.sourceChanged)
         self.connect(self.mediaObject, QtCore.SIGNAL('aboutToFinish()'),
-                self.aboutToFinish)
+                     self.aboutToFinish)
 
         Phonon.createPath(self.mediaObject, self.audioOutput)
 
         self.setupActions()
         self.setupMenus()
         self.setupUi()
-        self.timeLcd.display("00:00") 
+        self.timeLcd.display("00:00")
 
         self.sources = []
 
@@ -72,11 +76,12 @@ class MainWindow(QtGui.QMainWindow):
         return QtCore.QSize(500, 300)
 
     def addFiles(self):
-        files,_ = QtGui.QFileDialog.getOpenFileNames(self,
-                  self.tr("Select Music Files"),
-                  QtGui.QDesktopServices.storageLocation(QtGui.QDesktopServices.MusicLocation))
+        files, _ = QtGui.QFileDialog.getOpenFileNames(
+            self, self.tr("Select Music Files"),
+            QtGui.QDesktopServices.storageLocation(
+                QtGui.QDesktopServices.MusicLocation))
 
-        if files=="":
+        if files == "":
             return
 
         index = len(self.sources)
@@ -88,19 +93,20 @@ class MainWindow(QtGui.QMainWindow):
             self.metaInformationResolver.setCurrentSource(self.sources[index])
 
     def about(self):
-        QtGui.QMessageBox.information(self, self.tr("About Music Player"),
-                self.tr("The Music Player example shows how to use Phonon - "
-                        "the multimedia framework that comes with Qt - to "
-                        "create a simple music player."))
+        QtGui.QMessageBox.information(
+            self, self.tr("About Music Player"),
+            self.tr("The Music Player example shows how to use Phonon - the "
+                    "multimedia framework that comes with Qt - to create a "
+                    "simple music player."))
 
     def stateChanged(self, newState, oldState):
         if newState == Phonon.ErrorState:
             if self.mediaObject.errorType() == Phonon.FatalError:
                 QtGui.QMessageBox.warning(self, self.tr("Fatal Error"),
-                        self.mediaObject.errorString())
+                                          self.mediaObject.errorString())
             else:
                 QtGui.QMessageBox.warning(self, self.tr("Error"),
-                        self.mediaObject.errorString())
+                                          self.mediaObject.errorString())
 
         elif newState == Phonon.PlayingState:
             self.playAction.setEnabled(False)
@@ -139,10 +145,12 @@ class MainWindow(QtGui.QMainWindow):
 
     def metaStateChanged(self, newState, oldState):
         if newState == Phonon.ErrorState:
-            QtGui.QMessageBox.warning(self, self.tr("Error opening files"),
-                    self.metaInformationResolver.errorString())
+            QtGui.QMessageBox.warning(
+                self, self.tr("Error opening files"),
+                self.metaInformationResolver.errorString())
 
-            while self.sources and self.sources.pop() != self.metaInformationResolver.currentSource():
+            while self.sources and self.sources.pop() !=\
+                    self.metaInformationResolver.currentSource():
                 pass
 
             return
@@ -150,13 +158,14 @@ class MainWindow(QtGui.QMainWindow):
         if newState != Phonon.StoppedState and newState != Phonon.PausedState:
             return
 
-        if self.metaInformationResolver.currentSource().type() == Phonon.MediaSource.Invalid:
+        if self.metaInformationResolver.currentSource().type() == \
+                Phonon.MediaSource.Invalid:
             return
 
         metaData = self.metaInformationResolver.metaData()
 
         title = metaData.get('TITLE', [""])[0]
-        if title=="":
+        if title == "":
             title = self.metaInformationResolver.currentSource().fileName()
 
         titleItem = QtGui.QTableWidgetItem(title)
@@ -183,10 +192,12 @@ class MainWindow(QtGui.QMainWindow):
 
         if not self.musicTable.selectedItems():
             self.musicTable.selectRow(0)
-            self.mediaObject.setCurrentSource(self.metaInformationResolver.currentSource())
+            self.mediaObject.setCurrentSource(
+                self.metaInformationResolver.currentSource())
 
         source = self.metaInformationResolver.currentSource()
-        index = self.sources.index(self.metaInformationResolver.currentSource()) + 1
+        index = self.sources.index(
+            self.metaInformationResolver.currentSource()) + 1
 
         if len(self.sources) > index:
             self.metaInformationResolver.setCurrentSource(self.sources[index])
@@ -201,22 +212,32 @@ class MainWindow(QtGui.QMainWindow):
             self.mediaObject.enqueue(self.sources[index])
 
     def setupActions(self):
-        self.playAction = QtGui.QAction(self.style().standardIcon(QtGui.QStyle.SP_MediaPlay), self.tr("Play"), self)
+        self.playAction = QtGui.QAction(
+            self.style().standardIcon(QtGui.QStyle.SP_MediaPlay),
+            self.tr("Play"), self)
         self.playAction.setShortcut(self.tr("Crl+P"))
         self.playAction.setDisabled(True)
 
-        self.pauseAction = QtGui.QAction(self.style().standardIcon(QtGui.QStyle.SP_MediaPause), self.tr("Pause"), self)
+        self.pauseAction = QtGui.QAction(
+            self.style().standardIcon(QtGui.QStyle.SP_MediaPause),
+            self.tr("Pause"), self)
         self.pauseAction.setShortcut(self.tr("Ctrl+A"))
         self.pauseAction.setDisabled(True)
 
-        self.stopAction = QtGui.QAction(self.style().standardIcon(QtGui.QStyle.SP_MediaStop), self.tr("Stop"), self)
+        self.stopAction = QtGui.QAction(
+            self.style().standardIcon(QtGui.QStyle.SP_MediaStop),
+            self.tr("Stop"), self)
         self.stopAction.setShortcut(self.tr("Ctrl+S"))
         self.stopAction.setDisabled(True)
 
-        self.nextAction = QtGui.QAction(self.style().standardIcon(QtGui.QStyle.SP_MediaSkipForward), self.tr("Next"), self)
+        self.nextAction = QtGui.QAction(
+            self.style().standardIcon(QtGui.QStyle.SP_MediaSkipForward),
+            self.tr("Next"), self)
         self.nextAction.setShortcut(self.tr("Ctrl+N"))
 
-        self.previousAction = QtGui.QAction(self.style().standardIcon(QtGui.QStyle.SP_MediaSkipBackward), self.tr("Previous"), self)
+        self.previousAction = QtGui.QAction(
+            self.style().standardIcon(QtGui.QStyle.SP_MediaSkipBackward),
+            self.tr("Previous"), self)
         self.previousAction.setShortcut(self.tr("Ctrl+R"))
 
         self.addFilesAction = QtGui.QAction(self.tr("Add &Files"), self)
@@ -232,19 +253,19 @@ class MainWindow(QtGui.QMainWindow):
         self.aboutQtAction.setShortcut(self.tr("Ctrl+Q"))
 
         self.connect(self.playAction, QtCore.SIGNAL('triggered()'),
-                self.mediaObject, QtCore.SLOT('play()'))
+                     self.mediaObject, QtCore.SLOT('play()'))
         self.connect(self.pauseAction, QtCore.SIGNAL('triggered()'),
-                self.mediaObject, QtCore.SLOT('pause()'))
+                     self.mediaObject, QtCore.SLOT('pause()'))
         self.connect(self.stopAction, QtCore.SIGNAL('triggered()'),
-                self.mediaObject, QtCore.SLOT('stop()'))
+                     self.mediaObject, QtCore.SLOT('stop()'))
         self.connect(self.addFilesAction, QtCore.SIGNAL('triggered()'),
-                self.addFiles)
+                     self.addFiles)
         self.connect(self.exitAction, QtCore.SIGNAL('triggered()'),
-                self, QtCore.SLOT('close()'))
+                     self, QtCore.SLOT('close()'))
         self.connect(self.aboutAction, QtCore.SIGNAL('triggered()'),
-                self.about)
+                     self.about)
         self.connect(self.aboutQtAction, QtCore.SIGNAL('triggered()'),
-                QtGui.qApp, QtCore.SLOT('aboutQt()'))
+                     QtGui.qApp, QtCore.SLOT('aboutQt()'))
 
     def setupMenus(self):
         fileMenu = self.menuBar().addMenu(self.tr("&File"))
@@ -269,7 +290,7 @@ class MainWindow(QtGui.QMainWindow):
         self.volumeSlider = Phonon.VolumeSlider(self)
         self.volumeSlider.setAudioOutput(self.audioOutput)
         self.volumeSlider.setSizePolicy(QtGui.QSizePolicy.Maximum,
-                QtGui.QSizePolicy.Maximum)
+                                        QtGui.QSizePolicy.Maximum)
 
         volumeLabel = QtGui.QLabel()
         volumeLabel.setPixmap(QtGui.QPixmap('images/volume.png'))
@@ -280,14 +301,17 @@ class MainWindow(QtGui.QMainWindow):
         self.timeLcd = QtGui.QLCDNumber()
         self.timeLcd.setPalette(palette)
 
-        headers = [self.tr("Title"), self.tr("Artist"), self.tr("Album"), self.tr("Year")]
+        headers = [self.tr("Title"), self.tr("Artist"), self.tr("Album"),
+                   self.tr("Year")]
 
         self.musicTable = QtGui.QTableWidget(0, 4)
         self.musicTable.setHorizontalHeaderLabels(headers)
-        self.musicTable.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
-        self.musicTable.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.musicTable.setSelectionMode(
+            QtGui.QAbstractItemView.SingleSelection)
+        self.musicTable.setSelectionBehavior(
+            QtGui.QAbstractItemView.SelectRows)
         self.connect(self.musicTable, QtCore.SIGNAL('cellPressed(int, int)'),
-                self.tableClicked)
+                     self.tableClicked)
 
         seekerLayout = QtGui.QHBoxLayout()
         seekerLayout.addWidget(self.seekSlider)

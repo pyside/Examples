@@ -40,13 +40,12 @@ class PixmapWidgetPrivate(object):
 
 
 class PixmapWidget(QGraphicsWidget):
-    def __init__(self, pixmap, parent = None):
+    def __init__(self, pixmap, parent=None):
         QGraphicsWidget.__init__(self, parent)
 
         self._d = PixmapWidgetPrivate()
         self.setPixmap(pixmap)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed);
-
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
     def pixmap(self):
         return self._d.pixmap
@@ -63,7 +62,8 @@ class PixmapWidget(QGraphicsWidget):
         self.updateGeometry()
 
     def getBorders(self):
-        return (self._d.leftBorder, self._d.topBorder, self._d.topBorder, self._d.rightBorder, self._d.bottomBorder)
+        return (self._d.leftBorder, self._d.topBorder, self._d.topBorder,
+                self._d.rightBorder, self._d.bottomBorder)
 
     def setBorders(self, left, top, right, bottom):
         self._d.leftBorder = left
@@ -73,4 +73,6 @@ class PixmapWidget(QGraphicsWidget):
         seld.update()
 
     def paint(self, painter, option, widget):
-        bDrawPixmap(painter, self._d.pixmap, self.boundingRect(), self._d.leftBorder, self._d.topBorder, self._d.rightBorder, self._d.bottomBorder)
+        bDrawPixmap(painter, self._d.pixmap, self.boundingRect(),
+                    self._d.leftBorder, self._d.topBorder, self._d.rightBorder,
+                    self._d.bottomBorder)

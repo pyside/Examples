@@ -15,7 +15,8 @@ class ButtonBackground(DemoItem):
         self.highlighted = highlighted
         self.pressed = pressed
         self.logicalSize = logicalSize
-        self.useSharedImage('%s%d%d%d' % (__file__, type, highlighted, pressed))
+        self.useSharedImage('%s%d%d%d' % (__file__, type, highlighted,
+                                          pressed))
 
     def createImage(self, matrix):
         if self.type in (TextButton.SIDEBAR, TextButton.PANEL):
@@ -24,11 +25,13 @@ class ButtonBackground(DemoItem):
             return self.createArrowBackground(matrix)
 
     def createRoundButtonBackground(self, matrix):
-        scaledRect = matrix.mapRect(QtCore.QRect(0, 0,
-                self.logicalSize.width(), self.logicalSize.height()))
+        scaledRect = matrix.mapRect(
+            QtCore.QRect(0, 0, self.logicalSize.width(),
+                         self.logicalSize.height()))
 
-        image = QtGui.QImage(scaledRect.width(), scaledRect.height(),
-                QtGui.QImage.Format_ARGB32_Premultiplied)
+        image = QtGui.QImage(
+            scaledRect.width(), scaledRect.height(),
+            QtGui.QImage.Format_ARGB32_Premultiplied)
         image.fill(QtGui.QColor(0, 0, 0, 0).rgba())
         painter = QtGui.QPainter(image)
         painter.setRenderHint(QtGui.QPainter.SmoothPixmapTransform)
@@ -78,16 +81,18 @@ class ButtonBackground(DemoItem):
             painter.drawRect(0, 0, scaledRect.width(), scaledRect.height())
         else:
             painter.drawRoundedRect(0, 0, scaledRect.width(),
-                    scaledRect.height(), 10, 90, QtCore.Qt.RelativeSize)
+                                    scaledRect.height(), 10, 90,
+                                    QtCore.Qt.RelativeSize)
 
         return image
 
     def createArrowBackground(self, matrix):
-        scaledRect = matrix.mapRect(QtCore.QRect(0, 0,
-                self.logicalSize.width(), self.logicalSize.height()))
+        scaledRect = matrix.mapRect(
+            QtCore.QRect(0, 0, self.logicalSize.width(),
+                         self.logicalSize.height()))
 
         image = QtGui.QImage(scaledRect.width(), scaledRect.height(),
-                QtGui.QImage.Format_ARGB32_Premultiplied)
+                             QtGui.QImage.Format_ARGB32_Premultiplied)
         image.fill(QtGui.QColor(0, 0, 0, 0).rgba())
         painter = QtGui.QPainter(image)
         painter.setRenderHint(QtGui.QPainter.SmoothPixmapTransform)
@@ -126,7 +131,7 @@ class ButtonBackground(DemoItem):
                     brush.setColorAt(1, normal2)
                 painter.setPen(QtGui.QPen(outlinebrush, 1))
 
-            painter.setBrush(brush);
+            painter.setBrush(brush)
 
         painter.drawRect(0, 0, scaledRect.width(), scaledRect.height())
 
@@ -156,7 +161,8 @@ class TextButton(DemoItem):
 
     ON, OFF, HIGHLIGHT, DISABLED = range(4)
 
-    def __init__(self, text, align=LEFT, userCode=0, scene=None, parent=None, type=SIDEBAR):
+    def __init__(self, text, align=LEFT, userCode=0, scene=None, parent=None,
+                 type=SIDEBAR):
         super(TextButton, self).__init__(scene, parent)
 
         # Prevent a circular import.
@@ -180,9 +186,12 @@ class TextButton(DemoItem):
 
         # Calculate the button size.
         if type in (TextButton.SIDEBAR, TextButton.PANEL):
-            self.logicalSize = QtCore.QSize(TextButton.BUTTON_WIDTH, TextButton.BUTTON_HEIGHT)
+            self.logicalSize = QtCore.QSize(
+                TextButton.BUTTON_WIDTH, TextButton.BUTTON_HEIGHT)
         else:
-            self.logicalSize = QtCore.QSize(int((TextButton.BUTTON_WIDTH / 2.0) - 5), int(TextButton.BUTTON_HEIGHT * 1.5))
+            self.logicalSize = QtCore.QSize(
+                int((TextButton.BUTTON_WIDTH / 2.0) - 5), int(
+                    TextButton.BUTTON_HEIGHT * 1.5))
 
     def setMenuString(self, menu):
         self.menuString = menu
@@ -196,14 +205,14 @@ class TextButton(DemoItem):
 
     def boundingRect(self):
         return QtCore.QRectF(0, 0, self.logicalSize.width(),
-                self.logicalSize.height())
+                             self.logicalSize.height())
 
     def setupHoverText(self):
         if not self.buttonLabel:
             return
 
         textItem = DemoTextItem(self.buttonLabel, Colors.buttonFont(),
-                Colors.buttonText, -1, self.scene(), self)
+                                Colors.buttonText, -1, self.scene(), self)
         textItem.setZValue(self.zValue() + 2)
         textItem.setPos(16, 0)
 
@@ -217,7 +226,8 @@ class TextButton(DemoItem):
 
             x = 1.0
             y = 1.5
-            stop = TextButton.BUTTON_WIDTH - scanItem.boundingRect().width() - x
+            stop = TextButton.BUTTON_WIDTH - scanItem.boundingRect().width() \
+                - x
             if self.alignment == TextButton.LEFT:
                 self.scanAnim.setDuration(2500)
                 self.scanAnim.setPosAt(0.0, QtCore.QPointF(x, y))
@@ -244,13 +254,15 @@ class TextButton(DemoItem):
 
     def setupButtonBg(self):
         self.bgOn = ButtonBackground(self.buttonType, True, True,
-                self.logicalSize, self.scene(), self)
+                                     self.logicalSize, self.scene(), self)
         self.bgOff = ButtonBackground(self.buttonType, False, False,
-                self.logicalSize, self.scene(), self)
+                                      self.logicalSize, self.scene(), self)
         self.bgHighlight = ButtonBackground(self.buttonType, True, False,
-                self.logicalSize, self.scene(), self)
+                                            self.logicalSize, self.scene(),
+                                            self)
         self.bgDisabled = ButtonBackground(self.buttonType, True, True,
-                self.logicalSize, self.scene(), self)
+                                           self.logicalSize, self.scene(),
+                                           self)
         self.setState(TextButton.OFF)
 
     def hoverEnterEvent(self, event):

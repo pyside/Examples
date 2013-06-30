@@ -17,19 +17,19 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle("Syntax Highlighter")
 
     def about(self):
-        QtGui.QMessageBox.about(self, "About Syntax Highlighter",
-                "<p>The <b>Syntax Highlighter</b> example shows how to " \
-                "perform simple syntax highlighting by subclassing the " \
-                "QSyntaxHighlighter class and describing highlighting " \
-                "rules using regular expressions.</p>")
+        QtGui.QMessageBox.about(
+            self, "About Syntax Highlighter", "<p>The <b>Syntax "
+            "Highlighter</b> example shows how to perform simple syntax "
+            "highlighting by subclassing the QSyntaxHighlighter class and "
+            "describing highlighting rules using regular expressions.</p>")
 
     def newFile(self):
         self.editor.clear()
 
     def openFile(self, path=None):
         if not path:
-            path = QtGui.QFileDialog.getOpenFileName(self, "Open File",
-                    '', "C++ Files (*.cpp *.h)")
+            path = QtGui.QFileDialog.getOpenFileName(
+                self, "Open File", '', "C++ Files (*.cpp *.h)")
 
         if path:
             inFile = QtCore.QFile(path[0])
@@ -80,29 +80,30 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         keywordFormat.setForeground(QtCore.Qt.darkBlue)
         keywordFormat.setFontWeight(QtGui.QFont.Bold)
 
-        keywordPatterns = ["\\bchar\\b", "\\bclass\\b", "\\bconst\\b",
-                "\\bdouble\\b", "\\benum\\b", "\\bexplicit\\b", "\\bfriend\\b",
-                "\\binline\\b", "\\bint\\b", "\\blong\\b", "\\bnamespace\\b",
-                "\\boperator\\b", "\\bprivate\\b", "\\bprotected\\b",
-                "\\bpublic\\b", "\\bshort\\b", "\\bsignals\\b", "\\bsigned\\b",
-                "\\bslots\\b", "\\bstatic\\b", "\\bstruct\\b",
-                "\\btemplate\\b", "\\btypedef\\b", "\\btypename\\b",
-                "\\bunion\\b", "\\bunsigned\\b", "\\bvirtual\\b", "\\bvoid\\b",
-                "\\bvolatile\\b"]
+        keywordPatterns = [
+            "\\bchar\\b", "\\bclass\\b", "\\bconst\\b",
+            "\\bdouble\\b", "\\benum\\b", "\\bexplicit\\b", "\\bfriend\\b",
+            "\\binline\\b", "\\bint\\b", "\\blong\\b", "\\bnamespace\\b",
+            "\\boperator\\b", "\\bprivate\\b", "\\bprotected\\b",
+            "\\bpublic\\b", "\\bshort\\b", "\\bsignals\\b", "\\bsigned\\b",
+            "\\bslots\\b", "\\bstatic\\b", "\\bstruct\\b",
+            "\\btemplate\\b", "\\btypedef\\b", "\\btypename\\b",
+            "\\bunion\\b", "\\bunsigned\\b", "\\bvirtual\\b", "\\bvoid\\b",
+            "\\bvolatile\\b"]
 
         self.highlightingRules = [(QtCore.QRegExp(pattern), keywordFormat)
-                for pattern in keywordPatterns]
+                                  for pattern in keywordPatterns]
 
         classFormat = QtGui.QTextCharFormat()
         classFormat.setFontWeight(QtGui.QFont.Bold)
         classFormat.setForeground(QtCore.Qt.darkMagenta)
         self.highlightingRules.append((QtCore.QRegExp("\\bQ[A-Za-z]+\\b"),
-                classFormat))
+                                       classFormat))
 
         singleLineCommentFormat = QtGui.QTextCharFormat()
         singleLineCommentFormat.setForeground(QtCore.Qt.red)
         self.highlightingRules.append((QtCore.QRegExp("//[^\n]*"),
-                singleLineCommentFormat))
+                                       singleLineCommentFormat))
 
         self.multiLineCommentFormat = QtGui.QTextCharFormat()
         self.multiLineCommentFormat.setForeground(QtCore.Qt.red)
@@ -110,13 +111,13 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         quotationFormat = QtGui.QTextCharFormat()
         quotationFormat.setForeground(QtCore.Qt.darkGreen)
         self.highlightingRules.append((QtCore.QRegExp("\".*\""),
-                quotationFormat))
+                                       quotationFormat))
 
         functionFormat = QtGui.QTextCharFormat()
         functionFormat.setFontItalic(True)
         functionFormat.setForeground(QtCore.Qt.blue)
-        self.highlightingRules.append((QtCore.QRegExp("\\b[A-Za-z0-9_]+(?=\\()"),
-                functionFormat))
+        self.highlightingRules.append((
+            QtCore.QRegExp("\\b[A-Za-z0-9_]+(?=\\()"), functionFormat))
 
         self.commentStartExpression = QtCore.QRegExp("/\\*")
         self.commentEndExpression = QtCore.QRegExp("\\*/")
@@ -143,12 +144,13 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                 self.setCurrentBlockState(1)
                 commentLength = len(text) - startIndex
             else:
-                commentLength = endIndex - startIndex + self.commentEndExpression.matchedLength()
+                commentLength = endIndex - startIndex
+                + self.commentEndExpression.matchedLength()
 
             self.setFormat(startIndex, commentLength,
-                    self.multiLineCommentFormat)
-            startIndex = self.commentStartExpression.indexIn(text,
-                    startIndex + commentLength);
+                           self.multiLineCommentFormat)
+            startIndex = self.commentStartExpression.indexIn(
+                text, startIndex + commentLength)
 
 
 if __name__ == '__main__':

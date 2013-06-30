@@ -35,7 +35,7 @@ class Mouse(QtGui.QGraphicsItem):
     # Create the bounding rectangle once.
     adjust = 0.5
     BoundingRect = QtCore.QRectF(-20 - adjust, -22 - adjust, 40 + adjust,
-            83 + adjust)
+                                 83 + adjust)
 
     def __init__(self):
         super(Mouse, self).__init__()
@@ -44,7 +44,7 @@ class Mouse(QtGui.QGraphicsItem):
         self.speed = 0.0
         self.mouseEyeDirection = 0.0
         self.color = QtGui.QColor(QtCore.qrand() % 256, QtCore.qrand() % 256,
-                QtCore.qrand() % 256)
+                                  QtCore.qrand() % 256)
 
         self.rotate(QtCore.qrand() % (360 * 16))
 
@@ -70,7 +70,7 @@ class Mouse(QtGui.QGraphicsItem):
     def shape(self):
         path = QtGui.QPainterPath()
         path.addRect(-10, -20, 20, 40)
-        return path;
+        return path
 
     def paint(self, painter, option, widget):
         # Body.
@@ -87,8 +87,10 @@ class Mouse(QtGui.QGraphicsItem):
         painter.drawEllipse(QtCore.QRectF(-2, -22, 4, 4))
 
         # Pupils.
-        painter.drawEllipse(QtCore.QRectF(-8.0 + self.mouseEyeDirection, -17, 4, 4))
-        painter.drawEllipse(QtCore.QRectF(4.0 + self.mouseEyeDirection, -17, 4, 4))
+        painter.drawEllipse(QtCore.QRectF(-8.0 + self.mouseEyeDirection, -17,
+                                          4, 4))
+        painter.drawEllipse(QtCore.QRectF(4.0 + self.mouseEyeDirection, -17,
+                                          4, 4))
 
         # Ears.
         if self.scene().collidingItems(self):
@@ -109,17 +111,21 @@ class Mouse(QtGui.QGraphicsItem):
 
     def timerEvent(self):
         # Don't move too far away.
-        lineToCenter = QtCore.QLineF(QtCore.QPointF(0, 0), self.mapFromScene(0, 0))
+        lineToCenter = QtCore.QLineF(QtCore.QPointF(0, 0),
+                                     self.mapFromScene(0, 0))
         if lineToCenter.length() > 150:
-            angleToCenter = math.acos(lineToCenter.dx() / lineToCenter.length())
+            angleToCenter = math.acos(
+                lineToCenter.dx() / lineToCenter.length())
             if lineToCenter.dy() < 0:
-                angleToCenter = Mouse.TwoPi - angleToCenter;
-            angleToCenter = Mouse.normalizeAngle((Mouse.Pi - angleToCenter) + Mouse.Pi / 2)
+                angleToCenter = Mouse.TwoPi - angleToCenter
+            angleToCenter = Mouse.normalizeAngle((Mouse.Pi - angleToCenter) +
+                                                 Mouse.Pi / 2)
 
             if angleToCenter < Mouse.Pi and angleToCenter > Mouse.Pi / 4:
                 # Rotate left.
                 self.angle += [-0.25, 0.25][self.angle < -Mouse.Pi / 2]
-            elif angleToCenter >= Mouse.Pi and angleToCenter < (Mouse.Pi + Mouse.Pi / 2 + Mouse.Pi / 4):
+            elif angleToCenter >= Mouse.Pi and \
+                    angleToCenter < (Mouse.Pi + Mouse.Pi / 2 + Mouse.Pi / 4):
                 # Rotate right.
                 self.angle += [-0.25, 0.25][self.angle < Mouse.Pi / 2]
         elif math.sin(self.angle) < 0:
@@ -128,24 +134,27 @@ class Mouse(QtGui.QGraphicsItem):
             self.angle -= 0.25
 
         # Try not to crash with any other mice.
-        dangerMice = self.scene().items(QtGui.QPolygonF([self.mapToScene(0, 0),
-                                                         self.mapToScene(-30, -50),
-                                                         self.mapToScene(30, -50)]))
+        dangerMice = self.scene().items(
+            QtGui.QPolygonF([self.mapToScene(0, 0), self.mapToScene(-30, -50),
+                             self.mapToScene(30, -50)]))
 
         for item in dangerMice:
             if item is self:
                 continue
-        
-            lineToMouse = QtCore.QLineF(QtCore.QPointF(0, 0), self.mapFromItem(item, 0, 0))
+
+            lineToMouse = QtCore.QLineF(QtCore.QPointF(0, 0),
+                                        self.mapFromItem(item, 0, 0))
             angleToMouse = math.acos(lineToMouse.dx() / lineToMouse.length())
             if lineToMouse.dy() < 0:
                 angleToMouse = Mouse.TwoPi - angleToMouse
-            angleToMouse = Mouse.normalizeAngle((Mouse.Pi - angleToMouse) + Mouse.Pi / 2)
+            angleToMouse = Mouse.normalizeAngle((Mouse.Pi - angleToMouse) +
+                                                Mouse.Pi / 2)
 
             if angleToMouse >= 0 and angleToMouse < Mouse.Pi / 2:
                 # Rotate right.
                 self.angle += 0.5
-            elif angleToMouse <= Mouse.TwoPi and angleToMouse > (Mouse.TwoPi - Mouse.Pi / 2):
+            elif angleToMouse <= Mouse.TwoPi and \
+                    angleToMouse > (Mouse.TwoPi - Mouse.Pi / 2):
                 # Rotate left.
                 self.angle -= 0.5
 
@@ -172,7 +181,7 @@ if __name__ == '__main__':
     MouseCount = 7
 
     app = QtGui.QApplication(sys.argv)
-    QtCore.qsrand(QtCore.QTime(0,0,0).secsTo(QtCore.QTime.currentTime()))
+    QtCore.qsrand(QtCore.QTime(0, 0, 0).secsTo(QtCore.QTime.currentTime()))
 
     scene = QtGui.QGraphicsScene()
     scene.setSceneRect(-300, -300, 600, 600)

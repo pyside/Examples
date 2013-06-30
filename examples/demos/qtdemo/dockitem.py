@@ -1,4 +1,5 @@
-from PySide import QtGui
+# QtCore added to fix pep8 violation
+from PySide import QtGui, QtCore
 
 from colors import Colors
 from demoitem import DemoItem
@@ -18,8 +19,9 @@ class DockItem(DemoItem):
         self.setupPixmap()
 
     def setupPixmap(self):
-        self.pixmap = QtGui.QPixmap(int(self.boundingRect().width()),
-                int(self.boundingRect().height()))
+        self.pixmap = QtGui.QPixmap(
+            int(self.boundingRect().width()),
+            int(self.boundingRect().height()))
         self.pixmap.fill(QtGui.QColor(0, 0, 0, 0))
 
         painter = QtGui.QPainter(self.pixmap)
@@ -41,7 +43,7 @@ class DockItem(DemoItem):
             brush.setColorAt(0.0, background)
 
         painter.fillRect(0, 0, int(self.boundingRect().width()),
-                int(self.boundingRect().height()), brush)
+                         int(self.boundingRect().height()), brush)
 
     def boundingRect(self):
         if self.orientation in (DockItem.UP, DockItem.DOWN):

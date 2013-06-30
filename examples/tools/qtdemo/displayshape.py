@@ -102,9 +102,12 @@ class PanelShape(DisplayShape):
                 brushAlpha = brushColor.alpha()
                 fadeMinimum = int(self.metadata.get("fade minimum", "0"))
 
-                if penAlpha != fadeMinimum or brushAlpha != fadeMinimum or self.metadata["fade"] > 0:
-                    penAlpha = max(fadeMinimum, min(penAlpha + self.metadata["fade"], 255))
-                    brushAlpha = max(fadeMinimum, min(brushAlpha + self.metadata["fade"], 255))
+                if penAlpha != fadeMinimum or brushAlpha != fadeMinimum\
+                        or self.metadata["fade"] > 0:
+                    penAlpha = max(fadeMinimum, min(
+                        penAlpha + self.metadata["fade"], 255))
+                    brushAlpha = max(fadeMinimum, min(
+                        brushAlpha + self.metadata["fade"], 255))
 
                     penColor.setAlpha(penAlpha)
                     brushColor.setAlpha(brushAlpha)
@@ -137,7 +140,8 @@ class PanelShape(DisplayShape):
                         pass
 
                     updated = True
-                elif scale != float(self.metadata.get("highlight scale", "0.0")):
+                elif scale != float(self.metadata.get(
+                        "highlight scale", "0.0")):
                     self.metadata["highlight scale"] = scale
 
                     if scale == 1.0:
@@ -146,9 +150,12 @@ class PanelShape(DisplayShape):
                         normal = self.normalBrush.color()
                         highlighted = self.highlightedBrush.color()
 
-                        color.setRedF((1.0 - scale) * normal.redF() + scale * highlighted.redF())
-                        color.setGreenF((1.0 - scale) * normal.greenF() + scale * highlighted.greenF())
-                        color.setBlueF((1.0 - scale) * normal.blueF() + scale * highlighted.blueF())
+                        color.setRedF((1.0 - scale) * normal.redF() + scale
+                                      * highlighted.redF())
+                        color.setGreenF((1.0 - scale) * normal.greenF()
+                                        + scale * highlighted.greenF())
+                        color.setBlueF((1.0 - scale) * normal.blueF() + scale
+                                       * highlighted.blueF())
                         self.brush.setColor(color)
 
                     updated = True
@@ -170,7 +177,8 @@ class PanelShape(DisplayShape):
 
 
 class TitleShape(DisplayShape):
-    def __init__(self, text, font, pen, position, maxSize, alignment=QtCore.Qt.AlignVCenter|QtCore.Qt.AlignLeft):
+    def __init__(self, text, font, pen, position, maxSize,
+                 alignment=QtCore.Qt.AlignVCenter | QtCore.Qt.AlignLeft):
         DisplayShape.__init__(self, position, maxSize)
 
         self.font = QtGui.QFont(font)
@@ -179,7 +187,9 @@ class TitleShape(DisplayShape):
         self.alignment = alignment
 
         fm = QtGui.QFontMetricsF(self.font)
-        self.textRect = fm.boundingRect(QtCore.QRectF(QtCore.QPointF(0, 0), maxSize), self.alignment, self.text)
+        self.textRect = fm.boundingRect(
+            QtCore.QRectF(QtCore.QPointF(0, 0), maxSize), self.alignment,
+            self.text)
 
         textWidth = max(fm.width(self.text), self.textRect.width())
         textHeight = max(fm.height(), self.textRect.height())
@@ -188,8 +198,11 @@ class TitleShape(DisplayShape):
 
         self.font.setPointSizeF(self.font.pointSizeF() * scale)
         fm = QtGui.QFontMetricsF(self.font)
-        self.textRect = fm.boundingRect(QtCore.QRectF(QtCore.QPointF(0, 0), maxSize), self.alignment, self.text)
-        self.baselineStart = QtCore.QPointF(self.textRect.left(), self.textRect.bottom() - fm.descent())
+        self.textRect = fm.boundingRect(
+            QtCore.QRectF(QtCore.QPointF(0, 0), maxSize), self.alignment,
+            self.text)
+        self.baselineStart = QtCore.QPointF(
+            self.textRect.left(), self.textRect.bottom() - fm.descent())
 
     def animate(self):
         updated = False
@@ -199,7 +212,8 @@ class TitleShape(DisplayShape):
                 penColor = self.pen.color()
                 penAlpha = penColor.alpha()
 
-                penAlpha = max(int(self.metadata.get("fade minimum", "0")), min(penAlpha + self.metadata["fade"], 255))
+                penAlpha = max(int(self.metadata.get("fade minimum", "0")),
+                               min(penAlpha + self.metadata["fade"], 255))
 
                 penColor.setAlpha(penAlpha)
                 self.pen.setColor(penColor)
@@ -230,21 +244,25 @@ class TitleShape(DisplayShape):
 
 
 class ImageShape(DisplayShape):
-    def __init__(self, original, position, maxSize, alpha=0, alignment=QtCore.Qt.AlignCenter):
+    def __init__(self, original, position, maxSize, alpha=0,
+                 alignment=QtCore.Qt.AlignCenter):
         DisplayShape.__init__(self, position, maxSize)
 
         self.alpha = alpha
         self.alignment = alignment
 
-        self.source = original.convertToFormat(QtGui.QImage.Format_ARGB32_Premultiplied)
-        scale = min(min(self.maxSize.width() / self.source.width(), self.maxSize.height() / self.source.height()), 1.0)
+        self.source = original.convertToFormat(
+            QtGui.QImage.Format_ARGB32_Premultiplied)
+        scale = min(min(self.maxSize.width() / self.source.width(),
+                        self.maxSize.height() / self.source.height()), 1.0)
 
-        self.source = self.source.scaled(int(ceil(self.source.width() * scale)),
-                                         int(ceil(self.source.height() * scale)),
-                                         QtCore.Qt.KeepAspectRatio,
-                                         QtCore.Qt.SmoothTransformation)
+        self.source = self.source.scaled(
+            int(ceil(self.source.width() * scale)),
+            int(ceil(self.source.height() * scale)),
+            QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
 
-        self.image = QtGui.QImage(self.source.size(), QtGui.QImage.Format_ARGB32_Premultiplied)
+        self.image = QtGui.QImage(self.source.size(),
+                                  QtGui.QImage.Format_ARGB32_Premultiplied)
 
         self.offset = QtCore.QPointF(0.0, 0.0)
 
@@ -261,7 +279,8 @@ class ImageShape(DisplayShape):
         self.redraw()
 
     def redraw(self):
-        self.image.fill(QtGui.qRgba(self.alpha, self.alpha, self.alpha, self.alpha))
+        self.image.fill(QtGui.qRgba(self.alpha, self.alpha, self.alpha,
+                                    self.alpha))
 
         painter = QtGui.QPainter()
         painter.begin(self.image)
@@ -280,7 +299,8 @@ class ImageShape(DisplayShape):
 
         if "destroy" not in self.metadata:
             if "fade" in self.metadata:
-                self.alpha = max(int(self.metadata.get("fade minimum", "0")), min(self.alpha + self.metadata["fade"], 255))
+                self.alpha = max(int(self.metadata.get("fade minimum", "0")),
+                                 min(self.alpha + self.metadata["fade"], 255))
                 self.redraw()
 
                 if self.alpha == 0:
@@ -305,7 +325,9 @@ class DocumentShape(DisplayShape):
         self.textDocument.setDefaultFont(font)
         self.textDocument.setPageSize(maxSize)
         documentSize = self.textDocument.documentLayout().documentSize()
-        self.setSize(QtCore.QSizeF(self.maxSize.width(), min(self.maxSize.height(), documentSize.height())))
+        self.setSize(QtCore.QSizeF(
+            self.maxSize.width(), min(self.maxSize.height(),
+                                      documentSize.height())))
 
         self.source = QtGui.QImage(int(ceil(documentSize.width())),
                                    int(ceil(documentSize.height())),
@@ -335,7 +357,8 @@ class DocumentShape(DisplayShape):
 
         if "destroy" not in self.metadata:
             if "fade" in self.metadata:
-                self.alpha = max(int(self.metadata.get("fade minimum", "0")), min(self.alpha + self.metadata["fade"], 255))
+                self.alpha = max(int(self.metadata.get("fade minimum", "0")),
+                                 min(self.alpha + self.metadata["fade"], 255))
                 self.redraw()
 
                 if self.alpha == 0:
@@ -349,7 +372,8 @@ class DocumentShape(DisplayShape):
         return (DisplayShape.animate(self) or updated)
 
     def redraw(self):
-        self.image.fill(QtGui.qRgba(self.alpha, self.alpha, self.alpha, self.alpha))
+        self.image.fill(QtGui.qRgba(self.alpha, self.alpha, self.alpha,
+                                    self.alpha))
 
         painter = QtGui.QPainter()
         painter.begin(self.image)

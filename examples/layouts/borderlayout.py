@@ -87,21 +87,23 @@ class BorderLayout(QtGui.QLayout):
             position = wrapper.position
 
             if position == BorderLayout.North:
-                item.setGeometry(QtCore.QRect(rect.x(), northHeight,
-                        rect.width(), item.sizeHint().height()))    
+                item.setGeometry(QtCore.QRect(
+                    rect.x(), northHeight, rect.width(),
+                    item.sizeHint().height()))
 
                 northHeight += item.geometry().height() + self.spacing()
 
             elif position == BorderLayout.South:
-                item.setGeometry(QtCore.QRect(item.geometry().x(),
-                        item.geometry().y(), rect.width(),
-                        item.sizeHint().height()))
+                item.setGeometry(QtCore.QRect(
+                    item.geometry().x(), item.geometry().y(), rect.width(),
+                    item.sizeHint().height()))
 
                 southHeight += item.geometry().height() + self.spacing()
 
-                item.setGeometry(QtCore.QRect(rect.x(),
-                        rect.y() + rect.height() - southHeight + self.spacing(),
-                        item.geometry().width(), item.geometry().height()))
+                item.setGeometry(QtCore.QRect(
+                    rect.x(),
+                    rect.y() + rect.height() - southHeight + self.spacing(),
+                    item.geometry().width(), item.geometry().height()))
 
             elif position == BorderLayout.Center:
                 center = wrapper
@@ -113,25 +115,29 @@ class BorderLayout(QtGui.QLayout):
             position = wrapper.position
 
             if position == BorderLayout.West:
-                item.setGeometry(QtCore.QRect(rect.x() + westWidth,
-                        northHeight, item.sizeHint().width(), centerHeight))    
+                item.setGeometry(QtCore.QRect(
+                    rect.x() + westWidth, northHeight,
+                    item.sizeHint().width(), centerHeight))
 
                 westWidth += item.geometry().width() + self.spacing()
 
             elif position == BorderLayout.East:
-                item.setGeometry(QtCore.QRect(item.geometry().x(),
-                        item.geometry().y(), item.sizeHint().width(),
-                        centerHeight))
+                item.setGeometry(QtCore.QRect(
+                                 item.geometry().x(), item.geometry().y(),
+                                 item.sizeHint().width(), centerHeight))
 
                 eastWidth += item.geometry().width() + self.spacing()
 
-                item.setGeometry(QtCore.QRect(rect.x() + rect.width() - eastWidth + self.spacing(),
-                        northHeight, item.geometry().width(),
-                        item.geometry().height()))
+                item.setGeometry(QtCore.QRect(
+                    rect.x() + rect.width() - eastWidth + self.spacing(),
+                    northHeight, item.geometry().width(),
+                    item.geometry().height()))
 
         if center:
-            center.item.setGeometry(QtCore.QRect(westWidth, northHeight,
-                    rect.width() - eastWidth - westWidth, centerHeight))
+            center.item.setGeometry(
+                QtCore.QRect(westWidth, northHeight,
+                             rect.width() - eastWidth - westWidth,
+                             centerHeight))
 
     def sizeHint(self):
         return self.calculateSize(BorderLayout.SizeHint)
@@ -155,13 +161,15 @@ class BorderLayout(QtGui.QLayout):
 
             if sizeType == BorderLayout.MinimumSize:
                 itemSize = wrapper.item.minimumSize()
-            else: # sizeType == BorderLayout.SizeHint
+            else:  # sizeType == BorderLayout.SizeHint
                 itemSize = wrapper.item.sizeHint()
 
-            if position in (BorderLayout.North, BorderLayout.South, BorderLayout.Center):
+            if position in (BorderLayout.North, BorderLayout.South,
+                            BorderLayout.Center):
                 totalSize.setHeight(totalSize.height() + itemSize.height())
 
-            if position in (BorderLayout.West, BorderLayout.East, BorderLayout.Center):
+            if position in (BorderLayout.West, BorderLayout.East,
+                            BorderLayout.Center):
                 totalSize.setWidth(totalSize.width() + itemSize.width())
 
         return totalSize
@@ -213,4 +221,4 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     window = Window()
     window.show()
-    sys.exit(app.exec_())    
+    sys.exit(app.exec_())

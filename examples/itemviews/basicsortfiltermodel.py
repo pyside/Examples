@@ -44,8 +44,10 @@ class Window(QtGui.QWidget):
         self.proxyView.setModel(self.proxyModel)
         self.proxyView.setSortingEnabled(True)
 
-        self.sortCaseSensitivityCheckBox = QtGui.QCheckBox("Case sensitive sorting")
-        self.filterCaseSensitivityCheckBox = QtGui.QCheckBox("Case sensitive filter")
+        self.sortCaseSensitivityCheckBox = QtGui.QCheckBox(
+            "Case sensitive sorting")
+        self.filterCaseSensitivityCheckBox = QtGui.QCheckBox(
+            "Case sensitive filter")
 
         self.filterPatternLineEdit = QtGui.QLineEdit()
         self.filterPatternLabel = QtGui.QLabel("&Filter pattern:")
@@ -53,11 +55,11 @@ class Window(QtGui.QWidget):
 
         self.filterSyntaxComboBox = QtGui.QComboBox()
         self.filterSyntaxComboBox.addItem("Regular expression",
-                QtCore.QRegExp.RegExp)
+                                          QtCore.QRegExp.RegExp)
         self.filterSyntaxComboBox.addItem("Wildcard",
-                QtCore.QRegExp.Wildcard)
+                                          QtCore.QRegExp.Wildcard)
         self.filterSyntaxComboBox.addItem("Fixed string",
-                QtCore.QRegExp.FixedString)
+                                          QtCore.QRegExp.FixedString)
         self.filterSyntaxLabel = QtGui.QLabel("Filter &syntax:")
         self.filterSyntaxLabel.setBuddy(self.filterSyntaxComboBox)
 
@@ -68,10 +70,14 @@ class Window(QtGui.QWidget):
         self.filterColumnLabel = QtGui.QLabel("Filter &column:")
         self.filterColumnLabel.setBuddy(self.filterColumnComboBox)
 
-        self.filterPatternLineEdit.textChanged.connect(self.filterRegExpChanged)
-        self.filterSyntaxComboBox.currentIndexChanged.connect(self.filterRegExpChanged)
-        self.filterColumnComboBox.currentIndexChanged.connect(self.filterColumnChanged)
-        self.filterCaseSensitivityCheckBox.toggled.connect(self.filterRegExpChanged)
+        self.filterPatternLineEdit.textChanged.connect(
+            self.filterRegExpChanged)
+        self.filterSyntaxComboBox.currentIndexChanged.connect(
+            self.filterRegExpChanged)
+        self.filterColumnComboBox.currentIndexChanged.connect(
+            self.filterColumnChanged)
+        self.filterCaseSensitivityCheckBox.toggled.connect(
+            self.filterRegExpChanged)
         self.sortCaseSensitivityCheckBox.toggled.connect(self.sortChanged)
 
         sourceLayout = QtGui.QHBoxLayout()
@@ -110,7 +116,8 @@ class Window(QtGui.QWidget):
         self.sourceView.setModel(model)
 
     def filterRegExpChanged(self):
-        syntax_nr = self.filterSyntaxComboBox.itemData(self.filterSyntaxComboBox.currentIndex())
+        syntax_nr = self.filterSyntaxComboBox.itemData(
+            self.filterSyntaxComboBox.currentIndex())
         syntax = QtCore.QRegExp.PatternSyntax(syntax_nr)
 
         if self.filterCaseSensitivityCheckBox.isChecked():
@@ -119,11 +126,12 @@ class Window(QtGui.QWidget):
             caseSensitivity = QtCore.Qt.CaseInsensitive
 
         regExp = QtCore.QRegExp(self.filterPatternLineEdit.text(),
-                caseSensitivity, syntax)
+                                caseSensitivity, syntax)
         self.proxyModel.setFilterRegExp(regExp)
 
     def filterColumnChanged(self):
-        self.proxyModel.setFilterKeyColumn(self.filterColumnComboBox.currentIndex())
+        self.proxyModel.setFilterKeyColumn(
+            self.filterColumnComboBox.currentIndex())
 
     def sortChanged(self):
         if self.sortCaseSensitivityCheckBox.isChecked():
@@ -150,7 +158,8 @@ def createMailModel(parent):
 
     addMail(model, "Happy New Year!", "Grace K. <grace@software-inc.com>",
             QtCore.QDateTime(QtCore.QDate(2006, 12, 31), QtCore.QTime(17, 3)))
-    addMail(model, "Radically new concept", "Grace K. <grace@software-inc.com>",
+    addMail(model, "Radically new concept",
+            "Grace K. <grace@software-inc.com>",
             QtCore.QDateTime(QtCore.QDate(2006, 12, 22), QtCore.QTime(9, 44)))
     addMail(model, "Accounts", "pascale@nospam.com",
             QtCore.QDateTime(QtCore.QDate(2006, 12, 31), QtCore.QTime(12, 50)))

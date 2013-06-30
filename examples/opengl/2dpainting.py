@@ -34,9 +34,9 @@ try:
 except ImportError:
     app = QApplication(sys.argv)
     QMessageBox.critical(None, "OpenGL 2dpainting",
-                            "PyOpenGL must be installed to run this example.",
-                            QMessageBox.Ok | QMessageBox.Default,
-                            QMessageBox.NoButton)
+                         "PyOpenGL must be installed to run this example.",
+                         QMessageBox.Ok | QMessageBox.Default,
+                         QMessageBox.NoButton)
     sys.exit(1)
 
 
@@ -80,7 +80,7 @@ class Helper:
 
 
 class Widget(QWidget):
-    def __init__(self, helper, parent = None):
+    def __init__(self, helper, parent=None):
         QWidget.__init__(self, parent)
 
         self.helper = helper
@@ -100,7 +100,7 @@ class Widget(QWidget):
 
 
 class GLWidget(QGLWidget):
-    def __init__(self, helper, parent = None):
+    def __init__(self, helper, parent=None):
         QGLWidget.__init__(self, QGLFormat(QGL.SampleBuffers), parent)
 
         self.helper = helper
@@ -119,7 +119,7 @@ class GLWidget(QGLWidget):
 
 
 class Window(QWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
         helper = Helper()
@@ -142,7 +142,8 @@ class Window(QWidget):
         self.connect(timer, SIGNAL("timeout()"), openGL.animate)
         timer.start(50)
 
-        self.setWindowTitle(self.tr("2D Painting on Native and OpenGL Widgets"))
+        self.setWindowTitle(self.tr(
+            "2D Painting on Native and OpenGL Widgets"))
 
 
 if __name__ == '__main__':

@@ -26,6 +26,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 
+
 def bTileRectAt(order, size, leftBorder, topBorder, rightBorder, bottomBorder):
     w = size.width()
     h = size.height()
@@ -39,36 +40,40 @@ def bTileRectAt(order, size, leftBorder, topBorder, rightBorder, bottomBorder):
         return QRect(w - rightBorder, 0, rightBorder, topBorder)
     elif order == 3:
         return QRect(0, topBorder,
-                     leftBorder, h - topBorder - bottomBorder);
+                     leftBorder, h - topBorder - bottomBorder)
     elif order == 4:
         return QRect(leftBorder, topBorder,
                      w - leftBorder - rightBorder,
-                     h - topBorder - bottomBorder);
+                     h - topBorder - bottomBorder)
     elif order == 5:
         return QRect(w - rightBorder, topBorder,
-                     rightBorder, h - topBorder - bottomBorder);
+                     rightBorder, h - topBorder - bottomBorder)
     elif order == 6:
-        return QRect(0, h - bottomBorder, leftBorder, bottomBorder);
+        return QRect(0, h - bottomBorder, leftBorder, bottomBorder)
     elif order == 7:
         return QRect(leftBorder, h - bottomBorder,
-                     w - leftBorder - rightBorder, bottomBorder);
+                     w - leftBorder - rightBorder, bottomBorder)
     elif order == 8:
         return QRect(w - rightBorder, h - bottomBorder,
-                     rightBorder, bottomBorder);
+                     rightBorder, bottomBorder)
     else:
-        return QRect();
+        return QRect()
 
 
-def bDrawPixmap(painter, pixmap, boundingRect, leftBorder, topBorder, rightBorder, bottomBorder):
+def bDrawPixmap(painter, pixmap, boundingRect, leftBorder, topBorder,
+                rightBorder, bottomBorder):
     if pixmap.isNull():
         return
 
-    if leftBorder <= 0 and rightBorder <= 0 and topBorder <= 0 and bottomBorder <= 0:
+    if leftBorder <= 0 and rightBorder <= 0 and topBorder <= 0 and \
+            bottomBorder <= 0:
         painter.drawPixmap(boundingRect.toRect(), pixmap)
     else:
         for i in range(9):
-            oRect = bTileRectAt(i, pixmap.size(), leftBorder, topBorder, rightBorder, bottomBorder)
-            dRect = bTileRectAt(i, boundingRect.size().toSize(), leftBorder, topBorder, rightBorder, bottomBorder)
+            oRect = bTileRectAt(i, pixmap.size(), leftBorder, topBorder,
+                                rightBorder, bottomBorder)
+            dRect = bTileRectAt(i, boundingRect.size().toSize(), leftBorder,
+                                topBorder, rightBorder, bottomBorder)
 
             dRect.translate(boundingRect.x(), boundingRect.y())
 

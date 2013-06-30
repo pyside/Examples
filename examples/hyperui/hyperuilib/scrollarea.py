@@ -26,9 +26,9 @@
 from PySide import QtGui, QtCore
 from kineticscroll import KineticScroll
 
+
 #Ok I know, this class is not necessary in python
 #but this will change the logic and this will bring more work
-
 class ScrollAreaPrivate:
     def __init__(self, parent):
         self._offset = 0
@@ -42,7 +42,6 @@ class ScrollAreaPrivate:
         self._scrollArea = parent
         self._ignoreList = []
 
-
     def smoothPos(self, y):
         if abs(self._mouseDownPos - y) <= self._moveConstant:
             return y
@@ -50,7 +49,6 @@ class ScrollAreaPrivate:
             return y - self._moveConstant
         else:
             return y + self._moveConstant
-
 
     def isClickPossible(self, y):
         if self._isDragging or self._mouseDownPos < 0:
@@ -61,7 +59,8 @@ class ScrollAreaPrivate:
     def updateMaximumOffset(self):
         value = 0
         if self._widget:
-            value = max(0, self._widget.size().height() - self._scrollArea.size().height())
+            value = max(0, self._widget.size().height() -
+                        self._scrollArea.size().height())
 
         if value != self._maximumOffset:
             self._maximumOffset = value
@@ -69,22 +68,25 @@ class ScrollAreaPrivate:
 
     def reconfigure(self):
         if self._widget:
-            self._widget.resize(self._scrollArea.size().width(), self._widget.size().height())
+            self._widget.resize(self._scrollArea.size().width(),
+                                self._widget.size().height())
             self.updateMaximumOffset()
             self._scrollArea.setOffset(self._offset)
 
     def sendClick(self, x, y):
-        if self._scrollArea.scene() == None:
+        if self._scrollArea.scene() is None:
             return
 
-        event = QtGui.QGraphicsSceneMouseEvent(QtCore.QEvent.GraphicsSceneMousePress)
+        event = QtGui.QGraphicsSceneMouseEvent(
+            QtCore.QEvent.GraphicsSceneMousePress)
         event.setButton(QtCore.Qt.LeftButton)
         pos = QtCore.QPointF(x, y)
         event.setScenePos(pos)
         self._ignoreList.append(pos)
         QtCore.QCoreApplication.postEvent(self._scrollArea.scene(), event)
 
-        event = QtGui.QGraphicsSceneMouseEvent(QtCore.QEvent.GraphicsSceneMouseRelease)
+        event = QtGui.QGraphicsSceneMouseEvent(
+            QtCore.QEvent.GraphicsSceneMouseRelease)
         event.setButton(QtCore.Qt.LeftButton)
 
         pos = QtCore.QPointF(x, y)
@@ -94,7 +96,7 @@ class ScrollAreaPrivate:
 
 
 class ScrollArea(QtGui.QGraphicsWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QtGui.QGraphicsWidget.__init__(self, parent)
 
         self.setFlags(QtGui.QGraphicsItem.ItemHasNoContents)
@@ -102,8 +104,8 @@ class ScrollArea(QtGui.QGraphicsWidget):
 
         self._d = ScrollAreaPrivate(self)
         self._d._kinetic = KineticScroll(self)
-        self.connect(self._d._kinetic, QtCore.SIGNAL("signalMoveOffset(int)"), QtCore.SLOT("kineticMove(int)"))
-
+        self.connect(self._d._kinetic, QtCore.SIGNAL("signalMoveOffset(int)"),
+                     QtCore.SLOT("kineticMove(int)"))
 
     def widget(self):
         return self._d._widget
@@ -121,7 +123,6 @@ class ScrollArea(QtGui.QGraphicsWidget):
             self._d._widget.setPos(0, 0)
             self._d._widget.setFlag(QtGui.QGraphicsItem.ItemStacksBehindParent)
             self._d.reconfigure()
-
 
     def offset(self):
         return self._d._offset
@@ -143,8 +144,9 @@ class ScrollArea(QtGui.QGraphicsWidget):
         self._d.reconfigure()
 
     def eventFilter(self, object, event):
-        if object == self._d._widget and event.type() == QtCore.QEvent.GraphicsSceneResize:
-            self._d.reconfigure()
+        if object == self._d._widget and \
+                event.type() == QtCore.QEvent.GraphicsSceneResize:
+                    self._d.reconfigure()
 
         return False
 
@@ -198,7 +200,3 @@ class ScrollArea(QtGui.QGraphicsWidget):
             return False
 
         return True
-
-
-
-

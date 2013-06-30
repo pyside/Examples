@@ -21,8 +21,9 @@ class HeadingItem(DemoItem):
         xShadow = 3.0
         yShadow = 3.0
 
-        image = QtGui.QImage(int((w + xShadow) * sx), int((h + yShadow) * sy),
-                QtGui.QImage.Format_ARGB32_Premultiplied)
+        image = QtGui.QImage(
+            int((w + xShadow) * sx), int((h + yShadow) * sy),
+            QtGui.QImage.Format_ARGB32_Premultiplied)
         image.fill(QtGui.QColor(0, 0, 0, 0).rgba())
         painter = QtGui.QPainter(image)
         painter.setFont(Colors.headingFont())
@@ -38,8 +39,9 @@ class HeadingItem(DemoItem):
         pen_shadow = QtGui.QPen()
         pen_shadow.setBrush(brush_shadow)
         painter.setPen(pen_shadow)
-        painter.drawText(int(xShadow), int(yShadow), int(w), int(h),
-                QtCore.Qt.AlignLeft, self.text)
+        painter.drawText(
+            int(xShadow), int(yShadow), int(w), int(h), QtCore.Qt.AlignLeft,
+            self.text)
 
         # Draw text.
         brush_text = QtGui.QLinearGradient(0, 0, w, w)

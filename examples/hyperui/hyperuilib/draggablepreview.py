@@ -28,13 +28,14 @@ from PySide.QtGui import *
 
 from hyperuilib.shared.dataresource import *
 
+
 class DraggablePreview(QGraphicsWidget):
 
     def SCALED_POS(self, sw, sh, scale):
         return QPointF(round(sw * 0.5 - (sw * 0.5 + self._leftMargin) * scale),
-                   round(sh - (sh + self._topMargin) * 0.5 * scale))
+                       round(sh - (sh + self._topMargin) * 0.5 * scale))
 
-    def __init__(self, item, screenSize, parent = None):
+    def __init__(self, item, screenSize, parent=None):
         QGraphicsWidget.__init__(self, parent)
 
         self._item = item
@@ -42,8 +43,10 @@ class DraggablePreview(QGraphicsWidget):
         self._border = Resource.intValue("draggable-preview/border")
         self._topMargin = Resource.intValue("draggable-preview/margin-top")
         self._leftMargin = Resource.intValue("draggable-preview/margin-left")
-        self._maximizeRange = Resource.doubleValue("draggable-preview/maximize-range")
-        self._minimumOffset = Resource.intValue("draggable-preview/minimum-offset")
+        self._maximizeRange = Resource.doubleValue(
+            "draggable-preview/maximize-range")
+        self._minimumOffset = Resource.intValue(
+            "draggable-preview/minimum-offset")
         self.setFlag(QGraphicsItem.ItemHasNoContents)
         self.setupInterface()
 
@@ -58,7 +61,8 @@ class DraggablePreview(QGraphicsWidget):
         # add embedded widget
         self._item.setParentItem(self)
         self._item.setFlag(QGraphicsItem.ItemStacksBehindParent)
-        self._item.setPos(self._leftMargin + self._border, self._topMargin + self._border)
+        self._item.setPos(self._leftMargin + self._border,
+                          self._topMargin + self._border)
         self._item.resize(QSizeF(self._screenSize))
 
         # resize to the background size
@@ -68,11 +72,13 @@ class DraggablePreview(QGraphicsWidget):
         sh = self._screenSize.height()
 
         minimumScale = Resource.doubleValue("draggable-preview/minimum-scale")
-        draggableScale = Resource.doubleValue("draggable-preview/first-zoom-scale")
+        draggableScale = Resource.doubleValue(
+            "draggable-preview/first-zoom-scale")
 
         self._draggablePos = self.SCALED_POS(sw, sh, draggableScale)
         minimumPos = self.SCALED_POS(sw, sh, minimumScale)
-        maximumPos = QPointF(-self._leftMargin - self._border, -self._topMargin - self._border)
+        maximumPos = QPointF(-self._leftMargin - self._border,
+                             -self._topMargin - self._border)
 
         self._maximumOffset = minimumPos.y()
 
@@ -95,24 +101,25 @@ class DraggablePreview(QGraphicsWidget):
         firstZoomTime = Resource.intValue("draggable-preview/first-zoom-time")
 
         # create minimized > draggable state transition
-        transition = self._minimizedState.addTransition(self, SIGNAL("draggableStarted()"),
-                                                              self._draggableState)
+        transition = self._minimizedState.addTransition(
+            self, SIGNAL("draggableStarted()"), self._draggableState)
 
         transition.addAnimation(self.createAnimation(firstZoomTime))
 
         # create draggable > minimized state transition
-        transition = self._draggableState.addTransition(self, SIGNAL("minimizeStarted()"),
-                                                              self._minimizedState)
+        transition = self._draggableState.addTransition(
+            self, SIGNAL("minimizeStarted()"), self._minimizedState)
         transition.addAnimation(self.createAnimation(restoreTime))
 
         # create draggable > maximized state transition
-        transition = self._draggableState.addTransition(self, SIGNAL("maximizeStarted()"),
-                                                              self._maximizedState)
-        transition.addAnimation(self.createAnimation(maximizeTime, SLOT("onMaximizeFinished()")))
+        transition = self._draggableState.addTransition(
+            self, SIGNAL("maximizeStarted()"), self._maximizedState)
+        transition.addAnimation(
+            self.createAnimation(maximizeTime, SLOT("onMaximizeFinished()")))
 
         # this is used just to update the final value when still animating
-        transition = self._draggableState.addTransition(self, SIGNAL("draggableUpdate()"),
-                                                              self._draggableState)
+        transition = self._draggableState.addTransition(
+            self, SIGNAL("draggableUpdate()"), self._draggableState)
         transition.addAnimation(self.createAnimation(0))
 
         # add states
@@ -126,7 +133,7 @@ class DraggablePreview(QGraphicsWidget):
         self._machine.setInitialState(self._minimizedState)
         self._machine.start()
 
-    def createAnimation(self, time, slot = None):
+    def createAnimation(self, time, slot=None):
         result = QParallelAnimationGroup()
 
         posAnimation = QPropertyAnimation(self, "pos")
@@ -164,16 +171,15 @@ class DraggablePreview(QGraphicsWidget):
         self.emit(SIGNAL("draggableStarted()"))
 
     def mouseMoveEvent(self, e):
-        offset = round(self.pos().y() +  e.scenePos().y() - self._lastPos.y())
+        offset = round(self.pos().y() + e.scenePos().y() - self._lastPos.y())
         self._lastPos = e.scenePos()
 
         fy = max(self._minimumOffset, min(offset, self._maximumOffset))
 
         if fy < self._draggablePos.y():
-            self._draggableState.assignProperty(self, "pos",
-                                                QPointF(self._draggablePos.x(), fy))
+            self._draggableState.assignProperty(
+                self, "pos", QPointF(self._draggablePos.x(), fy))
         self.emit(SIGNAL("draggableUpdate()"))
-
 
     def mouseReleaseEvent(self, e):
         if self.pos().y() < self._minimumOffset + self._maximizeRange:

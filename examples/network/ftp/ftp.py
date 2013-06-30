@@ -21,12 +21,14 @@ class FtpWindow(QtGui.QDialog):
         self.ftpServerLineEdit = QtGui.QLineEdit('ftp.trolltech.com')
         ftpServerLabel.setBuddy(self.ftpServerLineEdit)
 
-        self.statusLabel = QtGui.QLabel("Please enter the name of an FTP server.")
+        self.statusLabel = QtGui.QLabel(
+            "Please enter the name of an FTP server.")
 
         self.fileList = QtGui.QTreeWidget()
         self.fileList.setEnabled(False)
         self.fileList.setRootIsDecorated(False)
-        self.fileList.setHeaderLabels(("Name", "Size", "Owner", "Group", "Time"))
+        self.fileList.setHeaderLabels((
+            "Name", "Size", "Owner", "Group", "Time"))
         self.fileList.header().setStretchLastSection(False)
 
         self.connectButton = QtGui.QPushButton("Connect")
@@ -43,7 +45,7 @@ class FtpWindow(QtGui.QDialog):
 
         buttonBox = QtGui.QDialogButtonBox()
         buttonBox.addButton(self.downloadButton,
-                QtGui.QDialogButtonBox.ActionRole)
+                            QtGui.QDialogButtonBox.ActionRole)
         buttonBox.addButton(self.quitButton, QtGui.QDialogButtonBox.RejectRole)
 
         self.progressDialog = QtGui.QProgressDialog(self)
@@ -116,7 +118,8 @@ class FtpWindow(QtGui.QDialog):
                     # Python v2.
                     pass
 
-                self.ftp.login(QtCore.QUrl.fromPercentEncoding(user_name), url.password())
+                self.ftp.login(QtCore.QUrl.fromPercentEncoding(user_name),
+                               url.password())
             else:
                 self.ftp.login()
 
@@ -126,21 +129,23 @@ class FtpWindow(QtGui.QDialog):
         self.fileList.setEnabled(True)
         self.connectButton.setEnabled(False)
         self.connectButton.setText("Disconnect")
-        self.statusLabel.setText("Connecting to FTP server %s..." % self.ftpServerLineEdit.text())
+        self.statusLabel.setText("Connecting to FTP server %s..."
+                                 % self.ftpServerLineEdit.text())
 
     def downloadFile(self):
         fileName = self.fileList.currentItem().text(0)
 
         if QtCore.QFile.exists(fileName):
-            QtGui.QMessageBox.information(self, "FTP",
-                    "There already exists a file called %s in the current "
-                    "directory." % fileName)
+            QtGui.QMessageBox.information(
+                self, "FTP", "There already exists a file called %s in the "
+                "current directory." % fileName)
             return
 
         self.outFile = QtCore.QFile(fileName)
         if not self.outFile.open(QtCore.QIODevice.WriteOnly):
-            QtGui.QMessageBox.information(self, "FTP",
-                    "Unable to save the file %s: %s." % (fileName, self.outFile.errorString()))
+            QtGui.QMessageBox.information(
+                self, "FTP", "Unable to save the file %s: %s."
+                % (fileName, self.outFile.errorString()))
             self.outFile = None
             return
 
@@ -158,13 +163,15 @@ class FtpWindow(QtGui.QDialog):
 
         if self.ftp.currentCommand() == QtNetwork.QFtp.ConnectToHost:
             if error:
-                QtGui.QMessageBox.information(self, "FTP",
-                        "Unable to connect to the FTP server at %s. Please "
-                        "check that the host name is correct." % self.ftpServerLineEdit.text())
+                QtGui.QMessageBox.information(
+                    self, "FTP", "Unable to connect to the FTP server at %s. "
+                    "Please check that the host name is correct."
+                    % self.ftpServerLineEdit.text())
                 self.connectOrDisconnect()
                 return
 
-            self.statusLabel.setText("Logged onto %s." % self.ftpServerLineEdit.text())
+            self.statusLabel.setText(
+                "Logged onto %s." % self.ftpServerLineEdit.text())
             self.fileList.setFocus()
             self.downloadButton.setDefault(True)
             self.connectButton.setEnabled(True)
@@ -175,11 +182,13 @@ class FtpWindow(QtGui.QDialog):
 
         if self.ftp.currentCommand() == QtNetwork.QFtp.Get:
             if error:
-                self.statusLabel.setText("Canceled download of %s." % self.outFile.fileName())
+                self.statusLabel.setText("Canceled download of %s."
+                                         % self.outFile.fileName())
                 self.outFile.close()
                 self.outFile.remove()
             else:
-                self.statusLabel.setText("Downloaded %s to current directory." % self.outFile.fileName())
+                self.statusLabel.setText("Downloaded %s to current directory."
+                                         % self.outFile.fileName())
                 self.outFile.close()
 
             self.outFile = None
@@ -187,7 +196,8 @@ class FtpWindow(QtGui.QDialog):
             self.progressDialog.hide()
         elif self.ftp.currentCommand() == QtNetwork.QFtp.List:
             if not self.isDirectory:
-                self.fileList.addTopLevelItem(QtGui.QTreeWidgetItem(["<empty>"]))
+                self.fileList.addTopLevelItem(
+                    QtGui.QTreeWidgetItem(["<empty>"]))
                 self.fileList.setEnabled(False)
 
     def addToList(self, urlInfo):
@@ -245,7 +255,8 @@ class FtpWindow(QtGui.QDialog):
         current = self.fileList.currentItem()
         if current:
             currentFile = current.text(0)
-            self.downloadButton.setEnabled(not self.isDirectory.get(currentFile))
+            self.downloadButton.setEnabled(
+                not self.isDirectory.get(currentFile))
         else:
             self.downloadButton.setEnabled(False)
 

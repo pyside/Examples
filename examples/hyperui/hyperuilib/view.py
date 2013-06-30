@@ -26,6 +26,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 
+
 class View(QGraphicsWidget):
     def __init__(self, parent):
         QGraphicsWidget.__init__(self, parent)

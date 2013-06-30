@@ -41,6 +41,7 @@ import calculator_rc
 
 calculator_rc.qInitResources()
 
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv

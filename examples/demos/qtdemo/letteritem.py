@@ -15,11 +15,13 @@ class LetterItem(DemoItem):
     def createImage(self, matrix):
         scaledRect = matrix.mapRect(QtCore.QRect(0, 0, 25, 25))
         image = QtGui.QImage(scaledRect.width(), scaledRect.height(),
-                QtGui.QImage.Format_ARGB32_Premultiplied)
+                             QtGui.QImage.Format_ARGB32_Premultiplied)
         image.fill(0)
         painter = QtGui.QPainter(image)
         painter.scale(matrix.m11(), matrix.m22())
-        painter.setRenderHints(QtGui.QPainter.TextAntialiasing | QtGui.QPainter.Antialiasing | QtGui.QPainter.SmoothPixmapTransform)
+        painter.setRenderHints(QtGui.QPainter.TextAntialiasing |
+                               QtGui.QPainter.Antialiasing |
+                               QtGui.QPainter.SmoothPixmapTransform)
         painter.setPen(QtCore.Qt.NoPen)
 
         if Colors.useEightBitPalette:

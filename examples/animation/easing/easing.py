@@ -43,6 +43,7 @@ class Animation(QtCore.QPropertyAnimation):
         else:
             super(Animation, self).updateCurrentTime(currentTime)
 
+
 # PyQt doesn't support deriving from more than one wrapped class so we use
 # composition and delegate the property.
 class Pixmap(QtCore.QObject):
@@ -50,7 +51,8 @@ class Pixmap(QtCore.QObject):
         super(Pixmap, self).__init__()
 
         self.pixmap_item = QtGui.QGraphicsPixmapItem(pix)
-        self.pixmap_item.setCacheMode(QtGui.QGraphicsItem.DeviceCoordinateCache)
+        self.pixmap_item.setCacheMode(
+            QtGui.QGraphicsItem.DeviceCoordinateCache)
 
     def set_pos(self, pos):
         self.pixmap_item.setPos(pos)
@@ -59,7 +61,7 @@ class Pixmap(QtCore.QObject):
         return self.pixmap_item.pos()
 
     pos = QtCore.Property(QtCore.QPointF, get_pos, set_pos)
-    
+
 
 class Window(QtGui.QWidget):
     def __init__(self, parent=None):
@@ -67,7 +69,7 @@ class Window(QtGui.QWidget):
 
         self.m_iconSize = QtCore.QSize(64, 64)
         self.m_scene = QtGui.QGraphicsScene()
-        
+
         m_ui = Ui_Form()
         m_ui.setupUi(self)
         m_ui.easingCurvePicker.setIconSize(self.m_iconSize)
@@ -85,7 +87,7 @@ class Window(QtGui.QWidget):
         m_ui.periodSpinBox.valueChanged.connect(self.periodChanged)
         m_ui.amplitudeSpinBox.valueChanged.connect(self.amplitudeChanged)
         m_ui.overshootSpinBox.valueChanged.connect(self.overshootChanged)
-        
+
         self.m_ui = m_ui
         self.createCurveIcons()
 
@@ -96,8 +98,9 @@ class Window(QtGui.QWidget):
 
         self.m_anim = Animation(self.m_item, 'pos')
         self.m_anim.setEasingCurve(QtCore.QEasingCurve.OutBounce)
-        self.m_ui.easingCurvePicker.setCurrentRow(int(QtCore.QEasingCurve.OutBounce))        
-        
+        self.m_ui.easingCurvePicker.setCurrentRow(
+            int(QtCore.QEasingCurve.OutBounce))
+
         self.startAnimation()
 
     def createCurveIcons(self):
@@ -114,15 +117,16 @@ class Window(QtGui.QWidget):
         # different curve types.  We do the Python equivalant (but without
         # cheating)
         curve_types = [(n, c) for n, c in QtCore.QEasingCurve.__dict__.items()
-                        if isinstance(c, QtCore.QEasingCurve.Type) \
-                            and c != QtCore.QEasingCurve.Custom    \
-                            and c != QtCore.QEasingCurve.NCurveTypes]
+                       if isinstance(c, QtCore.QEasingCurve.Type)
+                       and c != QtCore.QEasingCurve.Custom
+                       and c != QtCore.QEasingCurve.NCurveTypes]
         curve_types.sort(key=lambda ct: ct[1])
-        
+
         painter.begin(pix)
 
         for curve_name, curve_type in curve_types:
-            painter.fillRect(QtCore.QRect(QtCore.QPoint(0, 0), self.m_iconSize), brush)
+            painter.fillRect(QtCore.QRect(QtCore.QPoint(0, 0),
+                                          self.m_iconSize), brush)
             curve = QtCore.QEasingCurve(curve_type)
 
             painter.setPen(QtGui.QColor(0, 0, 255, 64))
@@ -131,28 +135,30 @@ class Window(QtGui.QWidget):
             painter.drawLine(0, xAxis, self.m_iconSize.width(),  xAxis)
             painter.drawLine(yAxis, 0, yAxis, self.m_iconSize.height())
 
-            curveScale = self.m_iconSize.height() / 2.0;
+            curveScale = self.m_iconSize.height() / 2.0
 
             painter.setPen(QtCore.Qt.NoPen)
 
             # Start point.
             painter.setBrush(QtCore.Qt.red)
-            start = QtCore.QPoint(yAxis,
-                    xAxis - curveScale * curve.valueForProgress(0))
+            start = QtCore.QPoint(
+                yAxis, xAxis - curveScale * curve.valueForProgress(0))
             painter.drawRect(start.x() - 1, start.y() - 1, 3, 3)
 
             # End point.
             painter.setBrush(QtCore.Qt.blue)
-            end = QtCore.QPoint(yAxis + curveScale,
-                    xAxis - curveScale * curve.valueForProgress(1))
+            end = QtCore.QPoint(
+                yAxis + curveScale,
+                xAxis - curveScale * curve.valueForProgress(1))
             painter.drawRect(end.x() - 1, end.y() - 1, 3, 3)
 
             curvePath = QtGui.QPainterPath()
             curvePath.moveTo(QtCore.QPointF(start))
             t = 0.0
             while t <= 1.0:
-                to = QtCore.QPointF(yAxis + curveScale * t,
-                        xAxis - curveScale * curve.valueForProgress(t))
+                to = QtCore.QPointF(
+                    yAxis + curveScale * t,
+                    xAxis - curveScale * curve.valueForProgress(t))
                 curvePath.lineTo(to)
                 t += 1.0 / curveScale
 
@@ -180,14 +186,15 @@ class Window(QtGui.QWidget):
         self.m_anim.setCurrentTime(0)
 
         isElastic = (curveType >= QtCore.QEasingCurve.InElastic
-                    and curveType <= QtCore.QEasingCurve.OutInElastic)
+                     and curveType <= QtCore.QEasingCurve.OutInElastic)
         isBounce = (curveType >= QtCore.QEasingCurve.InBounce
                     and curveType <= QtCore.QEasingCurve.OutInBounce)
 
         self.m_ui.periodSpinBox.setEnabled(isElastic)
         self.m_ui.amplitudeSpinBox.setEnabled(isElastic or isBounce)
-        self.m_ui.overshootSpinBox.setEnabled(curveType >= QtCore.QEasingCurve.InBack
-                                          and curveType <= QtCore.QEasingCurve.OutInBack)
+        self.m_ui.overshootSpinBox.setEnabled(
+            curveType >= QtCore.QEasingCurve.InBack
+            and curveType <= QtCore.QEasingCurve.OutInBack)
 
     def pathChanged(self, index):
         self.m_anim.setPathType(index)

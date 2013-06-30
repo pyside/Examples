@@ -44,14 +44,16 @@ class Window(QtGui.QDialog):
         self.resize(700, 300)
 
     def browse(self):
-        directory = QtGui.QFileDialog.getExistingDirectory(self, "Find Files",
-                QtCore.QDir.currentPath())
+        directory = \
+            QtGui.QFileDialog.getExistingDirectory(self, "Find Files",
+                                                   QtCore.QDir.currentPath())
 
         if directory:
             if self.directoryComboBox.findText(directory) == -1:
                 self.directoryComboBox.addItem(directory)
 
-            self.directoryComboBox.setCurrentIndex(self.directoryComboBox.findText(directory))
+            self.directoryComboBox.setCurrentIndex(
+                self.directoryComboBox.findText(directory))
 
     @staticmethod
     def updateComboBox(comboBox):
@@ -73,7 +75,8 @@ class Window(QtGui.QDialog):
         if not fileName:
             fileName = "*"
         files = self.currentDir.entryList([fileName],
-                QtCore.QDir.Files | QtCore.QDir.NoSymLinks)
+                                          QtCore.QDir.Files |
+                                          QtCore.QDir.NoSymLinks)
 
         if text:
             files = self.findFiles(files, text)
@@ -90,7 +93,8 @@ class Window(QtGui.QDialog):
 
         for i in range(files.count()):
             progressDialog.setValue(i)
-            progressDialog.setLabelText("Searching file number %d of %d..." % (i, files.count()))
+            progressDialog.setLabelText("Searching file number %d of %d..."
+                                        % (i, files.count()))
             QtGui.qApp.processEvents()
 
             if progressDialog.wasCanceled():
@@ -118,9 +122,12 @@ class Window(QtGui.QDialog):
             size = QtCore.QFileInfo(file).size()
 
             fileNameItem = QtGui.QTableWidgetItem(fn)
-            fileNameItem.setFlags(fileNameItem.flags() ^ QtCore.Qt.ItemIsEditable)
-            sizeItem = QtGui.QTableWidgetItem("%d KB" % (int((size + 1023) / 1024)))
-            sizeItem.setTextAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
+            fileNameItem.setFlags(
+                fileNameItem.flags() ^ QtCore.Qt.ItemIsEditable)
+            sizeItem = \
+                QtGui.QTableWidgetItem("%d KB" % (int((size + 1023) / 1024)))
+            sizeItem.setTextAlignment(
+                QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)
             sizeItem.setFlags(sizeItem.flags() ^ QtCore.Qt.ItemIsEditable)
 
             row = self.filesTable.rowCount()
@@ -128,7 +135,8 @@ class Window(QtGui.QDialog):
             self.filesTable.setItem(row, 0, fileNameItem)
             self.filesTable.setItem(row, 1, sizeItem)
 
-        self.filesFoundLabel.setText("%d file(s) found (Double click on a file to open it)" % len(files))
+        self.filesFoundLabel.setText("%d file(s) found (Double click on a "
+                                     "file to open it)" % len(files))
 
     def createButton(self, text, member):
         button = QtGui.QPushButton(text)
@@ -140,15 +148,17 @@ class Window(QtGui.QDialog):
         comboBox.setEditable(True)
         comboBox.addItem(text)
         comboBox.setSizePolicy(QtGui.QSizePolicy.Expanding,
-                QtGui.QSizePolicy.Preferred)
+                               QtGui.QSizePolicy.Preferred)
         return comboBox
 
     def createFilesTable(self):
         self.filesTable = QtGui.QTableWidget(0, 2)
-        self.filesTable.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.filesTable.setSelectionBehavior(
+            QtGui.QAbstractItemView.SelectRows)
 
         self.filesTable.setHorizontalHeaderLabels(("File Name", "Size"))
-        self.filesTable.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
+        self.filesTable.horizontalHeader().setResizeMode(
+            0, QtGui.QHeaderView.Stretch)
         self.filesTable.verticalHeader().hide()
         self.filesTable.setShowGrid(False)
 
@@ -157,7 +167,8 @@ class Window(QtGui.QDialog):
     def openFileOfItem(self, row, column):
         item = self.filesTable.item(row, 0)
 
-        QtGui.QDesktopServices.openUrl(QtCore.QUrl(self.currentDir.absoluteFilePath(item.text())))
+        QtGui.QDesktopServices.openUrl(
+            QtCore.QUrl(self.currentDir.absoluteFilePath(item.text())))
 
 
 if __name__ == '__main__':

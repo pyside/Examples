@@ -38,11 +38,13 @@
 
 from PySide import QtCore, QtGui, QtDeclarative
 
+
 class Console(QtCore.QObject):
 
     @QtCore.Slot('double')
-    def output(self,s):
-	print s
+    def output(self, s):
+        print s
+
 
 def sayThis(s):
     print s
@@ -57,16 +59,16 @@ if __name__ == '__main__':
     #con = Console()
 
     view.setSource(QtCore.QUrl('view.qml'))
-    
+
     root = view.rootObject()
 
-    button = root.findChild(QtCore.QObject,"buttonMouseArea")
-    
+    button = root.findChild(QtCore.QObject, "buttonMouseArea")
+
     root.textRotationChanged.connect(sayThis)
-    
-    root.buttonClicked.connect(lambda: sayThis("clicked button (QML top-level signal)"))
-    
+
+    root.buttonClicked.connect(lambda: sayThis(
+        "clicked button (QML top-level signal)"))
+
     view.show()
 
     sys.exit(app.exec_())
-

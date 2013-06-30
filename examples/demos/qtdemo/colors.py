@@ -62,7 +62,7 @@ class Colors(object):
     animSpeed = 1.0
     animSpeedButtons = 1.0
     benchmarkFps = -1.0
-    tickerLetterCount = 80;
+    tickerLetterCount = 80
     tickerMoveSpeed = 0.4
     tickerMorphSpeed = 2.5
     tickerText = ".EROM ETAERC .SSEL EDOC"
@@ -91,7 +91,7 @@ class Colors(object):
         font.setBold(True)
         font.setFamily('Verdana')
 
-        return font;
+        return font
 
     @staticmethod
     def buttonFont():
@@ -146,7 +146,7 @@ class Colors(object):
             elif s == "-no-ticker":
                 cls.noTicker = True
             elif s.startswith("-ticker"):
-                cls.noTicker =  not bool(parseFloat(s, "-ticker"))
+                cls.noTicker = not bool(parseFloat(s, "-ticker"))
             elif s == "-no-animations":
                 cls.noAnimations = True
             elif s.startswith("-animations"):
@@ -172,7 +172,8 @@ class Colors(object):
             elif s.startswith("-menu"):
                 cls.menuCount = int(parseFloat(s, "-menu"))
             elif s.startswith("-use-timer-update"):
-                cls.noTimerUpdate = not bool(parseFloat(s, "-use-timer-update"))
+                cls.noTimerUpdate = not bool(
+                    parseFloat(s, "-use-timer-update"))
             elif s.startswith("-pause"):
                 cls.pause = bool(parseFloat(s, "-pause"))
             elif s == "-no-ticker-morph":
@@ -200,17 +201,18 @@ class Colors(object):
             elif s.startswith("-fps"):
                 cls.fps = int(parseFloat(s, "-fps"))
             elif s.startswith("-h") or s.startswith("-help"):
-                QtGui.QMessageBox.warning(None, "Arguments",
-                        "Usage: qtdemo.py [-verbose] [-no-adapt] [-opengl] "
-                        "[-direct3d] [-software] [-fullscreen] [-ticker[0|1]] "
-                        "[-animations[0|1]] [-no-blending] [-no-sync] "
-                        "[-use-timer-update[0|1]] [-pause[0|1]] "
-                        "[-use-window-mask] [-no-rescale] [-use-pixmaps] "
-                        "[-show-fps] [-show-br] [-8bit[0|1]] [-menu<int>] "
-                        "[-use-loop] [-use-balls] [-animation-speed<float>] "
-                        "[-fps<int>] [-low] [-ticker-letters<int>] "
-                        "[-ticker-speed<float>] [-no-ticker-morph] "
-                        "[-ticker-morph-speed<float>] [-ticker-text<string>]")
+                QtGui.QMessageBox.warning(
+                    None, "Arguments",
+                    "Usage: qtdemo.py [-verbose] [-no-adapt] [-opengl] "
+                    "[-direct3d] [-software] [-fullscreen] [-ticker[0|1]] "
+                    "[-animations[0|1]] [-no-blending] [-no-sync] "
+                    "[-use-timer-update[0|1]] [-pause[0|1]] "
+                    "[-use-window-mask] [-no-rescale] [-use-pixmaps] "
+                    "[-show-fps] [-show-br] [-8bit[0|1]] [-menu<int>] "
+                    "[-use-loop] [-use-balls] [-animation-speed<float>] "
+                    "[-fps<int>] [-low] [-ticker-letters<int>] "
+                    "[-ticker-speed<float>] [-no-ticker-morph] "
+                    "[-ticker-morph-speed<float>] [-ticker-text<string>]")
                 sys.exit(0)
 
         cls.postConfigure()
@@ -253,8 +255,8 @@ class Colors(object):
 
             if (not QtOpenGL.QGLFormat.hasOpenGL() or
                     not glw.format().directRendering() or
-                    not (version_flags & QtOpenGL.QGLFormat.OpenGL_Version_1_5) or
-                    glw.depth() < 24):
+                    not (version_flags & QtOpenGL.QGLFormat.OpenGL_Version_1_5)
+                    or glw.depth() < 24):
                 cls.openGlAdequate = False
                 cls.debug("- OpenGL not recommended on this system")
         else:
@@ -284,17 +286,20 @@ class Colors(object):
             if w.depth() < 16:
                 cls.useEightBitPalette = True
                 cls.adapted = True
-                cls.debug("- Adapt: Color depth less than 16 bit. Using 8 bit palette")
+                cls.debug("- Adapt: Color depth less than 16 bit. Using 8 bit "
+                          "palette")
 
             if not cls.xRenderPresent:
                 cls.setLowSettings()
                 cls.adapted = True
-                cls.debug("- Adapt: X renderer not present. Using low settings")
+                cls.debug("- Adapt: X renderer not present. Using low "
+                          "settings")
 
         if sys.platform != 'win32':
             if cls.direct3dRendering:
                 cls.direct3dRendering = False
-                cls.debug("- WARNING: Direct3D specified, but not supported on this platform")
+                cls.debug("- WARNING: Direct3D specified, but not supported "
+                          "on this platform")
 
         if (not cls.openGlRendering and not cls.direct3dRendering and
                 not cls.softwareRendering):
@@ -321,9 +326,9 @@ def parseFloat(argument, name):
 
 def parseText(argument, name):
     if len(name) == len(argument):
-        QtGui.QMessageBox.warning(None, "Arguments",
-                "No argument number found for %s. Remember to put name and "
-                "value adjacent! (e.g. -fps100)")
+        QtGui.QMessageBox.warning(
+            None, "Arguments", "No argument number found for %s. Remember to "
+            "put name and value adjacent! (e.g. -fps100)")
         sys.exit(0)
 
     return argument[len(name):]

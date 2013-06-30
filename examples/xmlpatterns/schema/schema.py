@@ -38,7 +38,8 @@ class XmlSyntaxHighlighter(QtGui.QSyntaxHighlighter):
         format = QtGui.QTextCharFormat()
         format.setForeground(QtCore.Qt.darkBlue)
         format.setFontWeight(QtGui.QFont.Bold)
-        pattern = QtCore.QRegExp("(<[a-zA-Z:]+\\b|<\\?[a-zA-Z:]+\\b|\\?>|>|/>|</[a-zA-Z:]+>)")
+        pattern = QtCore.QRegExp(
+            "(<[a-zA-Z:]+\\b|<\\?[a-zA-Z:]+\\b|\\?>|>|/>|</[a-zA-Z:]+>)")
         self.highlightingRules.append((pattern, format))
 
         # Attribute format.
@@ -82,11 +83,12 @@ class XmlSyntaxHighlighter(QtGui.QSyntaxHighlighter):
                 self.setCurrentBlockState(1)
                 commentLength = text.length() - startIndex
             else:
-                commentLength = endIndex - startIndex + self.commentEndExpression.matchedLength()
+                commentLength = endIndex - startIndex + \
+                    self.commentEndExpression.matchedLength()
 
             self.setFormat(startIndex, commentLength, self.commentFormat)
-            startIndex = self.commentStartExpression.indexIn(text,
-                    startIndex + commentLength)
+            startIndex = self.commentStartExpression.indexIn(
+                text, startIndex + commentLength)
 
 
 class MessageHandler(QtXmlPatterns.QAbstractMessageHandler):
@@ -128,12 +130,15 @@ class MainWindow(QtGui.QMainWindow, Ui_SchemaMainWindow):
         self.instanceSelection.addItem("Valid Contact Instance")
         self.instanceSelection.addItem("Invalid Contact Instance")
 
-        self.schemaSelection.currentIndexChanged[int].connect(self.schemaSelected)
-        self.instanceSelection.currentIndexChanged[int].connect(self.instanceSelected)
+        self.schemaSelection.currentIndexChanged[int].connect(
+            self.schemaSelected)
+        self.instanceSelection.currentIndexChanged[int].connect(
+            self.instanceSelected)
         self.validateButton.clicked.connect(self.validate)
         self.instanceEdit.textChanged.connect(self.textChanged)
 
-        self.validationStatus.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+        self.validationStatus.setAlignment(
+            QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
 
         self.schemaSelected(0)
         self.instanceSelected(0)
@@ -195,7 +200,8 @@ class MainWindow(QtGui.QMainWindow, Ui_SchemaMainWindow):
             self.validationStatus.setText("validation successful")
             background = QtCore.Qt.green
 
-        styleSheet = 'QLabel {background: %s; padding: 3px}' % QtGui.QColor(background).lighter(160).name()
+        styleSheet = 'QLabel {background: %s; padding: 3px}' % QtGui.QColor(
+            background).lighter(160).name()
         self.validationStatus.setStyleSheet(styleSheet)
 
     def textChanged(self):
@@ -215,7 +221,8 @@ class MainWindow(QtGui.QMainWindow, Ui_SchemaMainWindow):
 
         lineColor = QtGui.QColor(QtCore.Qt.red).lighter(160)
         selection.format.setBackground(lineColor)
-        selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)
+        selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection,
+                                     True)
         selection.cursor = self.instanceEdit.textCursor()
         selection.cursor.clearSelection()
         extraSelections.append(selection)

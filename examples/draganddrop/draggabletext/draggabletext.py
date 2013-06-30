@@ -46,7 +46,7 @@ class DragLabel(QtGui.QLabel):
         mimeData = QtCore.QMimeData()
         mimeData.setText(self.text())
         mimeData.setData('application/x-hotspot',
-                '%d %d' % (hotSpot.x(), hotSpot.y()))
+                         '%d %d' % (hotSpot.x(), hotSpot.y()))
 
         pixmap = QtGui.QPixmap(self.size())
         self.render(pixmap)
@@ -56,7 +56,8 @@ class DragLabel(QtGui.QLabel):
         drag.setPixmap(pixmap)
         drag.setHotSpot(hotSpot)
 
-        dropAction = drag.exec_(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction, QtCore.Qt.CopyAction)
+        dropAction = drag.exec_(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction,
+                                QtCore.Qt.CopyAction)
 
         if dropAction == QtCore.Qt.MoveAction:
             self.close()
@@ -109,8 +110,8 @@ class DragWidget(QtGui.QWidget):
 
             hotSpotPos = mime.data('application/x-hotspot').split(' ')
             if len(hotSpotPos) == 2:
-               hotSpot.setX(hotSpotPos[0].toInt()[0])
-               hotSpot.setY(hotSpotPos[1].toInt()[0])
+                hotSpot.setX(hotSpotPos[0].toInt()[0])
+                hotSpot.setY(hotSpotPos[1].toInt()[0])
 
             for piece in pieces:
                 newLabel = DragLabel(piece, self)

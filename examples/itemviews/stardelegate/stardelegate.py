@@ -38,7 +38,7 @@
 **
 *****************************************************************************
 ** February 2011
-** - stardelegate example ported to PySide by Arun Srinivasan 
+** - stardelegate example ported to PySide by Arun Srinivasan
 **   <rulfzid@gmail.com>
 **************************************************************************"""
 
@@ -46,6 +46,7 @@ from PySide.QtGui import (QItemDelegate, QStyledItemDelegate, QStyle)
 
 from starrating import StarRating
 from stareditor import StarEditor
+
 
 class StarDelegate(QStyledItemDelegate):
     """ A subclass of QStyledItemDelegate that allows us to render our
@@ -57,33 +58,33 @@ class StarDelegate(QStyledItemDelegate):
 
     def paint(self, painter, option, index):
         """ Paint the items in the table.
-            
+
             If the item referred to by <index> is a StarRating, we handle the
             painting ourselves. For the other items, we let the base class
             handle the painting as usual.
 
-            In a polished application, we'd use a better check than the 
+            In a polished application, we'd use a better check than the
             column number to find out if we needed to paint the stars, but
             it works for the purposes of this example.
         """
         if index.column() == 3:
             starRating = StarRating(index.data())
-            
+
             # If the row is currently selected, we need to make sure we
             # paint the background accordingly.
             if option.state & QStyle.State_Selected:
                 # The original C++ example used option.palette.foreground() to
-                # get the brush for painting, but there are a couple of 
+                # get the brush for painting, but there are a couple of
                 # problems with that:
                 #   - foreground() is obsolete now, use windowText() instead
                 #   - more importantly, windowText() just returns a brush
-                #     containing a flat color, where sometimes the style 
-                #     would have a nice subtle gradient or something. 
+                #     containing a flat color, where sometimes the style
+                #     would have a nice subtle gradient or something.
                 # Here we just use the brush of the painter object that's
                 # passed in to us, which keeps the row highlighting nice
                 # and consistent.
                 painter.fillRect(option.rect, painter.brush())
-            
+
             # Now that we've painted the background, call starRating.paint()
             # to paint the stars.
             starRating.paint(painter, option.rect, option.palette)
@@ -103,7 +104,7 @@ class StarDelegate(QStyledItemDelegate):
     # be all we needed.
 
     def createEditor(self, parent, option, index):
-        """ Creates and returns the custom StarEditor object we'll use to edit 
+        """ Creates and returns the custom StarEditor object we'll use to edit
             the StarRating.
         """
         if index.column() == 3:
@@ -111,7 +112,8 @@ class StarDelegate(QStyledItemDelegate):
             editor.editingFinished.connect(self.commitAndCloseEditor)
             return editor
         else:
-            return QStyledItemDelegate.createEditor(self, parent, option, index)
+            return QStyledItemDelegate.createEditor(self, parent, option,
+                                                    index)
 
     def setEditorData(self, editor, index):
         """ Sets the data to be displayed and edited by our custom editor. """
@@ -149,15 +151,16 @@ if __name__ == "__main__":
     # Create and populate the tableWidget
     tableWidget = QTableWidget(4, 4)
     tableWidget.setItemDelegate(StarDelegate())
-    tableWidget.setEditTriggers(QAbstractItemView.DoubleClicked | 
+    tableWidget.setEditTriggers(QAbstractItemView.DoubleClicked |
                                 QAbstractItemView.SelectedClicked)
     tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
-    tableWidget.setHorizontalHeaderLabels(["Title", "Genre", "Artist", "Rating"])
+    tableWidget.setHorizontalHeaderLabels(["Title", "Genre", "Artist",
+                                           "Rating"])
 
-    data = [ ["Mass in B-Minor", "Baroque", "J.S. Bach", 5],
-             ["Three More Foxes", "Jazz", "Maynard Ferguson", 4],
-             ["Sex Bomb", "Pop", "Tom Jones", 3],
-             ["Barbie Girl", "Pop", "Aqua", 5] ]
+    data = [["Mass in B-Minor", "Baroque", "J.S. Bach", 5],
+            ["Three More Foxes", "Jazz", "Maynard Ferguson", 4],
+            ["Sex Bomb", "Pop", "Tom Jones", 3],
+            ["Barbie Girl", "Pop", "Aqua", 5]]
 
     for r in range(len(data)):
         tableWidget.setItem(r, 0, QTableWidgetItem(data[r][0]))
@@ -170,6 +173,5 @@ if __name__ == "__main__":
     tableWidget.resizeColumnsToContents()
     tableWidget.resize(500, 300)
     tableWidget.show()
-    
+
     sys.exit(app.exec_())
-                   

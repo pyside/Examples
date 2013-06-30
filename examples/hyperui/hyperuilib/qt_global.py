@@ -28,13 +28,13 @@ from PySide.QtGui import *
 
 
 def drawTextWithShadow(painter, x, y, text, color):
-    painter.setPen(QColor(30, 30, 30));
-    painter.drawText(x + 2, y + 2, text);
+    painter.setPen(QColor(30, 30, 30))
+    painter.drawText(x + 2, y + 2, text)
 
     painter.setPen(color)
     painter.drawText(x, y, text)
 
-def propertyAnimation(obj, property, time, type = QEasingCurve.Linear):
+def propertyAnimation(obj, property, time, type=QEasingCurve.Linear):
     result = QPropertyAnimation(obj, property)
     result.setDuration(int(time))
     result.setEasingCurve(QEasingCurve(type))

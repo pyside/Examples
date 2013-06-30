@@ -93,7 +93,8 @@ class TreeModel(QtCore.QAbstractItemModel):
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
     def headerData(self, section, orientation, role):
-        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
+        if orientation == QtCore.Qt.Horizontal \
+                and role == QtCore.Qt.DisplayRole:
             return self.rootItem.data(section)
 
         return None
@@ -160,7 +161,8 @@ class TreeModel(QtCore.QAbstractItemModel):
                     # parent unless the current parent has no children.
 
                     if parents[-1].childCount() > 0:
-                        parents.append(parents[-1].child(parents[-1].childCount() - 1))
+                        parents.append(
+                            parents[-1].child(parents[-1].childCount() - 1))
                         indentations.append(position)
 
                 else:

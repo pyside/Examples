@@ -38,8 +38,8 @@ class MainWindow(QtGui.QMainWindow):
             self.fallbacksAct.setEnabled(True)
 
     def openIniFile(self):
-        fileName, _  = QtGui.QFileDialog.getOpenFileName(self, "Open INI File",
-                '', "INI Files (*.ini *.conf)")
+        fileName, _ = QtGui.QFileDialog.getOpenFileName(
+            self, "Open INI File", '', "INI Files (*.ini *.conf)")
 
         if fileName:
             settings = QtCore.QSettings(fileName, QtCore.QSettings.IniFormat)
@@ -47,18 +47,20 @@ class MainWindow(QtGui.QMainWindow):
             self.fallbacksAct.setEnabled(False)
 
     def openPropertyList(self):
-        fileName, _ = QtGui.QFileDialog.getOpenFileName(self,
-                "Open Property List", '', "Property List Files (*.plist)")
+        fileName, _ = QtGui.QFileDialog.getOpenFileName(
+            self, "Open Property List", '', "Property List Files (*.plist)")
 
         if fileName:
-            settings = QtCore.QSettings(fileName, QtCore.QSettings.NativeFormat)
+            settings = QtCore.QSettings(fileName,
+                                        QtCore.QSettings.NativeFormat)
             self.setSettingsObject(settings)
             self.fallbacksAct.setEnabled(False)
 
     def openRegistryPath(self):
-        path, ok = QtGui.QInputDialog.getText(self, "Open Registry Path",
-                "Enter the path in the Windows registry:",
-                QtGui.QLineEdit.Normal, 'HKEY_CURRENT_USER\\')
+        path, ok = QtGui.QInputDialog.getText(
+            self, "Open Registry Path",
+            "Enter the path in the Windows registry:",
+            QtGui.QLineEdit.Normal, 'HKEY_CURRENT_USER\\')
 
         if ok and path != '':
             settings = QtCore.QSettings(path, QtCore.QSettings.NativeFormat)
@@ -66,47 +68,56 @@ class MainWindow(QtGui.QMainWindow):
             self.fallbacksAct.setEnabled(False)
 
     def about(self):
-        QtGui.QMessageBox.about(self, "About Settings Editor",
-                "The <b>Settings Editor</b> example shows how to access "
-                "application settings using Qt.")
+        QtGui.QMessageBox.about(
+            self, "About Settings Editor", "The <b>Settings Editor</b> "
+            "example shows how to access application settings using Qt.")
 
     def createActions(self):
-        self.openSettingsAct = QtGui.QAction("&Open Application Settings...",
-                self, shortcut="Ctrl+O", triggered=self.openSettings)
+        self.openSettingsAct = QtGui.QAction(
+            "&Open Application Settings...", self, shortcut="Ctrl+O",
+            triggered=self.openSettings)
 
-        self.openIniFileAct = QtGui.QAction("Open I&NI File...", self,
-                shortcut="Ctrl+N", triggered=self.openIniFile)
+        self.openIniFileAct = QtGui.QAction(
+            "Open I&NI File...", self, shortcut="Ctrl+N",
+            triggered=self.openIniFile)
 
-        self.openPropertyListAct = QtGui.QAction("Open Mac &Property List...",
-                self, shortcut="Ctrl+P", triggered=self.openPropertyList)
+        self.openPropertyListAct = QtGui.QAction(
+            "Open Mac &Property List...", self, shortcut="Ctrl+P",
+            triggered=self.openPropertyList)
         if sys.platform != 'darwin':
             self.openPropertyListAct.setEnabled(False)
 
         self.openRegistryPathAct = QtGui.QAction(
-                "Open Windows &Registry Path...", self, shortcut="Ctrl+G",
-                triggered=self.openRegistryPath)
+            "Open Windows &Registry Path...", self, shortcut="Ctrl+G",
+            triggered=self.openRegistryPath)
         if sys.platform != 'win32':
             self.openRegistryPathAct.setEnabled(False)
 
-        self.refreshAct = QtGui.QAction("&Refresh", self, shortcut="Ctrl+R",
-                enabled=False, triggered=self.settingsTree.refresh)
+        self.refreshAct = QtGui.QAction(
+            "&Refresh", self, shortcut="Ctrl+R", enabled=False,
+            triggered=self.settingsTree.refresh)
 
         self.exitAct = QtGui.QAction("E&xit", self, shortcut="Ctrl+Q",
-                triggered=self.close)
+                                     triggered=self.close)
 
-        self.autoRefreshAct = QtGui.QAction("&Auto-Refresh", self,
-                shortcut="Ctrl+A", checkable=True, enabled=False)
-        self.autoRefreshAct.triggered[bool].connect(self.settingsTree.setAutoRefresh)
-        self.autoRefreshAct.triggered[bool].connect(self.refreshAct.setDisabled)
+        self.autoRefreshAct = QtGui.QAction(
+            "&Auto-Refresh", self, shortcut="Ctrl+A", checkable=True,
+            enabled=False)
+        self.autoRefreshAct.triggered[bool].connect(
+            self.settingsTree.setAutoRefresh)
+        self.autoRefreshAct.triggered[bool].connect(
+            self.refreshAct.setDisabled)
 
-        self.fallbacksAct = QtGui.QAction("&Fallbacks", self,
-                shortcut="Ctrl+F", checkable=True, enabled=False)
-        self.fallbacksAct.triggered[bool].connect(self.settingsTree.setFallbacksEnabled)
+        self.fallbacksAct = QtGui.QAction(
+            "&Fallbacks", self, shortcut="Ctrl+F", checkable=True,
+            enabled=False)
+        self.fallbacksAct.triggered[bool].connect(
+            self.settingsTree.setFallbacksEnabled)
 
         self.aboutAct = QtGui.QAction("&About", self, triggered=self.about)
 
         self.aboutQtAct = QtGui.QAction("About &Qt", self,
-                triggered=QtGui.qApp.aboutQt)
+                                        triggered=QtGui.qApp.aboutQt)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
@@ -186,20 +197,27 @@ class LocationDialog(QtGui.QDialog):
         self.locationsGroupBox = QtGui.QGroupBox("Setting Locations")
 
         self.locationsTable = QtGui.QTableWidget()
-        self.locationsTable.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
-        self.locationsTable.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
-        self.locationsTable.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.locationsTable.setSelectionMode(
+            QtGui.QAbstractItemView.SingleSelection)
+        self.locationsTable.setSelectionBehavior(
+            QtGui.QAbstractItemView.SelectRows)
+        self.locationsTable.setEditTriggers(
+            QtGui.QAbstractItemView.NoEditTriggers)
         self.locationsTable.setColumnCount(2)
         self.locationsTable.setHorizontalHeaderLabels(("Location", "Access"))
-        self.locationsTable.horizontalHeader().setResizeMode(0, QtGui.QHeaderView.Stretch)
+        self.locationsTable.horizontalHeader().setResizeMode(
+            0, QtGui.QHeaderView.Stretch)
         self.locationsTable.horizontalHeader().resizeSection(1, 180)
 
-        self.buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        self.buttonBox = QtGui.QDialogButtonBox(
+            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
 
         self.formatComboBox.activated.connect(self.updateLocationsTable)
         self.scopeComboBox.activated.connect(self.updateLocationsTable)
-        self.organizationComboBox.lineEdit().editingFinished.connect(self.updateLocationsTable)
-        self.applicationComboBox.lineEdit().editingFinished.connect(self.updateLocationsTable)
+        self.organizationComboBox.lineEdit().editingFinished.connect(
+            self.updateLocationsTable)
+        self.applicationComboBox.lineEdit().editingFinished.connect(
+            self.updateLocationsTable)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
 
@@ -268,8 +286,9 @@ class LocationDialog(QtGui.QDialog):
                 else:
                     actualApplication = ''
 
-                settings = QtCore.QSettings(self.format(), actualScope,
-                        self.organization(), actualApplication)
+                settings = QtCore.QSettings(
+                    self.format(), actualScope, self.organization(),
+                    actualApplication)
 
                 row = self.locationsTable.rowCount()
                 self.locationsTable.setRowCount(row + 1)
@@ -286,7 +305,8 @@ class LocationDialog(QtGui.QDialog):
                         disable = False
                     else:
                         item1.setText("Read-only")
-                    self.buttonBox.button(QtGui.QDialogButtonBox.Ok).setDisabled(disable)
+                    self.buttonBox.button(
+                        QtGui.QDialogButtonBox.Ok).setDisabled(disable)
                 else:
                     item1.setText("Read-only fallback")
 
@@ -316,12 +336,14 @@ class SettingsTree(QtGui.QTreeWidget):
         self.autoRefresh = False
 
         self.groupIcon = QtGui.QIcon()
-        self.groupIcon.addPixmap(self.style().standardPixmap(QtGui.QStyle.SP_DirClosedIcon),
-                QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.groupIcon.addPixmap(self.style().standardPixmap(QtGui.QStyle.SP_DirOpenIcon),
-                QtGui.QIcon.Normal, QtGui.QIcon.On)
+        self.groupIcon.addPixmap(self.style().standardPixmap(
+            QtGui.QStyle.SP_DirClosedIcon), QtGui.QIcon.Normal,
+            QtGui.QIcon.Off)
+        self.groupIcon.addPixmap(self.style().standardPixmap(
+            QtGui.QStyle.SP_DirOpenIcon), QtGui.QIcon.Normal, QtGui.QIcon.On)
         self.keyIcon = QtGui.QIcon()
-        self.keyIcon.addPixmap(self.style().standardPixmap(QtGui.QStyle.SP_FileIcon))
+        self.keyIcon.addPixmap(self.style().standardPixmap(
+            QtGui.QStyle.SP_FileIcon))
 
         self.refreshTimer.timeout.connect(self.maybeRefresh)
 
@@ -511,7 +533,8 @@ class VariantDelegate(QtGui.QItemDelegate):
         self.pointExp.setPattern('\\((-?[0-9]*),(-?[0-9]*)\\)')
 
         self.rectExp = QtCore.QRegExp()
-        self.rectExp.setPattern('\\((-?[0-9]*),(-?[0-9]*),(-?[0-9]*),(-?[0-9]*)\\)')
+        self.rectExp.setPattern(
+            '\\((-?[0-9]*),(-?[0-9]*),(-?[0-9]*),(-?[0-9]*)\\)')
 
         self.signedIntegerExp = QtCore.QRegExp()
         self.signedIntegerExp.setPattern('-?[0-9]*')
@@ -528,7 +551,8 @@ class VariantDelegate(QtGui.QItemDelegate):
         self.timeExp.setPattern('([0-9]{,2}):([0-9]{,2}):([0-9]{,2})')
 
         self.dateTimeExp = QtCore.QRegExp()
-        self.dateTimeExp.setPattern(self.dateExp.pattern() + 'T' + self.timeExp.pattern())
+        self.dateTimeExp.setPattern(
+            self.dateExp.pattern() + 'T' + self.timeExp.pattern())
 
     def paint(self, painter, option, index):
         if index.column() == 2:
@@ -643,10 +667,11 @@ class VariantDelegate(QtGui.QItemDelegate):
 
     @staticmethod
     def isSupportedType(value):
-        return isinstance(value, (bool, float, int, QtCore.QByteArray,
-                str, QtGui.QColor, QtCore.QDate, QtCore.QDateTime,
-                QtCore.QTime, QtCore.QPoint, QtCore.QRect, QtCore.QSize,
-                list))
+        return isinstance(value,
+                          (bool, float, int, QtCore.QByteArray, str,
+                           QtGui.QColor, QtCore.QDate, QtCore.QDateTime,
+                           QtCore.QTime, QtCore.QPoint, QtCore.QRect,
+                           QtCore.QSize, list))
 
     @staticmethod
     def displayText(value):
@@ -657,13 +682,15 @@ class VariantDelegate(QtGui.QItemDelegate):
         elif isinstance(value, float):
             return '%g' % value
         elif isinstance(value, QtGui.QColor):
-            return '(%u,%u,%u,%u)' % (value.red(), value.green(), value.blue(), value.alpha())
+            return '(%u,%u,%u,%u)' % (value.red(), value.green(), value.blue(),
+                                      value.alpha())
         elif isinstance(value, (QtCore.QDate, QtCore.QDateTime, QtCore.QTime)):
             return value.toString(QtCore.Qt.ISODate)
         elif isinstance(value, QtCore.QPoint):
             return '(%d,%d)' % (value.x(), value.y())
         elif isinstance(value, QtCore.QRect):
-            return '(%d,%d,%d,%d)' % (value.x(), value.y(), value.width(), value.height())
+            return '(%d,%d,%d,%d)' % (value.x(), value.y(), value.width(),
+                                      value.height())
         elif isinstance(value, QtCore.QSize):
             return '(%d,%d)' % (value.width(), value.height())
         elif isinstance(value, list):

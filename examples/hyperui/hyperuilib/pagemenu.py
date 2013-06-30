@@ -56,8 +56,10 @@ class PageMenu(QGraphicsWidget):
     def paint(self, painter, option, widget):
         painter.drawPixmap(0, 0, self._background)
         metrics = QFontMetrics(self.font())
-        elidedText = metrics.elidedText(self._text, Qt.ElideRight, self._textRect.width())
+        elidedText = metrics.elidedText(self._text, Qt.ElideRight,
+                                        self._textRect.width())
 
         painter.setFont(self.font())
         painter.setPen(self._fontColor)
-        painter.drawText(self._textRect, Qt.TextSingleLine | Qt.AlignCenter, elidedText)
+        painter.drawText(self._textRect, Qt.TextSingleLine | Qt.AlignCenter,
+                         elidedText)

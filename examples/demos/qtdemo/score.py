@@ -22,17 +22,20 @@ class Score(object):
     def prepare(self, movie, runMode, lockMode):
         if lockMode == Score.LOCK_ITEMS:
             for item in movie:
-                if runMode != Score.ONLY_IF_VISIBLE or item.demoItem().isVisible():
+                if runMode != Score.ONLY_IF_VISIBLE \
+                        or item.demoItem().isVisible():
                     item.lockItem(True)
                     item.prepare()
         elif lockMode == Score.UNLOCK_ITEMS:
             for item in movie:
-                if runMode != Score.ONLY_IF_VISIBLE or item.demoItem().isVisible():
+                if runMode != Score.ONLY_IF_VISIBLE \
+                        or item.demoItem().isVisible():
                     item.lockItem(False)
                     item.prepare()
         else:
             for item in movie:
-                if runMode != Score.ONLY_IF_VISIBLE or item.demoItem().isVisible():
+                if runMode != Score.ONLY_IF_VISIBLE \
+                        or item.demoItem().isVisible():
                     item.prepare()
 
     def play(self, movie, runMode):

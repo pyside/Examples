@@ -18,10 +18,12 @@ class Dialog(QtGui.QDialog):
         self.createFormGroupBox()
 
         bigEditor = QtGui.QTextEdit()
-        bigEditor.setPlainText("This widget takes up all the remaining space "
-                "in the top-level layout.")
+        bigEditor.setPlainText(
+            "This widget takes up all the remaining space in the top-level "
+            "layout.")
 
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok |
+                                           QtGui.QDialogButtonBox.Cancel)
 
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
@@ -67,8 +69,8 @@ class Dialog(QtGui.QDialog):
             layout.addWidget(lineEdit, i + 1, 1)
 
         self.smallEditor = QtGui.QTextEdit()
-        self.smallEditor.setPlainText("This widget takes up about two thirds "
-                "of the grid layout.")
+        self.smallEditor.setPlainText(
+            "This widget takes up about two thirds of the grid layout.")
 
         layout.addWidget(self.smallEditor, 0, 2, 4, 1)
 

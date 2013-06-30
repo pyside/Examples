@@ -51,8 +51,7 @@ if __name__ == '__main__':
     root = view.rootObject()
 
     timer.timeout.connect(root.updateRotater)
-    
+
     view.show()
 
     sys.exit(app.exec_())
-

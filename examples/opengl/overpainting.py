@@ -33,10 +33,10 @@ try:
     from OpenGL.GL import *
 except ImportError:
     app = QApplication(sys.argv)
-    QMessageBox.critical(None, "OpenGL overpainting",
-                            "PyOpenGL must be installed to run this example.",
-                            QMessageBox.Ok | QMessageBox.Default,
-                            QMessageBox.NoButton)
+    QMessageBox.critical(
+        None, "OpenGL overpainting",
+        "PyOpenGL must be installed to run this example.",
+        QMessageBox.Ok | QMessageBox.Default, QMessageBox.NoButton)
     sys.exit(1)
 
 
@@ -50,8 +50,9 @@ class Bubble:
         self.updateBrush()
 
     def updateBrush(self):
-        gradient = QRadialGradient(QPointF(self.radius, self.radius), self.radius,
-                                   QPointF(self.radius*0.5, self.radius*0.5))
+        gradient = QRadialGradient(
+            QPointF(self.radius, self.radius), self.radius,
+            QPointF(self.radius*0.5, self.radius*0.5))
 
         gradient.setColorAt(0, QColor(255, 255, 255, 255))
         gradient.setColorAt(0.25, self.innerColor)
@@ -102,7 +103,7 @@ class Bubble:
 
 
 class GLWidget(QGLWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QGLWidget.__init__(self, QGLFormat(QGL.SampleBuffers), parent)
 
         midnight = QTime(0, 0, 0)
@@ -186,7 +187,7 @@ class GLWidget(QGLWidget):
         glEnable(GL_CULL_FACE)
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)
-        lightPosition = ( 0.5, 5.0, 7.0, 1.0 )
+        lightPosition = (0.5, 5.0, 7.0, 1.0)
         glLightfv(GL_LIGHT0, GL_POSITION, lightPosition)
 
         self.resizeGL(self.width(), self.height())
@@ -205,7 +206,7 @@ class GLWidget(QGLWidget):
         glMatrixMode(GL_PROJECTION)
         glPopMatrix()
 
-        glDisable(GL_CULL_FACE) ### not required if begin() also does it
+        glDisable(GL_CULL_FACE)  # not required if begin() also does it
 
         for bubble in self.bubbles:
             if bubble.rect().intersects(QRectF(event.rect())):
@@ -319,9 +320,11 @@ class GLWidget(QGLWidget):
 
     def createBubbles(self, number):
         for i in range(number):
-            position = QPointF(self.width()*(0.1 + 0.8*random.random()),
-                               self.height()*(0.1 + 0.8*random.random()))
-            radius = min(self.width(), self.height())*(0.0125 + 0.0875*random.random())
+            position = QPointF(
+                self.width()*(0.1 + 0.8*random.random()),
+                self.height()*(0.1 + 0.8*random.random()))
+            radius = min(
+                self.width(), self.height())*(0.0125 + 0.0875*random.random())
             velocity = QPointF(self.width()*0.0125*(-0.5 + random.random()),
                                self.height()*0.0125*(-0.5 + random.random()))
 

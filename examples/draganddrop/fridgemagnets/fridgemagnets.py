@@ -40,7 +40,7 @@ class DragLabel(QtGui.QLabel):
         size = metric.size(QtCore.Qt.TextSingleLine, text)
 
         image = QtGui.QImage(size.width() + 12, size.height() + 12,
-                QtGui.QImage.Format_ARGB32_Premultiplied)
+                             QtGui.QImage.Format_ARGB32_Premultiplied)
         image.fill(QtGui.qRgba(0, 0, 0, 0))
 
         font = QtGui.QFont()
@@ -50,13 +50,15 @@ class DragLabel(QtGui.QLabel):
         painter.begin(image)
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
         painter.setBrush(QtCore.Qt.white)
-        painter.drawRoundedRect(QtCore.QRectF(0.5, 0.5, image.width()-1,
-                image.height()-1), 25, 25, QtCore.Qt.RelativeSize)
+        painter.drawRoundedRect(
+            QtCore.QRectF(0.5, 0.5, image.width()-1, image.height()-1), 25, 25,
+            QtCore.Qt.RelativeSize)
 
         painter.setFont(font)
         painter.setBrush(QtCore.Qt.black)
-        painter.drawText(QtCore.QRect(QtCore.QPoint(6, 6), size),
-                QtCore.Qt.AlignCenter, text)
+        painter.drawText(
+            QtCore.QRect(QtCore.QPoint(6, 6), size), QtCore.Qt.AlignCenter,
+            text)
         painter.end()
 
         self.setPixmap(QtGui.QPixmap.fromImage(image))
@@ -65,7 +67,8 @@ class DragLabel(QtGui.QLabel):
     def mousePressEvent(self, event):
         itemData = QtCore.QByteArray()
         dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.WriteOnly)
-        dataStream << QtCore.QByteArray(str(self.labelText)) << QtCore.QPoint(event.pos() - self.rect().topLeft())
+        dataStream << QtCore.QByteArray(str(self.labelText)) << \
+            QtCore.QPoint(event.pos() - self.rect().topLeft())
 
         mimeData = QtCore.QMimeData()
         mimeData.setData('application/x-fridgemagnet', itemData)
@@ -78,7 +81,8 @@ class DragLabel(QtGui.QLabel):
 
         self.hide()
 
-        if drag.exec_(QtCore.Qt.MoveAction | QtCore.Qt.CopyAction, QtCore.Qt.CopyAction) == QtCore.Qt.MoveAction:
+        if drag.exec_(QtCore.Qt.MoveAction | QtCore.Qt.CopyAction,
+                      QtCore.Qt.CopyAction) == QtCore.Qt.MoveAction:
             self.close()
         else:
             self.show()
@@ -129,7 +133,8 @@ class DragWidget(QtGui.QWidget):
         if event.mimeData().hasFormat('application/x-fridgemagnet'):
             mime = event.mimeData()
             itemData = mime.data('application/x-fridgemagnet')
-            dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.ReadOnly)
+            dataStream = QtCore.QDataStream(itemData,
+                                            QtCore.QIODevice.ReadOnly)
 
             text = QtCore.QByteArray()
             offset = QtCore.QPoint()

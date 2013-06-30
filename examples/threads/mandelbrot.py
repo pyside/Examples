@@ -54,7 +54,8 @@ class RenderThread(QtCore.QThread):
         self.abort = False
 
         for i in range(RenderThread.ColormapSize):
-            self.colormap.append(self.rgbFromWaveLength(380.0 + (i * 400.0 / RenderThread.ColormapSize)))
+            self.colormap.append(self.rgbFromWaveLength(
+                380.0 + (i * 400.0 / RenderThread.ColormapSize)))
 
     def stop(self):
         self.mutex.lock()
@@ -132,16 +133,20 @@ class RenderThread(QtCore.QThread):
 
                         if numIterations < MaxIterations:
                             image.setPixel(x + halfWidth, y + halfHeight,
-                                           self.colormap[numIterations % RenderThread.ColormapSize])
+                                           self.colormap[numIterations
+                                           % RenderThread.ColormapSize])
                             allBlack = False
                         else:
-                            image.setPixel(x + halfWidth, y + halfHeight, QtGui.qRgb(0, 0, 0))
+                            image.setPixel(x + halfWidth, y + halfHeight,
+                                           QtGui.qRgb(0, 0, 0))
 
                 if allBlack and curpass == 0:
                     curpass = 4
                 else:
                     if not self.restart:
-                        self.emit(QtCore.SIGNAL("renderedImage(const QImage &, double)"), image, scaleFactor)
+                        self.emit(QtCore.SIGNAL(
+                            "renderedImage(const QImage &, double)"), image,
+                            scaleFactor)
                     curpass += 1
 
             self.mutex.lock()
@@ -214,8 +219,9 @@ class MandelbrotWidget(QtGui.QWidget):
 
         if self.pixmap.isNull():
             painter.setPen(QtCore.Qt.white)
-            painter.drawText(self.rect(), QtCore.Qt.AlignCenter,
-                             self.tr("Rendering initial image, please wait..."))
+            painter.drawText(
+                self.rect(), QtCore.Qt.AlignCenter,
+                self.tr("Rendering initial image, please wait..."))
             return
 
         if self.curScale == self.pixmapScale:
@@ -225,7 +231,8 @@ class MandelbrotWidget(QtGui.QWidget):
             newWidth = int(self.pixmap.width() * scaleFactor)
             newHeight = int(self.pixmap.height() * scaleFactor)
             newX = self.pixmapOffset.x() + (self.pixmap.width() - newWidth) / 2
-            newY = self.pixmapOffset.y() + (self.pixmap.height() - newHeight) / 2
+            newY = self.pixmapOffset.y() + (
+                self.pixmap.height() - newHeight) / 2
 
             painter.save()
             painter.translate(newX, newY)
@@ -247,7 +254,8 @@ class MandelbrotWidget(QtGui.QWidget):
                          metrics.leading() + metrics.ascent(), text)
 
     def resizeEvent(self, event):
-        self.thread.render(self.centerX, self.centerY, self.curScale, self.size())
+        self.thread.render(self.centerX, self.centerY, self.curScale,
+                           self.size())
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Plus:
@@ -285,8 +293,10 @@ class MandelbrotWidget(QtGui.QWidget):
             self.pixmapOffset += event.pos() - self.lastDragPos
             self.lastDragPos = QtCore.QPoint()
 
-            deltaX = (self.width() - self.pixmap.width()) / 2 - self.pixmapOffset.x()
-            deltaY = (self.height() - self.pixmap.height()) / 2 - self.pixmapOffset.y()
+            deltaX = (self.width() - self.pixmap.width()) / 2
+            - self.pixmapOffset.x()
+            deltaY = (self.height() - self.pixmap.height()) / 2
+            - self.pixmapOffset.y()
             self.scroll(deltaX, deltaY)
 
     def updatePixmap(self, image, scaleFactor):
@@ -302,13 +312,15 @@ class MandelbrotWidget(QtGui.QWidget):
     def zoom(self, zoomFactor):
         self.curScale *= zoomFactor
         self.update()
-        self.thread.render(self.centerX, self.centerY, self.curScale, self.size())
+        self.thread.render(self.centerX, self.centerY, self.curScale,
+                           self.size())
 
     def scroll(self, deltaX, deltaY):
         self.centerX += deltaX * self.curScale
         self.centerY += deltaY * self.curScale
         self.update()
-        self.thread.render(self.centerX, self.centerY, self.curScale, self.size())
+        self.thread.render(self.centerX, self.centerY, self.curScale,
+                           self.size())
 
 
 if __name__ == "__main__":

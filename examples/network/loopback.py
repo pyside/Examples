@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 
 ############################################################################
-# 
+#
 #  Copyright (C) 2004-2005 Trolltech AS. All rights reserved.
-# 
+#
 #  This file is part of the example classes of the Qt Toolkit.
-# 
+#
 #  This file may be used under the terms of the GNU General Public
 #  License version 2.0 as published by the Free Software Foundation
 #  and appearing in the file LICENSE.GPL included in the packaging of
 #  self file.  Please review the following information to ensure GNU
 #  General Public Licensing requirements will be met:
 #  http://www.trolltech.com/products/qt/opensource.html
-# 
+#
 #  If you are unsure which license is appropriate for your use, please
 #  review the following information:
 #  http://www.trolltech.com/products/qt/licensing.html or contact the
 #  sales department at sales@trolltech.com.
-# 
+#
 #  This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 #  WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-# 
+#
 ############################################################################
 
 from PySide import QtCore, QtGui, QtNetwork
@@ -48,7 +48,8 @@ class Dialog(QtGui.QDialog):
         self.quitButton = QtGui.QPushButton("&Quit")
 
         buttonBox = QtGui.QDialogButtonBox()
-        buttonBox.addButton(self.startButton, QtGui.QDialogButtonBox.ActionRole)
+        buttonBox.addButton(
+            self.startButton, QtGui.QDialogButtonBox.ActionRole)
         buttonBox.addButton(self.quitButton, QtGui.QDialogButtonBox.RejectRole)
 
         self.startButton.clicked.connect(self.start)
@@ -79,16 +80,19 @@ class Dialog(QtGui.QDialog):
         self.bytesReceived = 0
 
         while not self.tcpServer.isListening() and not self.tcpServer.listen():
-            ret = QtGui.QMessageBox.critical(self, "Loopback",
-                    "Unable to start the test: %s." % self.tcpServer.errorString(),
-                    QtGui.QMessageBox.Retry | QtGui.QMessageBox.Cancel)
+            ret = QtGui.QMessageBox.critical(
+                self, "Loopback", "Unable to start the test: %s."
+                % self.tcpServer.errorString(),
+                QtGui.QMessageBox.Retry | QtGui.QMessageBox.Cancel)
             if ret == QtGui.QMessageBox.Cancel:
                 return
 
         self.serverStatusLabel.setText("Listening")
         self.clientStatusLabel.setText("Connecting")
 
-        self.tcpClient.connectToHost(QtNetwork.QHostAddress(QtNetwork.QHostAddress.LocalHost), self.tcpServer.serverPort())
+        self.tcpClient.connectToHost(
+            QtNetwork.QHostAddress(QtNetwork.QHostAddress.LocalHost),
+            self.tcpServer.serverPort())
 
     def acceptConnection(self):
         self.tcpServerConnection = self.tcpServer.nextPendingConnection()
@@ -99,7 +103,9 @@ class Dialog(QtGui.QDialog):
         self.tcpServer.close()
 
     def startTransfer(self):
-        self.bytesToWrite = Dialog.TotalBytes - self.tcpClient.write(QtCore.QByteArray(Dialog.PayloadSize, '@'))
+        self.bytesToWrite = \
+            Dialog.TotalBytes - self.tcpClient.write(QtCore.QByteArray(
+                Dialog.PayloadSize, '@'))
         self.clientStatusLabel.setText("Connected")
 
     def updateServerProgress(self):
@@ -108,7 +114,8 @@ class Dialog(QtGui.QDialog):
 
         self.serverProgressBar.setMaximum(Dialog.TotalBytes)
         self.serverProgressBar.setValue(self.bytesReceived)
-        self.serverStatusLabel.setText("Received %dMB" % (self.bytesReceived / (1024 * 1024)))
+        self.serverStatusLabel.setText(
+            "Received %dMB" % (self.bytesReceived / (1024 * 1024)))
 
         if self.bytesReceived == Dialog.TotalBytes:
             self.tcpServerConnection.close()
@@ -118,19 +125,22 @@ class Dialog(QtGui.QDialog):
     def updateClientProgress(self, numBytes):
         self.bytesWritten += numBytes
         if self.bytesToWrite > 0:
-            self.bytesToWrite -= self.tcpClient.write(QtCore.QByteArray(
-                                        min(self.bytesToWrite, Dialog.PayloadSize), '@'))
+            self.bytesToWrite -= self.tcpClient.write(
+                QtCore.QByteArray(min(self.bytesToWrite, Dialog.PayloadSize),
+                                  '@'))
 
         self.clientProgressBar.setMaximum(Dialog.TotalBytes)
         self.clientProgressBar.setValue(self.bytesWritten)
-        self.clientStatusLabel.setText("Sent %dMB" % (self.bytesWritten / (1024 * 1024)))
+        self.clientStatusLabel.setText(
+            "Sent %dMB" % (self.bytesWritten / (1024 * 1024)))
 
     def displayError(self, socketError):
         if socketError == QtNetwork.QTcpSocket.RemoteHostClosedError:
             return
 
-        QtGui.QMessageBox.information(self, "Network error",
-                "The following error occured: %s." % self.tcpClient.errorString())
+        QtGui.QMessageBox.information(
+            self, "Network error",
+            "The following error occured: %s." % self.tcpClient.errorString())
 
         self.tcpClient.close()
         self.tcpServer.close()
