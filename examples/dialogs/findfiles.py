@@ -9,8 +9,8 @@ class Window(QtGui.QDialog):
     def __init__(self, parent=None):
         super(Window, self).__init__(parent)
 
-        browseButton = self.createButton("&Browse...", self.browse)
-        findButton = self.createButton("&Find", self.find)
+        self.browseButton = self.createButton("&Browse...", self.browse)
+        self.findButton = self.createButton("&Find", self.find)
 
         self.fileComboBox = self.createComboBox("*")
         self.textComboBox = self.createComboBox()
@@ -25,7 +25,7 @@ class Window(QtGui.QDialog):
 
         buttonsLayout = QtGui.QHBoxLayout()
         buttonsLayout.addStretch()
-        buttonsLayout.addWidget(findButton)
+        buttonsLayout.addWidget(self.findButton)
 
         mainLayout = QtGui.QGridLayout()
         mainLayout.addWidget(fileLabel, 0, 0)
@@ -34,14 +34,14 @@ class Window(QtGui.QDialog):
         mainLayout.addWidget(self.textComboBox, 1, 1, 1, 2)
         mainLayout.addWidget(directoryLabel, 2, 0)
         mainLayout.addWidget(self.directoryComboBox, 2, 1)
-        mainLayout.addWidget(browseButton, 2, 2)
+        mainLayout.addWidget(self.browseButton, 2, 2)
         mainLayout.addWidget(self.filesTable, 3, 0, 1, 3)
         mainLayout.addWidget(self.filesFoundLabel, 4, 0)
         mainLayout.addLayout(buttonsLayout, 5, 0, 1, 3)
         self.setLayout(mainLayout)
 
         self.setWindowTitle("Find Files")
-        self.resize(700, 300)
+        self.resize(500, 300)
 
     def browse(self):
         directory = QtGui.QFileDialog.getExistingDirectory(self, "Find Files",
