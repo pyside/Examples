@@ -87,8 +87,8 @@ class RenderThread(QtCore.QThread):
             centerY = self.centerY
             self.mutex.unlock()
 
-            halfWidth = resultSize.width() / 2
-            halfHeight = resultSize.height() / 2
+            halfWidth = int(resultSize.width() / 2)
+            halfHeight = int(resultSize.height() / 2)
             image = QtGui.QImage(resultSize, QtGui.QImage.Format_RGB32)
 
             NumPasses = 8
