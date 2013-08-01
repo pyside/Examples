@@ -37,9 +37,9 @@ class Window(QtGui.QWidget):
         mainLayout.addWidget(self.zSlider)
         self.setLayout(mainLayout)
 
-        self.xSlider.setValue(15 * 16)
-        self.ySlider.setValue(345 * 16)
-        self.zSlider.setValue(0 * 16)
+        self.xSlider.setValue(170 * 16)
+        self.ySlider.setValue(160 * 16)
+        self.zSlider.setValue(90 * 16)
 
         self.setWindowTitle(self.tr("Hello GL"))
 
@@ -130,7 +130,7 @@ class GLWidget(QtOpenGL.QGLWidget):
 
         GL.glMatrixMode(GL.GL_PROJECTION)
         GL.glLoadIdentity()
-        GL.glOrtho(-0.5, +0.5, +0.5, -0.5, 4.0, 15.0)
+        GL.glOrtho(-0.5, +0.5, -0.5, +0.5, 4.0, 15.0)
         GL.glMatrixMode(GL.GL_MODELVIEW)
 
     def mousePressEvent(self, event):
@@ -204,23 +204,23 @@ class GLWidget(QtOpenGL.QGLWidget):
     def quad(self, x1, y1, x2, y2, x3, y3, x4, y4):
         self.qglColor(self.trolltechGreen)
 
-        GL.glVertex3d(x1, y1, -0.05)
-        GL.glVertex3d(x2, y2, -0.05)
-        GL.glVertex3d(x3, y3, -0.05)
-        GL.glVertex3d(x4, y4, -0.05)
-
-        GL.glVertex3d(x4, y4, +0.05)
-        GL.glVertex3d(x3, y3, +0.05)
-        GL.glVertex3d(x2, y2, +0.05)
         GL.glVertex3d(x1, y1, +0.05)
+        GL.glVertex3d(x2, y2, +0.05)
+        GL.glVertex3d(x3, y3, +0.05)
+        GL.glVertex3d(x4, y4, +0.05)
+
+        GL.glVertex3d(x4, y4, -0.05)
+        GL.glVertex3d(x3, y3, -0.05)
+        GL.glVertex3d(x2, y2, -0.05)
+        GL.glVertex3d(x1, y1, -0.05)
 
     def extrude(self, x1, y1, x2, y2):
         self.qglColor(self.trolltechGreen.darker(250 + int(100 * x1)))
 
-        GL.glVertex3d(x1, y1, +0.05)
-        GL.glVertex3d(x2, y2, +0.05)
-        GL.glVertex3d(x2, y2, -0.05)
         GL.glVertex3d(x1, y1, -0.05)
+        GL.glVertex3d(x2, y2, -0.05)
+        GL.glVertex3d(x2, y2, +0.05)
+        GL.glVertex3d(x1, y1, +0.05)
 
     def normalizeAngle(self, angle):
         while angle < 0:
