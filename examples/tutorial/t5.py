@@ -26,10 +26,10 @@ class MyWidget(QtGui.QWidget):
                      lcd, QtCore.SLOT("display(int)"))
 
         layout = QtGui.QVBoxLayout()
-        layout.addWidget(quit);
-        layout.addWidget(lcd);
-        layout.addWidget(slider);
-        self.setLayout(layout);
+        layout.addWidget(quit)
+        layout.addWidget(lcd)
+        layout.addWidget(slider)
+        self.setLayout(layout)
 
 
 app = QtGui.QApplication(sys.argv)

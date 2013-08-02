@@ -26,6 +26,7 @@
 
 from PySide import QtGui, QtCore
 
+
 class KineticScroll(QtCore.QObject):
     MAX_SPEED = 2000
 
@@ -42,7 +43,7 @@ class KineticScroll(QtCore.QObject):
         self._time = self._lastTime = QtCore.QTime.currentTime()
 
     def mouseUp(self, value):
-        if self._lastValue < 0 or self._animation != None:
+        if self._lastValue < 0 or self._animation is not None:
             return
 
         t = QtCore.QTime.currentTime()
@@ -69,7 +70,6 @@ class KineticScroll(QtCore.QObject):
         self._time = QtCore.QTime.currentTime()
 
         return r
-
 
     def mouseMove(self, value):
         if self._lastValue < 0:
@@ -101,7 +101,8 @@ class KineticScroll(QtCore.QObject):
         self._animationAccel = -self._animationSpeed * self._accelConstant
 
         self._animation = QtCore.QTimer(self)
-        self.connect(self._animation, QtCore.SIGNAL("timeout()"), self.animator)
+        self.connect(self._animation, QtCore.SIGNAL("timeout()"),
+                     self.animator)
         self._animation.start(30)
 
     def animator(self):
@@ -119,4 +120,3 @@ class KineticScroll(QtCore.QObject):
             #self._area.kineticMove(round(value))
             self._animationSpeed = speed
             self._animationITime = now
-

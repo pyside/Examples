@@ -38,7 +38,7 @@
 **
 *****************************************************************************
 ** February 2011
-** - addressbook example ported to PySide by Arun Srinivasan 
+** - addressbook example ported to PySide by Arun Srinivasan
 **   <rulfzid@gmail.com>
 **************************************************************************"""
 
@@ -48,7 +48,7 @@ except ImportError:
     import pickle
 
 from PySide.QtCore import (Qt, Signal, QRegExp, QModelIndex)
-from PySide.QtGui import (QWidget, QTabWidget, QItemSelectionModel, 
+from PySide.QtGui import (QWidget, QTabWidget, QItemSelectionModel,
                           QMessageBox, QTableView, QSortFilterProxyModel,
                           QAbstractItemView, QItemSelection)
 
@@ -84,19 +84,19 @@ class AddressWidget(QTabWidget):
             if addDialog.exec_():
                 name = addDialog.name
                 address = addDialog.address
-                
+
         address = {"name": name, "address": address}
         addresses = self.tableModel.addresses[:]
 
         # The QT docs for this example state that what we're doing here
-        # is checking if the entered name already exists. What they 
-        # (and we here) are actually doing is checking if the whole 
-        # name/address pair exists already - ok for the purposes of this 
+        # is checking if the entered name already exists. What they
+        # (and we here) are actually doing is checking if the whole
+        # name/address pair exists already - ok for the purposes of this
         # example, but obviously not how a real addressbook application
         # should behave.
         try:
             addresses.remove(address)
-            QMessageBox.information(self, "Duplicate Name", 
+            QMessageBox.information(self, "Duplicate Name",
                                     "The name \"%s\" already exists." % name)
         except ValueError:
             # The address didn't already exist, so let's add it to the model.
@@ -116,13 +116,13 @@ class AddressWidget(QTabWidget):
             # Remove the newAddressTab, as we now have at least one
             # address in the model.
             self.removeTab(self.indexOf(self.newAddressTab))
-            
+
             # The screenshot for the QT example shows nicely formatted
             # multiline cells, but the actual application doesn't behave
             # quite so nicely, at least on Ubuntu. Here we resize the newly
             # created row so that multiline addresses look reasonable.
             tableView = self.currentWidget()
-            tableView.resizeRowToContents(ix.row())            
+            tableView.resizeRowToContents(ix.row())
 
     def editEntry(self):
         """ Edit an entry in the addressbook. """
@@ -168,7 +168,7 @@ class AddressWidget(QTabWidget):
             row = proxyModel.mapToSource(index).row()
             self.tableModel.removeRows(row)
 
-        # If we've removed the last address in the model, display the 
+        # If we've removed the last address in the model, display the
         # newAddressTab
         if self.tableModel.rowCount() == 0:
             self.insertTab(0, self.newAddressTab, "Address Book")
@@ -193,16 +193,17 @@ class AddressWidget(QTabWidget):
 
             # This here be the magic: we use the group name (e.g. "ABC") to
             # build the regex for the QSortFilterProxyModel for the group's
-            # tab. The regex will end up looking like "^[ABC].*", only 
-            # allowing this tab to display items where the name starts with 
+            # tab. The regex will end up looking like "^[ABC].*", only
+            # allowing this tab to display items where the name starts with
             # "A", "B", or "C". Notice that we set it to be case-insensitive.
             reFilter = "^[%s].*" % group
 
             proxyModel.setFilterRegExp(QRegExp(reFilter, Qt.CaseInsensitive))
-            proxyModel.setFilterKeyColumn(0) # Filter on the "name" column
+            proxyModel.setFilterKeyColumn(0)  # Filter on the "name" column
             proxyModel.sort(0, Qt.AscendingOrder)
 
-            tableView.selectionModel().selectionChanged.connect(self.selectionChanged)
+            tableView.selectionModel().selectionChanged.connect(
+                self.selectionChanged)
 
             self.addTab(tableView, group)
 
@@ -224,7 +225,7 @@ class AddressWidget(QTabWidget):
             QMessageBox.information(self, "No contacts in file: %s" % filename)
         else:
             for address in addresses:
-                self.addEntry(address["name"], address["address"])        
+                self.addEntry(address["name"], address["address"])
 
     def writeToFile(self, filename):
         """ Save all contacts in the model to a file. """
@@ -235,7 +236,7 @@ class AddressWidget(QTabWidget):
         except IOError:
             QMessageBox.information(self, "Unable to open file: %s" % filename)
         finally:
-            f.close()       
+            f.close()
 
 
 if __name__ == "__main__":

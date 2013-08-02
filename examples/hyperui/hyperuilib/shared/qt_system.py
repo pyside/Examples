@@ -32,6 +32,7 @@ try:
 except:
     USE_MAEMO_5 = False
 
+
 class System(QObject):
     _instance_ = None
 
@@ -53,4 +54,5 @@ class System(QObject):
         if USE_MAEMO_5:
             enabled = (mode == System.PortraitMode)
             window.setAttribute(Qt.WA_Maemo5ForcePortraitOrientation, enabled)
-            window.setAttribute(Qt.WA_Maemo5ForceLandscapeOrientation, not enabled)
+            window.setAttribute(Qt.WA_Maemo5ForceLandscapeOrientation,
+                                not enabled)

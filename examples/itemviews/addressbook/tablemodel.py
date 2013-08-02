@@ -38,11 +38,12 @@
 **
 *****************************************************************************
 ** February 2011
-** - addressbook example ported to PySide by Arun Srinivasan 
+** - addressbook example ported to PySide by Arun Srinivasan
 **   <rulfzid@gmail.com>
 **************************************************************************"""
 
 from PySide.QtCore import (Qt, QAbstractTableModel, QModelIndex)
+
 
 class TableModel(QAbstractTableModel):
 
@@ -63,8 +64,8 @@ class TableModel(QAbstractTableModel):
         return 2
 
     def data(self, index, role=Qt.DisplayRole):
-        """ Depending on the index and role given, return data. If not 
-            returning data, return None (PySide equivalent of QT's 
+        """ Depending on the index and role given, return data. If not
+            returning data, return None (PySide equivalent of QT's
             "invalid QVariant").
         """
         if not index.isValid():
@@ -94,7 +95,7 @@ class TableModel(QAbstractTableModel):
                 return "Name"
             elif section == 1:
                 return "Address"
-        
+
         return None
 
     def insertRows(self, position, rows=1, index=QModelIndex()):
@@ -102,7 +103,7 @@ class TableModel(QAbstractTableModel):
         self.beginInsertRows(QModelIndex(), position, position + rows - 1)
 
         for row in range(rows):
-            self.addresses.insert(position + row, {"name":"", "address":""})
+            self.addresses.insert(position + row, {"name": "", "address": ""})
 
         self.endInsertRows()
         return True
@@ -117,8 +118,8 @@ class TableModel(QAbstractTableModel):
         return True
 
     def setData(self, index, value, role=Qt.EditRole):
-        """ Adjust the data (set it to <value>) depending on the given 
-            index and role. 
+        """ Adjust the data (set it to <value>) depending on the given
+            index and role.
         """
         if role != Qt.EditRole:
             return False
@@ -138,8 +139,8 @@ class TableModel(QAbstractTableModel):
         return False
 
     def flags(self, index):
-        """ Set the item flags at the given index. Seems like we're 
-            implementing this function just to see how it's done, as we 
+        """ Set the item flags at the given index. Seems like we're
+            implementing this function just to see how it's done, as we
             manually adjust each tableView to have NoEditTriggers.
         """
         if not index.isValid():

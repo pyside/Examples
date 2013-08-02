@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 
 ############################################################################
-# 
+#
 #  Copyright (C) 2004-2005 Trolltech AS. All rights reserved.
-# 
+#
 #  This file is part of the example classes of the Qt Toolkit.
-# 
+#
 #  This file may be used under the terms of the GNU General Public
 #  License version 2.0 as published by the Free Software Foundation
 #  and appearing in the file LICENSE.GPL included in the packaging of
 #  self file.  Please review the following information to ensure GNU
 #  General Public Licensing requirements will be met:
 #  http://www.trolltech.com/products/qt/opensource.html
-# 
+#
 #  If you are unsure which license is appropriate for your use, please
 #  review the following information:
 #  http://www.trolltech.com/products/qt/licensing.html or contact the
 #  sales department at sales@trolltech.com.
-# 
+#
 #  This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 #  WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-# 
+#
 ############################################################################
 
 from PySide import QtCore, QtGui, QtNetwork
@@ -75,7 +75,7 @@ class FortuneThread(QtCore.QThread):
             while socket.bytesAvailable() < 2:
                 if not socket.waitForReadyRead(Timeout):
                     self.error.emit(socket.error(), socket.errorString())
-                    return 
+                    return
 
             instr = QtCore.QDataStream(socket)
             instr.setVersion(QtCore.QDataStream.Qt_4_0)
@@ -121,8 +121,9 @@ class BlockingClient(QtGui.QDialog):
         hostLabel.setBuddy(self.hostLineEdit)
         portLabel.setBuddy(self.portLineEdit)
 
-        self.statusLabel = QtGui.QLabel("This example requires that you run "
-                "the Fortune Server example as well.")
+        self.statusLabel = QtGui.QLabel(
+            "This example requires that you run the Fortune Server example "
+            "as well.")
 
         self.getFortuneButton = QtGui.QPushButton("Get Fortune")
         self.getFortuneButton.setDefault(True)
@@ -132,7 +133,7 @@ class BlockingClient(QtGui.QDialog):
 
         buttonBox = QtGui.QDialogButtonBox()
         buttonBox.addButton(self.getFortuneButton,
-                QtGui.QDialogButtonBox.ActionRole)
+                            QtGui.QDialogButtonBox.ActionRole)
         buttonBox.addButton(quitButton, QtGui.QDialogButtonBox.RejectRole)
 
         self.hostLineEdit.textChanged.connect(self.enableGetFortuneButton)
@@ -156,8 +157,8 @@ class BlockingClient(QtGui.QDialog):
 
     def requestNewFortune(self):
         self.getFortuneButton.setEnabled(False)
-        self.thread.requestNewFortune(self.hostLineEdit.text(),
-                int(self.portLineEdit.text()))
+        self.thread.requestNewFortune(
+            self.hostLineEdit.text(), int(self.portLineEdit.text()))
 
     def showFortune(self, nextFortune):
         if nextFortune == self.currentFortune:
@@ -170,23 +171,26 @@ class BlockingClient(QtGui.QDialog):
 
     def displayError(self, socketError, message):
         if socketError == QtNetwork.QAbstractSocket.HostNotFoundError:
-            QtGui.QMessageBox.information(self, "Blocking Fortune Client",
-                    "The host was not found. Please check the host and port "
-                    "settings.")
+            QtGui.QMessageBox.information(
+                self, "Blocking Fortune Client",
+                "The host was not found. Please check the host and port "
+                "settings.")
         elif socketError == QtNetwork.QAbstractSocket.ConnectionRefusedError:
-            QtGui.QMessageBox.information(self, "Blocking Fortune Client",
-                    "The connection was refused by the peer. Make sure the "
-                    "fortune server is running, and check that the host name "
-                    "and port settings are correct.")
+            QtGui.QMessageBox.information(
+                self, "Blocking Fortune Client",
+                "The connection was refused by the peer. Make sure the "
+                "fortune server is running, and check that the host name and "
+                "port settings are correct.")
         else:
-            QtGui.QMessageBox.information(self, "Blocking Fortune Client",
-                    "The following error occurred: %s." % message)
+            QtGui.QMessageBox.information(
+                self, "Blocking Fortune Client",
+                "The following error occurred: %s." % message)
 
         self.getFortuneButton.setEnabled(True)
 
     def enableGetFortuneButton(self):
         self.getFortuneButton.setEnabled(bool(self.hostLineEdit.text() and
-                self.portLineEdit.text()))
+                                              self.portLineEdit.text()))
 
 
 if __name__ == '__main__':

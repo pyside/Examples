@@ -42,9 +42,13 @@ class ExampleContent(DemoItem):
 
         paragraphs = exampleDoc.elementsByTagName('p')
         if paragraphs.length() < 1:
-            Colors.debug("- ExampleContent.loadDescription(): Could not load description:", self._menu_manager.info[self.name].get('docfile'))
+            Colors.debug(
+                "- ExampleContent.loadDescription(): Could not load "
+                "description:", self._menu_manager.info[self.name].get(
+                    'docfile'))
 
-        description = Colors.contentColor + "Could not load description. Ensure that the documentation for Qt is built."
+        description = Colors.contentColor + "Could not load description. "
+        "Ensure that the documentation for Qt is built."
         for p in range(paragraphs.length()):
             description = self.extractTextFromParagraph(paragraphs.item(p))
             if self.isSummary(description):
@@ -53,7 +57,9 @@ class ExampleContent(DemoItem):
         return Colors.contentColor + description
 
     def isSummary(self, text):
-        re = QtCore.QRegExp("(In )?((The|This) )?(%s )?.*(tutorial|example|demo|application)" % self.name, QtCore.Qt.CaseInsensitive)
+        re = QtCore.QRegExp(
+            "(In )?((The|This) )?(%s )?.*(tutorial|example|demo|application)"
+            % self.name, QtCore.Qt.CaseInsensitive)
 
         return ('[' not in text) and (re.indexIn(text) >= 0)
 
@@ -80,7 +86,8 @@ class ExampleContent(DemoItem):
                 else:
                     beginTag = endTag = ''
 
-                description += beginTag + self.extractTextFromParagraph(node) + endTag
+                description += beginTag + self.extractTextFromParagraph(node)
+                + endTag
 
             node = node.nextSibling()
 
@@ -89,15 +96,20 @@ class ExampleContent(DemoItem):
     def createContent(self):
         # Create the items.
         self.heading = HeadingItem(self.name, self.scene(), self)
-        self.description = DemoTextItem(self.loadDescription(),
-                Colors.contentFont(), Colors.heading, 500, self.scene(), self)
+        self.description = DemoTextItem(
+            self.loadDescription(), Colors.contentFont(), Colors.heading, 500,
+            self.scene(), self)
         imgHeight = 340 - int(self.description.boundingRect().height()) + 50
-        self.screenshot = ImageItem(QtGui.QImage.fromData(self._menu_manager.getImage(self.name)), 550, imgHeight, self.scene(), self)
+        self.screenshot = ImageItem(QtGui.QImage.fromData(
+            self._menu_manager.getImage(self.name)), 550, imgHeight,
+            self.scene(), self)
 
         # Place the items on screen.
         self.heading.setPos(0, 3)
-        self.description.setPos(0, self.heading.pos().y() + self.heading.boundingRect().height() + 10)
-        self.screenshot.setPos(0, self.description.pos().y() + self.description.boundingRect().height() + 10)
+        self.description.setPos(0, self.heading.pos().y()
+                                + self.heading.boundingRect().height() + 10)
+        self.screenshot.setPos(0, self.description.pos().y()
+                               + self.description.boundingRect().height() + 10)
 
     def boundingRect(self):
         return QtCore.QRectF(0, 0, 500, 100)

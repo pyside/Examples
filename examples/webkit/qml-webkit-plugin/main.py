@@ -15,6 +15,7 @@ from PySide.QtGui import QApplication
 from PySide.QtDeclarative import QDeclarativeView
 from PySide.QtWebKit import QWebPluginFactory, QWebView, QWebSettings
 
+
 class PluginFactory(QWebPluginFactory):
 
     def plugins(self):
@@ -48,6 +49,7 @@ class PluginFactory(QWebPluginFactory):
 
         return view
 
+
 def main():
 
     app = QApplication([])
@@ -55,7 +57,8 @@ def main():
     view = QWebView()
     fac = PluginFactory()
     view.page().setPluginFactory(fac)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.PluginsEnabled, True)
+    QWebSettings.globalSettings().setAttribute(QWebSettings.PluginsEnabled,
+                                               True)
 
     view.load(QUrl(sys.argv[1]))
 

@@ -8,7 +8,8 @@ from PySide import QtCore, QtGui, QtSvg
 class SvgTextObject(QtCore.QObject, QtGui.QTextObjectInterface):
 
     def intrinsicSize(self, doc, posInDocument, format):
-        renderer = QtSvg.QSvgRenderer(format.property(Window.SvgData).toByteArray())
+        renderer = QtSvg.QSvgRenderer(
+            format.property(Window.SvgData).toByteArray())
         size = renderer.defaultSize()
 
         if size.height() > 25:
@@ -17,7 +18,8 @@ class SvgTextObject(QtCore.QObject, QtGui.QTextObjectInterface):
         return QtCore.QSizeF(size)
 
     def drawObject(self, painter, rect, doc, posInDocument, format):
-        renderer = QtSvg.QSvgRenderer(format.property(Window.SvgData).toByteArray())
+        renderer = QtSvg.QSvgRenderer(
+            format.property(Window.SvgData).toByteArray())
         renderer.render(painter, rect)
 
 
@@ -40,8 +42,9 @@ class Window(QtGui.QWidget):
         file = QtCore.QFile(fileName)
 
         if not file.open(QtCore.QIODevice.ReadOnly):
-            QtGui.QMessageBox.warning(self, self.tr("Error Opening File"),
-                    self.tr("Could not open '%1'").arg(fileName))
+            QtGui.QMessageBox.warning(
+                self, self.tr("Error Opening File"),
+                self.tr("Could not open '%1'").arg(fileName))
 
         svgData = file.readAll()
 
@@ -55,7 +58,8 @@ class Window(QtGui.QWidget):
 
     def setupTextObject(self):
         svgInterface = SvgTextObject(self)
-        self.textEdit.document().documentLayout().registerHandler(Window.SvgTextFormat, svgInterface)
+        self.textEdit.document().documentLayout().registerHandler(
+            Window.SvgTextFormat, svgInterface)
 
     def setupGui(self):
         fileNameLabel = QtGui.QLabel(self.tr("Svg File Name:"))
@@ -63,7 +67,9 @@ class Window(QtGui.QWidget):
         insertTextObjectButton = QtGui.QPushButton(self.tr("Insert Image"))
 
         self.fileNameLineEdit.setText('./files/heart.svg')
-        QtCore.QObject.connect(insertTextObjectButton, QtCore.SIGNAL('clicked()'), self.insertTextObject)
+        QtCore.QObject.connect(insertTextObjectButton,
+                               QtCore.SIGNAL('clicked()'),
+                               self.insertTextObject)
 
         bottomLayout = QtGui.QHBoxLayout()
         bottomLayout.addWidget(fileNameLabel)

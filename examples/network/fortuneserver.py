@@ -17,22 +17,24 @@ class Server(QtGui.QDialog):
 
         self.tcpServer = QtNetwork.QTcpServer(self)
         if not self.tcpServer.listen():
-            QtGui.QMessageBox.critical(self, "Fortune Server",
-                    "Unable to start the server: %s." % self.tcpServer.errorString())
+            QtGui.QMessageBox.critical(
+                self, "Fortune Server", "Unable to start the server: %s."
+                % self.tcpServer.errorString())
             self.close()
             return
 
-        statusLabel.setText("The server is running on port %d.\nRun the "
-                "Fortune Client example now." % self.tcpServer.serverPort())
+        statusLabel.setText(
+            "The server is running on port %d.\nRun the Fortune Client "
+            "example now." % self.tcpServer.serverPort())
 
         self.fortunes = (
-                "You've been leading a dog's life. Stay off the furniture.",
-                "You've got to think about tomorrow.",
-                "You will be surprised by a loud noise.",
-                "You will feel hungry again in another hour.",
-                "You might have mail.",
-                "You cannot kill time without injuring eternity.",
-                "Computers are not intelligent. They only think they are.")
+            "You've been leading a dog's life. Stay off the furniture.",
+            "You've got to think about tomorrow.",
+            "You will be surprised by a loud noise.",
+            "You will feel hungry again in another hour.",
+            "You might have mail.",
+            "You cannot kill time without injuring eternity.",
+            "Computers are not intelligent. They only think they are.")
 
         quitButton.clicked.connect(self.close)
         self.tcpServer.newConnection.connect(self.sendFortune)

@@ -59,10 +59,12 @@ class DisplayWidget(QtGui.QWidget):
 
         for shape in self.shapes:
             if shape.rect().contains(QtCore.QPointF(event.pos())):
-                if shape.isInteractive() and "fade" not in shape.metadata and "highlight" not in shape.metadata:
+                if shape.isInteractive() and "fade" not in shape.metadata \
+                        and "highlight" not in shape.metadata:
                     shape.metadata["highlight"] = True
                     updated = True
-            elif shape.isInteractive() and "highlight" in shape.metadata and shape.metadata["highlight"]:
+            elif shape.isInteractive() and "highlight" in shape.metadata \
+                    and shape.metadata["highlight"]:
                 shape.metadata["highlight"] = False
                 updated = True
 
@@ -77,19 +79,25 @@ class DisplayWidget(QtGui.QWidget):
             return
 
         for shape in self.shapes:
-            if shape.rect().contains(QtCore.QPointF(event.pos())) and "fade" not in shape.metadata:
+            if shape.rect().contains(QtCore.QPointF(event.pos())) and "fade" \
+                    not in shape.metadata:
                 if "action" in shape.metadata:
-                    self.emit(QtCore.SIGNAL("actionRequested"), shape.metadata["action"])
+                    self.emit(QtCore.SIGNAL("actionRequested"),
+                              shape.metadata["action"])
                 elif "category" in shape.metadata:
-                    self.emit(QtCore.SIGNAL("categoryRequested"), shape.metadata["category"])
+                    self.emit(QtCore.SIGNAL("categoryRequested"),
+                              shape.metadata["category"])
                 elif "example" in shape.metadata:
-                    self.emit(QtCore.SIGNAL("exampleRequested"), shape.metadata["example"])
+                    self.emit(QtCore.SIGNAL("exampleRequested"),
+                              shape.metadata["example"])
                 elif "documentation" in shape.metadata:
-                    self.emit(QtCore.SIGNAL("documentationRequested"), shape.metadata["documentation"])
+                    self.emit(QtCore.SIGNAL("documentationRequested"),
+                              shape.metadata["documentation"])
                     shape.metadata["highlight"] = False
                     self.enableUpdates()
                 elif "launch" in shape.metadata:
-                    self.emit(QtCore.SIGNAL("launchRequested"), shape.metadata["launch"])
+                    self.emit(QtCore.SIGNAL("launchRequested"),
+                              shape.metadata["launch"])
                     shape.metadata["fade"] = -5
                     self.enableUpdates()
 

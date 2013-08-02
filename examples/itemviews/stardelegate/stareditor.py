@@ -38,7 +38,7 @@
 **
 *****************************************************************************
 ** February 2011
-** - stardelegate example ported to PySide by Arun Srinivasan 
+** - stardelegate example ported to PySide by Arun Srinivasan
 **   <rulfzid@gmail.com>
 **************************************************************************"""
 
@@ -68,14 +68,15 @@ class StarEditor(QWidget):
     def paintEvent(self, event):
         """ Paint the editor, offloading the work to the StarRating class. """
         painter = QPainter(self)
-        self.starRating.paint(painter, self.rect(), self.palette(), isEditable=True)
-        
+        self.starRating.paint(painter, self.rect(), self.palette(),
+                              isEditable=True)
+
     def mouseMoveEvent(self, event):
-        """ As the mouse moves inside the editor, track the position and 
-            update the editor to display as many stars as necessary. 
+        """ As the mouse moves inside the editor, track the position and
+            update the editor to display as many stars as necessary.
         """
         star = self.starAtPosition(event.x())
-        
+
         if (star != self.starRating.starCount) and (star != -1):
             self.starRating.starCount = star
             self.update()
@@ -87,7 +88,7 @@ class StarEditor(QWidget):
         self.editingFinished.emit()
 
     def starAtPosition(self, x):
-        """ Calculate which star the user's mouse cursor is currently 
+        """ Calculate which star the user's mouse cursor is currently
             hovering over.
         """
         star = (x / (self.starRating.sizeHint().width() /
@@ -96,7 +97,3 @@ class StarEditor(QWidget):
             return -1
 
         return star
-
-                                        
-
-

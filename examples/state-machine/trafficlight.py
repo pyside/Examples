@@ -4,24 +4,30 @@
 from PySide.QtGui import *
 from PySide.QtCore import *
 
+
 class LightWidget(QWidget):
     def __init__(self, colour):
         super(LightWidget, self).__init__()
         self.colour = colour
         self.onVal = False
+
     def isOn(self):
         return self.onVal
+
     def setOn(self, on):
         if self.onVal == on:
             return
         self.onVal = on
         self.update()
+
     @Slot()
     def turnOff(self):
         self.setOn(False)
+
     @Slot()
     def turnOn(self):
         self.setOn(True)
+
     def paintEvent(self, e):
         if not self.onVal:
             return
@@ -31,6 +37,7 @@ class LightWidget(QWidget):
         painter.drawEllipse(0, 0, self.width(), self.height())
 
     on = Property(bool, isOn, setOn)
+
 
 class TrafficLightWidget(QWidget):
     def __init__(self):
@@ -47,6 +54,7 @@ class TrafficLightWidget(QWidget):
         self.setPalette(pal)
         self.setAutoFillBackground(True)
 
+
 def createLightState(light, duration, parent=None):
     lightState = QState(parent)
     timer = QTimer(lightState)
@@ -61,6 +69,7 @@ def createLightState(light, duration, parent=None):
     lightState.setInitialState(timing)
     return lightState
 
+
 class TrafficLight(QWidget):
     def __init__(self):
         super(TrafficLight, self).__init__()
@@ -74,14 +83,18 @@ class TrafficLight(QWidget):
         redGoingYellow.setObjectName('redGoingYellow')
         yellowGoingGreen = createLightState(widget.redLight, 1000)
         yellowGoingGreen.setObjectName('redGoingYellow')
-        redGoingYellow.addTransition(redGoingYellow, SIGNAL('finished()'), yellowGoingGreen)
+        redGoingYellow.addTransition(redGoingYellow, SIGNAL('finished()'),
+                                     yellowGoingGreen)
         greenGoingYellow = createLightState(widget.yellowLight, 3000)
         greenGoingYellow.setObjectName('redGoingYellow')
-        yellowGoingGreen.addTransition(yellowGoingGreen, SIGNAL('finished()'), greenGoingYellow)
+        yellowGoingGreen.addTransition(yellowGoingGreen, SIGNAL('finished()'),
+                                       greenGoingYellow)
         yellowGoingRed = createLightState(widget.greenLight, 1000)
         yellowGoingRed.setObjectName('redGoingYellow')
-        greenGoingYellow.addTransition(greenGoingYellow, SIGNAL('finished()'), yellowGoingRed)
-        yellowGoingRed.addTransition(yellowGoingRed, SIGNAL('finished()'), redGoingYellow)
+        greenGoingYellow.addTransition(greenGoingYellow, SIGNAL('finished()'),
+                                       yellowGoingRed)
+        yellowGoingRed.addTransition(yellowGoingRed, SIGNAL('finished()'),
+                                     redGoingYellow)
 
         machine.addState(redGoingYellow)
         machine.addState(yellowGoingGreen)
@@ -89,6 +102,7 @@ class TrafficLight(QWidget):
         machine.addState(yellowGoingRed)
         machine.setInitialState(redGoingYellow)
         machine.start()
+
 
 if __name__ == '__main__':
     import sys

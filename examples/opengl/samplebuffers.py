@@ -10,10 +10,11 @@ try:
     from OpenGL import GL
 except ImportError:
     app = QtGui.QApplication(sys.argv)
-    QtGui.QMessageBox.critical(None, "OpenGL samplebuffers",
-                            "PyOpenGL must be installed to run this example.",
-                            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
-                            QtGui.QMessageBox.NoButton)
+    QtGui.QMessageBox.critical(
+        None, "OpenGL samplebuffers",
+        "PyOpenGL must be installed to run this example.",
+        QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
+        QtGui.QMessageBox.NoButton)
     sys.exit(1)
 
 
@@ -22,7 +23,8 @@ class GLWidget(QtOpenGL.QGLWidget):
     rot = 0.0
 
     def __init__(self, parent=None):
-        QtOpenGL.QGLWidget.__init__(self, QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
+        QtOpenGL.QGLWidget.__init__(
+            self, QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers), parent)
 
         self.list_ = []
 
@@ -32,7 +34,7 @@ class GLWidget(QtOpenGL.QGLWidget):
     def initializeGL(self):
         GL.glMatrixMode(GL.GL_PROJECTION)
         GL.glLoadIdentity()
-        GL.glOrtho( -.5, .5, .5, -.5, -1000, 1000)
+        GL.glOrtho(-.5, .5, .5, -.5, -1000, 1000)
         GL.glMatrixMode(GL.GL_MODELVIEW)
         GL.glLoadIdentity()
         GL.glClearColor(1.0, 1.0, 1.0, 1.0)
@@ -48,7 +50,7 @@ class GLWidget(QtOpenGL.QGLWidget):
         GL.glMatrixMode(GL.GL_MODELVIEW)
         GL.glPushMatrix()
         GL.glEnable(GLWidget.GL_MULTISAMPLE)
-        GL.glTranslatef( -0.25, -0.10, 0.0)
+        GL.glTranslatef(-0.25, -0.10, 0.0)
         GL.glScalef(0.75, 1.15, 0.0)
         GL.glRotatef(GLWidget.rot, 0.0, 0.0, 1.0)
         GL.glCallList(self.list_)
@@ -130,9 +132,9 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
 
     if not QtOpenGL.QGLFormat.hasOpenGL():
-        QMessageBox.information(0, "OpenGL pbuffers",
-                                "This system does not support OpenGL.",
-                                QMessageBox.Ok)
+        QMessageBox.information(
+            0, "OpenGL pbuffers", "This system does not support OpenGL.",
+            QMessageBox.Ok)
         sys.exit(1)
 
     f = QtOpenGL.QGLFormat.defaultFormat()

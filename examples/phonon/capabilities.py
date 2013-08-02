@@ -29,10 +29,11 @@ try:
     from PySide.phonon import Phonon
 except ImportError:
     app = QtGui.QApplication(sys.argv)
-    QtGui.QMessageBox.critical(None, "Phonon Capabilities",
-            "Your Qt installation does not have Phonon support.",
-            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
-            QtGui.QMessageBox.NoButton)
+    QtGui.QMessageBox.critical(
+        None, "Phonon Capabilities",
+        "Your Qt installation does not have Phonon support.",
+        QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
+        QtGui.QMessageBox.NoButton)
     sys.exit(1)
 
 
@@ -75,7 +76,8 @@ class Window(QtGui.QWidget):
                 minimumValue = parameter.minimumValue()
                 maximumValue = parameter.maximumValue()
 
-                valueString = "%s / %s / %s" % (defaultValue, minimumValue, maximumValue)
+                valueString = "%s / %s / %s" % (defaultValue, minimumValue,
+                                                maximumValue)
 
                 parameterItem = QtGui.QTreeWidgetItem(item)
                 parameterItem.setText(0, "Parameter")
@@ -111,7 +113,7 @@ class Window(QtGui.QWidget):
         self.effectsLabel = QtGui.QLabel("Available Audio Effects:")
 
         headerLabels = ("Type", "Name", "Description", "Value Type",
-                "Default/Min/Max Values")
+                        "Default/Min/Max Values")
 
         self.effectsTreeWidget = QtGui.QTreeWidget()
         self.effectsTreeWidget.setHeaderLabels(headerLabels)

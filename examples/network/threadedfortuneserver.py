@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 
 ############################################################################
-# 
+#
 #  Copyright (C) 2004-2005 Trolltech AS. All rights reserved.
-# 
+#
 #  This file is part of the example classes of the Qt Toolkit.
-# 
+#
 #  This file may be used under the terms of the GNU General Public
 #  License version 2.0 as published by the Free Software Foundation
 #  and appearing in the file LICENSE.GPL included in the packaging of
 #  self file.  Please review the following information to ensure GNU
 #  General Public Licensing requirements will be met:
 #  http://www.trolltech.com/products/qt/opensource.html
-# 
+#
 #  If you are unsure which license is appropriate for your use, please
 #  review the following information:
 #  http://www.trolltech.com/products/qt/licensing.html or contact the
 #  sales department at sales@trolltech.com.
-# 
+#
 #  This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 #  WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-# 
+#
 ############################################################################
 
 import random
@@ -61,13 +61,13 @@ class FortuneServer(QtNetwork.QTcpServer):
         super(FortuneServer, self).__init__(parent)
 
         self.fortunes = (
-                "You've been leading a dog's life. Stay off the furniture.",
-                "You've got to think about tomorrow.",
-                "You will be surprised by a loud noise.",
-                "You will feel hungry again in another hour.",
-                "You might have mail.",
-                "You cannot kill time without injuring eternity.",
-                "Computers are not intelligent. They only think they are.")
+            "You've been leading a dog's life. Stay off the furniture.",
+            "You've got to think about tomorrow.",
+            "You will be surprised by a loud noise.",
+            "You will feel hungry again in another hour.",
+            "You might have mail.",
+            "You cannot kill time without injuring eternity.",
+            "Computers are not intelligent. They only think they are.")
 
     def incomingConnection(self, socketDescriptor):
         fortune = self.fortunes[random.randint(0, len(self.fortunes) - 1)]
@@ -95,13 +95,15 @@ class Dialog(QtGui.QDialog):
         quitButton.setAutoDefault(False)
 
         if not self.server.listen():
-            QtGui.QMessageBox.critical(self, "Threaded Fortune Server",
-                    "Unable to start the server: %s." % self.server.errorString())
+            QtGui.QMessageBox.critical(
+                self, "Threaded Fortune Server",
+                "Unable to start the server: %s." % self.server.errorString())
             self.close()
             return
 
-        statusLabel.setText("The server is running on port %d.\nRun the "
-                "Fortune Client example now." % self.server.serverPort())
+        statusLabel.setText(
+            "The server is running on port %d.\nRun the Fortune Client "
+            "example now." % self.server.serverPort())
 
         quitButton.clicked.connect(self.close)
 

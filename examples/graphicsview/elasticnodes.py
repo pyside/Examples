@@ -67,13 +67,15 @@ class Edge(QtGui.QGraphicsItem):
         if not self.source() or not self.dest():
             return
 
-        line = QtCore.QLineF(self.mapFromItem(self.source(), 0, 0), self.mapFromItem(self.dest(), 0, 0))
+        line = QtCore.QLineF(self.mapFromItem(self.source(), 0, 0),
+                             self.mapFromItem(self.dest(), 0, 0))
         length = line.length()
 
         if length == 0.0:
             return
 
-        edgeOffset = QtCore.QPointF((line.dx() * 10) / length, (line.dy() * 10) / length)
+        edgeOffset = QtCore.QPointF((line.dx() * 10) / length,
+                                    (line.dy() * 10) / length)
 
         self.prepareGeometryChange()
         self.sourcePoint = line.p1() + edgeOffset
@@ -86,9 +88,12 @@ class Edge(QtGui.QGraphicsItem):
         penWidth = 1
         extra = (penWidth + self.arrowSize) / 2.0
 
-        return QtCore.QRectF(self.sourcePoint,
-                             QtCore.QSizeF(self.destPoint.x() - self.sourcePoint.x(),
-                                           self.destPoint.y() - self.sourcePoint.y())).normalized().adjusted(-extra, -extra, extra, extra)
+        return QtCore.QRectF(
+            self.sourcePoint,
+            QtCore.QSizeF(self.destPoint.x() - self.sourcePoint.x(),
+                          self.destPoint.y() -
+                          self.sourcePoint.y())).normalized().adjusted(
+                              -extra, -extra, extra, extra)
 
     def paint(self, painter, option, widget):
         if not self.source() or not self.dest():
@@ -100,7 +105,8 @@ class Edge(QtGui.QGraphicsItem):
         if line.length() == 0.0:
             return
 
-        painter.setPen(QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+        painter.setPen(QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine,
+                                  QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
         painter.drawLine(line)
 
         # Draw the arrows if there's enough room.
@@ -108,18 +114,24 @@ class Edge(QtGui.QGraphicsItem):
         if line.dy() >= 0:
             angle = Edge.TwoPi - angle
 
-        sourceArrowP1 = self.sourcePoint + QtCore.QPointF(math.sin(angle + Edge.Pi / 3) * self.arrowSize,
-                                                          math.cos(angle + Edge.Pi / 3) * self.arrowSize)
-        sourceArrowP2 = self.sourcePoint + QtCore.QPointF(math.sin(angle + Edge.Pi - Edge.Pi / 3) * self.arrowSize,
-                                                          math.cos(angle + Edge.Pi - Edge.Pi / 3) * self.arrowSize);
-        destArrowP1 = self.destPoint + QtCore.QPointF(math.sin(angle - Edge.Pi / 3) * self.arrowSize,
-                                                      math.cos(angle - Edge.Pi / 3) * self.arrowSize)
-        destArrowP2 = self.destPoint + QtCore.QPointF(math.sin(angle - Edge.Pi + Edge.Pi / 3) * self.arrowSize,
-                                                      math.cos(angle - Edge.Pi + Edge.Pi / 3) * self.arrowSize)
+        sourceArrowP1 = self.sourcePoint + QtCore.QPointF(
+            math.sin(angle + Edge.Pi / 3) * self.arrowSize,
+            math.cos(angle + Edge.Pi / 3) * self.arrowSize)
+        sourceArrowP2 = self.sourcePoint + QtCore.QPointF(
+            math.sin(angle + Edge.Pi - Edge.Pi / 3) * self.arrowSize,
+            math.cos(angle + Edge.Pi - Edge.Pi / 3) * self.arrowSize)
+        destArrowP1 = self.destPoint + QtCore.QPointF(
+            math.sin(angle - Edge.Pi / 3) * self.arrowSize,
+            math.cos(angle - Edge.Pi / 3) * self.arrowSize)
+        destArrowP2 = self.destPoint + QtCore.QPointF(
+            math.sin(angle - Edge.Pi + Edge.Pi / 3) * self.arrowSize,
+            math.cos(angle - Edge.Pi + Edge.Pi / 3) * self.arrowSize)
 
         painter.setBrush(QtCore.Qt.black)
-        painter.drawPolygon(QtGui.QPolygonF([line.p1(), sourceArrowP1, sourceArrowP2]))
-        painter.drawPolygon(QtGui.QPolygonF([line.p2(), destArrowP1, destArrowP2]))
+        painter.drawPolygon(QtGui.QPolygonF([line.p1(), sourceArrowP1,
+                                             sourceArrowP2]))
+        painter.drawPolygon(QtGui.QPolygonF([line.p2(), destArrowP1,
+                                             destArrowP2]))
 
 
 class Node(QtGui.QGraphicsItem):
@@ -158,7 +170,8 @@ class Node(QtGui.QGraphicsItem):
             if not isinstance(item, Node):
                 continue
 
-            line = QtCore.QLineF(self.mapFromItem(item, 0, 0), QtCore.QPointF(0, 0))
+            line = QtCore.QLineF(self.mapFromItem(item, 0, 0),
+                                 QtCore.QPointF(0, 0))
             dx = line.dx()
             dy = line.dy()
             l = 2.0 * (dx * dx + dy * dy)
@@ -181,8 +194,12 @@ class Node(QtGui.QGraphicsItem):
 
         sceneRect = self.scene().sceneRect()
         self.newPos = self.pos() + QtCore.QPointF(xvel, yvel)
-        self.newPos.setX(min(max(self.newPos.x(), sceneRect.left() + 10), sceneRect.right() - 10))
-        self.newPos.setY(min(max(self.newPos.y(), sceneRect.top() + 10), sceneRect.bottom() - 10))
+        self.newPos.setX(
+            min(max(self.newPos.x(), sceneRect.left() + 10),
+                sceneRect.right() - 10))
+        self.newPos.setY(
+            min(max(self.newPos.y(), sceneRect.top() + 10),
+                sceneRect.bottom() - 10))
 
     def advance(self):
         if self.newPos == self.pos():
@@ -211,7 +228,8 @@ class Node(QtGui.QGraphicsItem):
             gradient.setCenter(3, 3)
             gradient.setFocalPoint(3, 3)
             gradient.setColorAt(1, QtGui.QColor(QtCore.Qt.yellow).lighter(120))
-            gradient.setColorAt(0, QtGui.QColor(QtCore.Qt.darkYellow).lighter(120))
+            gradient.setColorAt(
+                0, QtGui.QColor(QtCore.Qt.darkYellow).lighter(120))
         else:
             gradient.setColorAt(0, QtCore.Qt.yellow)
             gradient.setColorAt(1, QtCore.Qt.darkYellow)
@@ -319,13 +337,14 @@ class GraphWidget(QtGui.QGraphicsView):
         elif key == QtCore.Qt.Key_Space or key == QtCore.Qt.Key_Enter:
             for item in self.scene().items():
                 if isinstance(item, Node):
-                    item.setPos(-150 + QtCore.qrand() % 300, -150 + QtCore.qrand() % 300)
+                    item.setPos(-150 + QtCore.qrand() % 300, -150 +
+                                QtCore.qrand() % 300)
         else:
             QtGui.QGraphicsView.keyPressEvent(self, event)
 
-
     def timerEvent(self, event):
-        nodes = [item for item in self.scene().items() if isinstance(item, Node)]
+        nodes = [item for item in self.scene().items() if isinstance(item,
+                 Node)]
 
         for node in nodes:
             node.calculateForces()
@@ -345,15 +364,18 @@ class GraphWidget(QtGui.QGraphicsView):
     def drawBackground(self, painter, rect):
         # Shadow.
         sceneRect = self.sceneRect()
-        rightShadow = QtCore.QRectF(sceneRect.right(), sceneRect.top() + 5, 5, sceneRect.height())
-        bottomShadow = QtCore.QRectF(sceneRect.left() + 5, sceneRect.bottom(), sceneRect.width(), 5)
+        rightShadow = QtCore.QRectF(sceneRect.right(), sceneRect.top() + 5, 5,
+                                    sceneRect.height())
+        bottomShadow = QtCore.QRectF(sceneRect.left() + 5, sceneRect.bottom(),
+                                     sceneRect.width(), 5)
         if rightShadow.intersects(rect) or rightShadow.contains(rect):
-	        painter.fillRect(rightShadow, QtCore.Qt.darkGray)
+            painter.fillRect(rightShadow, QtCore.Qt.darkGray)
         if bottomShadow.intersects(rect) or bottomShadow.contains(rect):
-	        painter.fillRect(bottomShadow, QtCore.Qt.darkGray)
+            painter.fillRect(bottomShadow, QtCore.Qt.darkGray)
 
         # Fill.
-        gradient = QtGui.QLinearGradient(sceneRect.topLeft(), sceneRect.bottomRight())
+        gradient = QtGui.QLinearGradient(sceneRect.topLeft(),
+                                         sceneRect.bottomRight())
         gradient.setColorAt(0, QtCore.Qt.white)
         gradient.setColorAt(1, QtCore.Qt.lightGray)
         painter.fillRect(rect.intersect(sceneRect), QtGui.QBrush(gradient))
@@ -376,7 +398,9 @@ class GraphWidget(QtGui.QGraphicsView):
         painter.drawText(textRect, message)
 
     def scaleView(self, scaleFactor):
-        factor = self.matrix().scale(scaleFactor, scaleFactor).mapRect(QtCore.QRectF(0, 0, 1, 1)).width()
+        factor = self.matrix().scale(
+            scaleFactor, scaleFactor).mapRect(
+                QtCore.QRectF(0, 0, 1, 1)).width()
 
         if factor < 0.07 or factor > 100:
             return
@@ -386,7 +410,7 @@ class GraphWidget(QtGui.QGraphicsView):
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
-    QtCore.qsrand(QtCore.QTime(0,0,0).secsTo(QtCore.QTime.currentTime()))
+    QtCore.qsrand(QtCore.QTime(0, 0, 0).secsTo(QtCore.QTime.currentTime()))
 
     widget = GraphWidget()
     widget.show()

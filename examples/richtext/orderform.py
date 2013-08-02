@@ -47,7 +47,8 @@ class MainWindow(QtGui.QMainWindow):
         referenceFrameFormat.setBorder(1)
         referenceFrameFormat.setPadding(8)
         referenceFrameFormat.setPosition(QtGui.QTextFrameFormat.FloatRight)
-        referenceFrameFormat.setWidth(QtGui.QTextLength(QtGui.QTextLength.PercentageLength, 40))
+        referenceFrameFormat.setWidth(
+            QtGui.QTextLength(QtGui.QTextLength.PercentageLength, 40))
         cursor.insertFrame(referenceFrameFormat)
 
         cursor.insertText("A company", boldFormat)
@@ -70,15 +71,17 @@ class MainWindow(QtGui.QMainWindow):
 
         date = QtCore.QDate.currentDate()
         cursor.insertText("Date: %s" % date.toString('d MMMM yyyy'),
-                textFormat)
+                          textFormat)
         cursor.insertBlock()
 
         bodyFrameFormat = QtGui.QTextFrameFormat()
-        bodyFrameFormat.setWidth(QtGui.QTextLength(QtGui.QTextLength.PercentageLength, 100))
+        bodyFrameFormat.setWidth(
+            QtGui.QTextLength(QtGui.QTextLength.PercentageLength, 100))
         cursor.insertFrame(bodyFrameFormat)
 
-        cursor.insertText("I would like to place an order for the following "
-                "items:", textFormat)
+        cursor.insertText(
+            "I would like to place an order for the following items:",
+            textFormat)
         cursor.insertBlock()
         cursor.insertBlock()
 
@@ -108,18 +111,21 @@ class MainWindow(QtGui.QMainWindow):
 
         cursor.insertBlock()
 
-        cursor.insertText("Please update my records to take account of the "
-                "following privacy information:")
+        cursor.insertText(
+            "Please update my records to take account of the following "
+            "privacy information:")
         cursor.insertBlock()
 
         offersTable = cursor.insertTable(2, 2)
 
         cursor = offersTable.cellAt(0, 1).firstCursorPosition()
-        cursor.insertText("I want to receive more information about your "
-                "company's products and special offers.", textFormat)
+        cursor.insertText(
+            "I want to receive more information about your company's products "
+            "and special offers.", textFormat)
         cursor = offersTable.cellAt(1, 1).firstCursorPosition()
-        cursor.insertText("I do not want to receive any promotional "
-                "information from your company.", textFormat)
+        cursor.insertText(
+            "I do not want to receive any promotional information from your "
+            "company.", textFormat)
 
         if sendOffers:
             cursor = offersTable.cellAt(0, 0).firstCursorPosition()
@@ -140,16 +146,16 @@ class MainWindow(QtGui.QMainWindow):
 
     def createSample(self):
         dialog = DetailsDialog('Dialog with default values', self)
-        self.createLetter('Mr Smith',
-                '12 High Street\nSmall Town\nThis country',
-                dialog.orderItems(), True)
+        self.createLetter(
+            'Mr Smith', '12 High Street\nSmall Town\nThis country',
+            dialog.orderItems(), True)
 
     def openDialog(self):
         dialog = DetailsDialog("Enter Customer Details", self)
 
         if dialog.exec_() == QtGui.QDialog.Accepted:
             self.createLetter(dialog.senderName(), dialog.senderAddress(),
-                    dialog.orderItems(), dialog.sendOffers())
+                              dialog.orderItems(), dialog.sendOffers())
 
     def printFile(self):
         editor = self.letters.currentWidget()
@@ -179,12 +185,13 @@ class DetailsDialog(QtGui.QDialog):
 
         self.nameEdit = QtGui.QLineEdit()
         self.addressEdit = QtGui.QTextEdit()
-        self.offersCheckBox = QtGui.QCheckBox("Send information about "
-                "products and special offers:")
+        self.offersCheckBox = QtGui.QCheckBox(
+            "Send information about products and special offers:")
 
         self.setupItemsTable()
 
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox = QtGui.QDialogButtonBox(
+            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
 
         buttonBox.accepted.connect(self.verify)
         buttonBox.rejected.connect(self.reject)
@@ -216,7 +223,8 @@ class DetailsDialog(QtGui.QDialog):
 
         for row in range(len(self.items)):
             text = self.itemsTable.item(row, 0).text()
-            quantity = int(self.itemsTable.item(row, 1).data(QtCore.Qt.DisplayRole))
+            quantity = int(
+                self.itemsTable.item(row, 1).data(QtCore.Qt.DisplayRole))
             orderList.append((text, max(0, quantity)))
 
         return orderList
@@ -235,10 +243,10 @@ class DetailsDialog(QtGui.QDialog):
             self.accept()
             return
 
-        answer = QtGui.QMessageBox.warning(self, "Incomplete Form",
-                "The form does not contain all the necessary information.\n"
-                "Do you want to discard it?",
-                QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+        answer = QtGui.QMessageBox.warning(
+            self, "Incomplete Form", "The form does not contain all the "
+            "necessary information.\nDo you want to discard it?",
+            QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
 
         if answer == QtGui.QMessageBox.Yes:
             self.reject()

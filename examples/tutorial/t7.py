@@ -47,7 +47,6 @@ class MyWidget(QtGui.QWidget):
         grid = QtGui.QGridLayout()
         previousRange = None
 
-
         layout = QtGui.QVBoxLayout()
         layout.addWidget(quit)
         layout.addLayout(grid)
@@ -63,7 +62,6 @@ class MyWidget(QtGui.QWidget):
                                  previousRange.setValue)
 
                 previousRange = lcdRange
-
 
 
 app = QtGui.QApplication(sys.argv)

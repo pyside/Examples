@@ -4,17 +4,20 @@
 from PySide.QtGui import *
 from PySide.QtCore import *
 
+
 class MovementTransition(QEventTransition):
     def __init__(self, window):
         super(MovementTransition, self).__init__(window, QEvent.KeyPress)
         self.window = window
+
     def eventTest(self, event):
         if event.type() == QEvent.StateMachineWrapped and \
-          event.event().type() == QEvent.KeyPress:
+                event.event().type() == QEvent.KeyPress:
             key = event.event().key()
             return key == Qt.Key_2 or key == Qt.Key_8 or \
                 key == Qt.Key_6 or key == Qt.Key_4
         return False
+
     def onTransition(self, event):
         key = event.event().key()
         if key == Qt.Key_4:
@@ -26,6 +29,7 @@ class MovementTransition(QEventTransition):
         if key == Qt.Key_2:
             self.window.movePlayer(self.window.Down)
 
+
 class Custom(QState):
     def __init__(self, parent, mw):
         super(Custom, self).__init__(parent)
@@ -33,6 +37,7 @@ class Custom(QState):
 
     def onEntry(self, e):
         print(self.mw.status)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -56,6 +61,7 @@ class MainWindow(QMainWindow):
         self.setupMap()
         self.buildMachine()
         self.show()
+
     def setupMap(self):
         self.map = []
         qsrand(QTime(0, 0, 0).secsTo(QTime.currentTime()))
@@ -63,7 +69,7 @@ class MainWindow(QMainWindow):
             column = []
             for y in range(self.height):
                 if x == 0 or x == self.width - 1 or y == 0 or \
-                  y == self.height - 1 or qrand() % 40 == 0:
+                        y == self.height - 1 or qrand() % 40 == 0:
                     column.append('#')
                 else:
                     column.append('.')
@@ -76,7 +82,8 @@ class MainWindow(QMainWindow):
         # this line sets the status
         self.status = 'hello!'
         # however this line does not
-        inputState.assignProperty(self, 'status', 'Move the rogue with 2, 4, 6, and 8')
+        inputState.assignProperty(
+            self, 'status', 'Move the rogue with 2, 4, 6, and 8')
 
         machine.setInitialState(inputState)
         machine.start()
@@ -106,7 +113,9 @@ class MainWindow(QMainWindow):
 
     def sizeHint(self):
         metrics = QFontMetrics(self.font())
-        return QSize(metrics.width('X') * self.width, metrics.height() * (self.height + 1))
+        return QSize(metrics.width('X') * self.width,
+                     metrics.height() * (self.height + 1))
+
     def paintEvent(self, event):
         metrics = QFontMetrics(self.font())
         painter = QPainter(self)
@@ -127,7 +136,9 @@ class MainWindow(QMainWindow):
                     continue
                 painter.drawText(QPoint(xPos, yPos), self.map[x][y])
                 xPos += fontWidth
-        painter.drawText(QPoint(self.pX * fontWidth, (self.pY + 2) * fontHeight), '@')
+        painter.drawText(QPoint(self.pX * fontWidth,
+                                (self.pY + 2) * fontHeight), '@')
+
     def movePlayer(self, direction):
         if direction == self.Left:
             if self.map[self.pX - 1][self.pY] != '#':
@@ -142,8 +153,10 @@ class MainWindow(QMainWindow):
             if self.map[self.pX][self.pY + 1] != '#':
                 self.pY += 1
         self.repaint()
+
     def getStatus(self):
         return self.statusStr
+
     def setStatus(self, status):
         self.statusStr = status
         self.repaint()
@@ -154,6 +167,7 @@ class MainWindow(QMainWindow):
     Right = 3
     Width = 35
     Height = 20
+
 
 if __name__ == '__main__':
     import sys

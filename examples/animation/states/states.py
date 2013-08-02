@@ -58,7 +58,8 @@ class Pixmap(QtGui.QGraphicsObject):
         painter.drawPixmap(QtCore.QPointF(), self.p)
 
     def boundingRect(self):
-        return QtCore.QRectF(QtCore.QPointF(0, 0), QtCore.QSizeF(self.p.size()))
+        return QtCore.QRectF(QtCore.QPointF(0, 0),
+                             QtCore.QSizeF(self.p.size()))
 
 
 if __name__ == '__main__':
@@ -151,7 +152,8 @@ if __name__ == '__main__':
 
     # State 2.
     state2.assignProperty(button, 'text', "Switch to state 3")
-    state2.assignProperty(widget, 'geometry', QtCore.QRectF(200, 150, 200, 150))
+    state2.assignProperty(widget, 'geometry',
+                          QtCore.QRectF(200, 150, 200, 150))
     state2.assignProperty(box, 'geometry', QtCore.QRect(9, 150, 190, 150))
     state2.assignProperty(p1, 'pos', QtCore.QPointF(68 - 150, 185 + 150))
     state2.assignProperty(p2, 'pos', QtCore.QPointF(168, 185 + 150))
@@ -180,8 +182,10 @@ if __name__ == '__main__':
     state3.assignProperty(p3, 'pos', QtCore.QPointF(5, 5 + (64 + 5) + 64))
     state3.assignProperty(p4, 'pos', QtCore.QPointF(5 + 64 + 5, 5))
     state3.assignProperty(p5, 'pos', QtCore.QPointF(5 + 64 + 5, 5 + 64 + 5))
-    state3.assignProperty(p6, 'pos', QtCore.QPointF(5 + 64 + 5, 5 + (64 + 5) + 64))
-    state3.assignProperty(widget, 'geometry', QtCore.QRectF(138, 5, 400 - 138, 200))
+    state3.assignProperty(p6, 'pos',
+                          QtCore.QPointF(5 + 64 + 5, 5 + (64 + 5) + 64))
+    state3.assignProperty(widget, 'geometry',
+                          QtCore.QRectF(138, 5, 400 - 138, 200))
     state3.assignProperty(box, 'geometry', QtCore.QRect(5, 205, 400, 90))
     state3.assignProperty(p1, 'opacity', 1.0)
     state3.assignProperty(p2, 'opacity', 1.0)
@@ -193,7 +197,8 @@ if __name__ == '__main__':
     t1 = state1.addTransition(button.clicked, state2)
     animation1SubGroup = QtCore.QSequentialAnimationGroup()
     animation1SubGroup.addPause(250)
-    animation1SubGroup.addAnimation(QtCore.QPropertyAnimation(box, 'geometry', state1))
+    animation1SubGroup.addAnimation(QtCore.QPropertyAnimation(box, 'geometry',
+                                                              state1))
     t1.addAnimation(animation1SubGroup)
     t1.addAnimation(QtCore.QPropertyAnimation(widget, 'geometry', state1))
     t1.addAnimation(QtCore.QPropertyAnimation(p1, 'pos', state1))

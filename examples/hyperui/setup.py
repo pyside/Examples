@@ -9,4 +9,3 @@ setup(name='HyperUI Demo',
       packages=['hyperuilib', 'hyperuilib.shared', 'hyperuilib.resource'],
       scripts=['hyperui']
       )
-

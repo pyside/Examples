@@ -78,7 +78,8 @@ class DemoItemAnimation(QtGui.QGraphicsItemAnimation):
             self.playWithoutDelay()
 
     def playWithoutDelay(self):
-        if self.moveOnPlay and not (Colors.noAnimations and not self.forcePlay):
+        if self.moveOnPlay and not \
+                (Colors.noAnimations and not self.forcePlay):
             self.timeline.start()
         self.demoItem().animationStarted(self.inOrOut)
 
@@ -116,7 +117,8 @@ class DemoItemAnimation(QtGui.QGraphicsItemAnimation):
 
     def setOpacity(self, step):
         demoItem = self.item()
-        demoItem.opacity = self.opacityAt0 + step * step * step * (self.opacityAt1 - self.opacityAt0)
+        demoItem.opacity = self.opacityAt0 + step * step * step * (
+            self.opacityAt1 - self.opacityAt0)
 
     def afterAnimationStep(self, step):
         if step == 1.0:

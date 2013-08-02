@@ -14,7 +14,7 @@ class RegExpDialog(QtGui.QDialog):
         self.patternComboBox = QtGui.QComboBox()
         self.patternComboBox.setEditable(True)
         self.patternComboBox.setSizePolicy(QtGui.QSizePolicy.Expanding,
-                QtGui.QSizePolicy.Preferred)
+                                           QtGui.QSizePolicy.Preferred)
 
         patternLabel = QtGui.QLabel("&Pattern:")
         patternLabel.setBuddy(self.patternComboBox)
@@ -23,7 +23,8 @@ class RegExpDialog(QtGui.QDialog):
         self.escapedPatternLineEdit.setReadOnly(True)
         palette = self.escapedPatternLineEdit.palette()
         palette.setBrush(QtGui.QPalette.Base,
-                palette.brush(QtGui.QPalette.Disabled, QtGui.QPalette.Base))
+                         palette.brush(QtGui.QPalette.Disabled,
+                                       QtGui.QPalette.Base))
         self.escapedPatternLineEdit.setPalette(palette)
 
         escapedPatternLabel = QtGui.QLabel("&Escaped Pattern:")
@@ -31,12 +32,12 @@ class RegExpDialog(QtGui.QDialog):
 
         self.syntaxComboBox = QtGui.QComboBox()
         self.syntaxComboBox.addItem("Regular expression v1",
-                QtCore.QRegExp.RegExp)
+                                    QtCore.QRegExp.RegExp)
         self.syntaxComboBox.addItem("Regular expression v2",
-                QtCore.QRegExp.RegExp2)
+                                    QtCore.QRegExp.RegExp2)
         self.syntaxComboBox.addItem("Wildcard", QtCore.QRegExp.Wildcard)
         self.syntaxComboBox.addItem("Fixed string",
-                QtCore.QRegExp.FixedString)
+                                    QtCore.QRegExp.FixedString)
 
         syntaxLabel = QtGui.QLabel("&Pattern Syntax:")
         syntaxLabel.setBuddy(self.syntaxComboBox)
@@ -44,7 +45,7 @@ class RegExpDialog(QtGui.QDialog):
         self.textComboBox = QtGui.QComboBox()
         self.textComboBox.setEditable(True)
         self.textComboBox.setSizePolicy(QtGui.QSizePolicy.Expanding,
-                QtGui.QSizePolicy.Preferred)
+                                        QtGui.QSizePolicy.Preferred)
 
         textLabel = QtGui.QLabel("&Text:")
         textLabel.setBuddy(self.textComboBox)
@@ -124,13 +125,15 @@ class RegExpDialog(QtGui.QDialog):
             cs = QtCore.Qt.CaseSensitive
         rx.setCaseSensitivity(cs)
         rx.setMinimal(self.minimalCheckBox.isChecked())
-        syntax = self.syntaxComboBox.itemData(self.syntaxComboBox.currentIndex())
+        syntax = self.syntaxComboBox.itemData(
+            self.syntaxComboBox.currentIndex())
         rx.setPatternSyntax(QtCore.QRegExp.PatternSyntax(syntax))
 
         palette = self.patternComboBox.palette()
         if rx.isValid():
             palette.setColor(QtGui.QPalette.Text,
-                    self.textComboBox.palette().color(QtGui.QPalette.Text))
+                             self.textComboBox.palette().color(
+                                 QtGui.QPalette.Text))
         else:
             palette.setColor(QtGui.QPalette.Text, QtCore.Qt.red)
         self.patternComboBox.setPalette(palette)

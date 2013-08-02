@@ -7,7 +7,7 @@ class DemoTextItem(DemoItem):
     STATIC_TEXT, DYNAMIC_TEXT = range(2)
 
     def __init__(self, text, font, textColor, textWidth, scene=None,
-            parent=None, type=STATIC_TEXT, bgColor=QtGui.QColor()):
+                 parent=None, type=STATIC_TEXT, bgColor=QtGui.QColor()):
         super(DemoTextItem, self).__init__(scene, parent)
 
         self.type = type
@@ -39,7 +39,7 @@ class DemoTextItem(DemoItem):
         w = textItem.boundingRect().width()
         h = textItem.boundingRect().height()
         image = QtGui.QImage(int(w * sx), int(h * sy),
-                QtGui.QImage.Format_ARGB32_Premultiplied)
+                             QtGui.QImage.Format_ARGB32_Premultiplied)
         image.fill(QtGui.QColor(0, 0, 0, 0).rgba())
         painter = QtGui.QPainter(image)
         painter.scale(sx, sy)

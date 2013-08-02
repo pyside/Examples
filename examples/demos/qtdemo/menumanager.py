@@ -11,9 +11,10 @@ from menucontent import MenuContentItem
 from score import Score
 from textbutton import TextButton
 
+
 class MenuManager(QtCore.QObject):
     ROOT, MENU1, MENU2, LAUNCH, DOCUMENTATION, QUIT, FULLSCREEN, UP, DOWN, \
-            BACK = range(10)
+        BACK = range(10)
 
     pInstance = None
 
@@ -63,19 +64,22 @@ class MenuManager(QtCore.QObject):
 
         xml_file = QtCore.QFile(':/xml/examples.xml')
         statusOK, errorStr, errorLine, errorColumn = \
-                self.contentsDoc.setContent(xml_file, True)
+            self.contentsDoc.setContent(xml_file, True)
 
         if not statusOK:
-            QtGui.QMessageBox.critical(None, "DOM Parser",
-                    "Could not read or find the contents document. Error at "
-                    "line %d, column %d:\n%s" % (errorLine, errorColumn, errorStr))
+            QtGui.QMessageBox.critical(
+                None, "DOM Parser",
+                "Could not read or find the contents document. Error at "
+                "line %d, column %d:\n%s" % (errorLine, errorColumn, errorStr))
             sys.exit(-1)
 
     def initHelpEngine(self):
-        self.helpRootUrl = 'qthelp://com.trolltech.qt.%d%d%d/qdoc/' % QtCore.__version_info__
+        self.helpRootUrl = 'qthelp://com.trolltech.qt.%d%d%d/qdoc/' \
+            % QtCore.__version_info__
 
         # Store help collection file in cache dir of assistant.
-        cacheDir = QtGui.QDesktopServices.storageLocation(QtGui.QDesktopServices.DataLocation) + '/Trolltech/Assistant/'
+        cacheDir = QtGui.QDesktopServices.storageLocation(
+            QtGui.QDesktopServices.DataLocation) + '/Trolltech/Assistant/'
         helpDataFile = 'qtdemo_%s.qhc' % QtCore.__version__
 
         dir = QtCore.QDir()
@@ -86,7 +90,8 @@ class MenuManager(QtCore.QObject):
         self.helpEngine = QtHelp.QHelpEngineCore(cacheDir + helpDataFile)
         self.helpEngine.setupData()
 
-        qtDocRoot = QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.DocumentationPath) + '/qch'
+        qtDocRoot = QtCore.QLibraryInfo.location(
+            QtCore.QLibraryInfo.DocumentationPath) + '/qch'
         qtDocRoot = QtCore.QDir(qtDocRoot).absolutePath()
 
         qchFiles = ['/qt.qch', '/designer.qch', '/linguist.qch']
@@ -94,7 +99,8 @@ class MenuManager(QtCore.QObject):
         oldDir = self.helpEngine.customValue('docDir', '')
         if oldDir != qtDocRoot:
             for qchFile in qchFiles:
-                self.helpEngine.unregisterDocumentation(QtHelp.QHelpEngineCore.namespaceName(qtDocRoot + qchFile))
+                self.helpEngine.unregisterDocumentation(
+                    QtHelp.QHelpEngineCore.namespaceName(qtDocRoot + qchFile))
 
         # If the data that the engine will work on is not yet registered, do it
         # now.
@@ -116,12 +122,12 @@ class MenuManager(QtCore.QObject):
         elif userCode == MenuManager.ROOT:
             # Out.
             self.score.queueMovie(self.currentMenu + ' -out', Score.FROM_START,
-                    Score.LOCK_ITEMS)
+                                  Score.LOCK_ITEMS)
             self.score.queueMovie(self.currentMenuButtons + ' -out',
-                    Score.FROM_START, Score.LOCK_ITEMS)
+                                  Score.FROM_START, Score.LOCK_ITEMS)
             self.score.queueMovie(self.currentInfo + ' -out')
             self.score.queueMovie(self.currentInfo + ' -buttons -out',
-                    Score.NEW_ANIMATION_ONLY)
+                                  Score.NEW_ANIMATION_ONLY)
             self.score.queueMovie('back -out', Score.ONLY_IF_VISIBLE)
 
             # Book-keeping.
@@ -133,9 +139,9 @@ class MenuManager(QtCore.QObject):
             # In.
             self.score.queueMovie('upndown -shake')
             self.score.queueMovie(self.currentMenu, Score.FROM_START,
-                    Score.UNLOCK_ITEMS)
+                                  Score.UNLOCK_ITEMS)
             self.score.queueMovie(self.currentMenuButtons, Score.FROM_START,
-                    Score.UNLOCK_ITEMS)
+                                  Score.UNLOCK_ITEMS)
             self.score.queueMovie(self.currentInfo)
 
             if not Colors.noTicker:
@@ -146,9 +152,9 @@ class MenuManager(QtCore.QObject):
         elif userCode == MenuManager.MENU1:
             # Out.
             self.score.queueMovie(self.currentMenu + ' -out', Score.FROM_START,
-                    Score.LOCK_ITEMS)
+                                  Score.LOCK_ITEMS)
             self.score.queueMovie(self.currentMenuButtons + ' -out',
-                    Score.FROM_START, Score.LOCK_ITEMS)
+                                  Score.FROM_START, Score.LOCK_ITEMS)
             self.score.queueMovie(self.currentInfo + ' -out')
 
             # Book-keeping.
@@ -161,7 +167,7 @@ class MenuManager(QtCore.QObject):
             self.score.queueMovie('upndown -shake')
             self.score.queueMovie('back -in')
             self.score.queueMovie(self.currentMenu, Score.FROM_START,
-                    Score.UNLOCK_ITEMS)
+                                  Score.UNLOCK_ITEMS)
             self.score.queueMovie(self.currentInfo)
 
             if not Colors.noTicker:
@@ -169,9 +175,9 @@ class MenuManager(QtCore.QObject):
         elif userCode == MenuManager.MENU2:
             # Out.
             self.score.queueMovie(self.currentInfo + ' -out',
-                    Score.NEW_ANIMATION_ONLY)
+                                  Score.NEW_ANIMATION_ONLY)
             self.score.queueMovie(self.currentInfo + ' -buttons -out',
-                    Score.NEW_ANIMATION_ONLY)
+                                  Score.NEW_ANIMATION_ONLY)
 
             # Book-keeping.
             self.currentMenuCode = MenuManager.MENU2
@@ -183,7 +189,7 @@ class MenuManager(QtCore.QObject):
             self.score.queueMovie(self.currentMenu + ' -shake')
             self.score.queueMovie(self.currentInfo, Score.NEW_ANIMATION_ONLY)
             self.score.queueMovie(self.currentInfo + ' -buttons',
-                    Score.NEW_ANIMATION_ONLY)
+                                  Score.NEW_ANIMATION_ONLY)
 
             if not Colors.noTicker:
                 self.score.queueMovie('ticker -out', Score.NEW_ANIMATION_ONLY)
@@ -191,25 +197,25 @@ class MenuManager(QtCore.QObject):
             backMenu = self.info[self.currentMenu]['back']
             if backMenu:
                 self.score.queueMovie(self.currentMenu + ' -top_out',
-                        Score.FROM_START, Score.LOCK_ITEMS)
+                                      Score.FROM_START, Score.LOCK_ITEMS)
                 self.score.queueMovie(backMenu + ' -bottom_in',
-                        Score.FROM_START, Score.UNLOCK_ITEMS)
+                                      Score.FROM_START, Score.UNLOCK_ITEMS)
                 self.currentMenu = backMenu
         elif userCode == MenuManager.DOWN:
             moreMenu = self.info[self.currentMenu]['more']
             if moreMenu:
                 self.score.queueMovie(self.currentMenu + ' -bottom_out',
-                        Score.FROM_START, Score.LOCK_ITEMS)
+                                      Score.FROM_START, Score.LOCK_ITEMS)
                 self.score.queueMovie(moreMenu + ' -top_in', Score.FROM_START,
-                        Score.UNLOCK_ITEMS)
+                                      Score.UNLOCK_ITEMS)
                 self.currentMenu = moreMenu
         elif userCode == MenuManager.BACK:
             if self.currentMenuCode == MenuManager.MENU2:
                 # Out.
                 self.score.queueMovie(self.currentInfo + ' -out',
-                        Score.NEW_ANIMATION_ONLY)
+                                      Score.NEW_ANIMATION_ONLY)
                 self.score.queueMovie(self.currentInfo + ' -buttons -out',
-                        Score.NEW_ANIMATION_ONLY)
+                                      Score.NEW_ANIMATION_ONLY)
 
                 # Book-keeping.
                 self.currentMenuCode = MenuManager.MENU1
@@ -220,9 +226,9 @@ class MenuManager(QtCore.QObject):
                 self.score.queueMovie('upndown -shake')
                 self.score.queueMovie(self.currentMenu + ' -shake')
                 self.score.queueMovie(self.currentInfo,
-                        Score.NEW_ANIMATION_ONLY)
+                                      Score.NEW_ANIMATION_ONLY)
                 self.score.queueMovie(self.currentInfo + ' -buttons',
-                        Score.NEW_ANIMATION_ONLY)
+                                      Score.NEW_ANIMATION_ONLY)
 
                 if not Colors.noTicker:
                     self.ticker.doIntroTransitions = False
@@ -257,7 +263,8 @@ class MenuManager(QtCore.QObject):
 
         # Start assistant if it's not already running.
         if self.assistantProcess.state() != QtCore.QProcess.Running:
-            app = QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.BinariesPath) + QtCore.QDir.separator()
+            app = QtCore.QLibraryInfo.location(
+                QtCore.QLibraryInfo.BinariesPath) + QtCore.QDir.separator()
 
             if sys.platform == 'darwin':
                 app += 'Assistant.app/Contents/MacOS/Assistant'
@@ -268,7 +275,7 @@ class MenuManager(QtCore.QObject):
             self.assistantProcess.start(app, args)
             if not self.assistantProcess.waitForStarted():
                 QtGui.QMessageBox.critical(None, "PyQt Demo",
-                        "Could not start %s." % app)
+                                           "Could not start %s." % app)
                 return
 
         # Send command through remote control even if the process was just
@@ -286,7 +293,9 @@ class MenuManager(QtCore.QObject):
         if sys.platform == 'win32':
             # Make sure it finds the DLLs on Windows.
             curpath = os.getenv('PATH')
-            newpath = 'PATH=%s;%s' % (QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.BinariesPath), curpath)
+            newpath = 'PATH=%s;%s' % (
+                QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.BinariesPath),
+                curpath)
             process.setEnvironment([newpath])
 
         if self.info[name]['changedirectory'] != 'false':
@@ -302,10 +311,10 @@ class MenuManager(QtCore.QObject):
 
     def exampleError(self, error):
         if error != QtCore.QProcess.Crashed:
-            QtGui.QMessageBox.critical(None, "Failed to launch the example",
-                    "Could not launch the example. Ensure that it has been "
-                    "built.",
-                    QtGui.QMessageBox.Cancel)
+            QtGui.QMessageBox.critical(
+                None, "Failed to launch the example",
+                "Could not launch the example. Ensure that it has been built.",
+                QtGui.QMessageBox.Cancel)
 
     def init(self, window):
         self.window = window
@@ -342,10 +351,14 @@ class MenuManager(QtCore.QObject):
                          "Demo/example with name", name, "appears twice in "
                          "the xml-file!__")
 
-        self.info.setdefault(name, {})['filename'] = str(example.attribute('filename'))
-        self.info[name]['category'] = str(example.parentNode().toElement().tagName())
-        self.info[name]['dirname'] = str(example.parentNode().toElement().attribute('dirname'))
-        self.info[name]['changedirectory'] = str(example.attribute('changedirectory'))
+        self.info.setdefault(name, {})['filename'] = str(example.attribute(
+            'filename'))
+        self.info[name]['category'] = \
+            str(example.parentNode().toElement().tagName())
+        self.info[name]['dirname'] = \
+            str(example.parentNode().toElement().attribute('dirname'))
+        self.info[name]['changedirectory'] = \
+            str(example.attribute('changedirectory'))
         self.info[name]['image'] = str(example.attribute('image'))
 
     def resolveDir(self, name):
@@ -383,7 +396,7 @@ class MenuManager(QtCore.QObject):
             return pywFile.fileName()
 
         Colors.debug("- WARNING: Could not resolve executable:", dir.path(),
-                fileName)
+                     fileName)
         return '__executable not found__'
 
     def resolveDocUrl(self, name):
@@ -394,7 +407,8 @@ class MenuManager(QtCore.QObject):
         if category == 'demos':
             return self.helpRootUrl + 'demos-' + fileName + '.html'
         else:
-            return self.helpRootUrl + dirName.replace('/', '-') + '-' + fileName + '.html'
+            return self.helpRootUrl + dirName.replace('/', '-') + '-' \
+                + fileName + '.html'
 
     def resolveImageUrl(self, name):
         return self.helpRootUrl + 'images/' + name
@@ -424,19 +438,21 @@ class MenuManager(QtCore.QObject):
     def createRootMenu(self, el):
         name = str(el.attribute('name'))
         self.createMenu(el, MenuManager.MENU1)
-        self.createInfo(MenuContentItem(el, self.window.scene), name + ' -info')
+        self.createInfo(
+            MenuContentItem(el, self.window.scene), name + ' -info')
 
         menuButtonsIn = self.score.insertMovie(name + ' -buttons')
         menuButtonsOut = self.score.insertMovie(name + ' -buttons -out')
         self.createLowLeftButton("Quit", MenuManager.QUIT, menuButtonsIn,
-                menuButtonsOut, None)
+                                 menuButtonsOut, None)
         self.createLowRightButton("Toggle fullscreen", MenuManager.FULLSCREEN,
-                menuButtonsIn, menuButtonsOut, None)
+                                  menuButtonsIn, menuButtonsOut, None)
 
     def createSubMenu(self, el):
         name = str(el.attribute('name'))
         self.createMenu(el, MenuManager.MENU2)
-        self.createInfo(MenuContentItem(el, self.window.scene), name + ' -info')
+        self.createInfo(MenuContentItem(
+            el, self.window.scene), name + ' -info')
 
     def createLeafMenu(self, el):
         name = str(el.attribute('name'))
@@ -444,11 +460,13 @@ class MenuManager(QtCore.QObject):
 
         infoButtonsIn = self.score.insertMovie(name + ' -buttons')
         infoButtonsOut = self.score.insertMovie(name + ' -buttons -out')
-        self.createLowRightLeafButton("Documentation", 600,
-                MenuManager.DOCUMENTATION, infoButtonsIn, infoButtonsOut, None)
+        self.createLowRightLeafButton(
+            "Documentation", 600, MenuManager.DOCUMENTATION, infoButtonsIn,
+            infoButtonsOut, None)
         if str(el.attribute('executable')) != 'false':
-            self.createLowRightLeafButton("Launch", 405, MenuManager.LAUNCH,
-                    infoButtonsIn, infoButtonsOut, None)
+            self.createLowRightLeafButton(
+                "Launch", 405, MenuManager.LAUNCH, infoButtonsIn,
+                infoButtonsOut, None)
 
     def createMenu(self, category, type):
         sw = self.window.scene.sceneRect().width()
@@ -464,9 +482,11 @@ class MenuManager(QtCore.QObject):
             movieIn = self.score.insertMovie(currentMenu)
             movieOut = self.score.insertMovie(currentMenu + ' -out')
             movieNextTopOut = self.score.insertMovie(currentMenu + ' -top_out')
-            movieNextBottomOut = self.score.insertMovie(currentMenu + ' -bottom_out')
+            movieNextBottomOut = self.score.insertMovie(
+                currentMenu + ' -bottom_out')
             movieNextTopIn = self.score.insertMovie(currentMenu + ' -top_in')
-            movieNextBottomIn = self.score.insertMovie(currentMenu + ' -bottom_in')
+            movieNextBottomIn = self.score.insertMovie(
+                currentMenu + ' -bottom_in')
             movieShake = self.score.insertMovie(currentMenu + ' -shake')
 
             i = 0
@@ -474,11 +494,12 @@ class MenuManager(QtCore.QObject):
                 # Create a normal menu button.
                 label = str(currentNode.toElement().attribute('name'))
                 item = TextButton(label, TextButton.LEFT, type,
-                        self.window.scene)
+                                  self.window.scene)
                 currentNode = currentNode.nextSibling()
 
                 # Skip the OpenGL examples if they can't run.
-                if str(currentNode.toElement().attribute('dirname')) == 'opengl':
+                if str(currentNode.toElement().attribute('dirname')) == \
+                        'opengl':
                     if not Colors.openGlAvailable:
                         currentNode = currentNode.nextSibling()
 
@@ -490,22 +511,40 @@ class MenuManager(QtCore.QObject):
 
                 # Create in-animation.
                 anim = DemoItemAnimation(item, DemoItemAnimation.ANIM_IN)
-                anim.setDuration(float(1000 + (i * 20)) * Colors.animSpeedButtons)
+                anim.setDuration(
+                    float(1000 + (i * 20)) * Colors.animSpeedButtons)
                 anim.setStartPos(QtCore.QPointF(xOffset, -ih))
                 anim.setPosAt(0.20, QtCore.QPointF(xOffset, -ih))
-                anim.setPosAt(0.50, QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY + (10 * float(i / 4.0))))
-                anim.setPosAt(0.60, QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY))
-                anim.setPosAt(0.70, QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY + (5 * float(i / 4.0))))
-                anim.setPosAt(0.80, QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY))
-                anim.setPosAt(0.90, QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY + (2 * float(i / 4.0))))
-                anim.setPosAt(1.00, QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY))
+                anim.setPosAt(
+                    0.50, QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY + (
+                            10 * float(i / 4.0))))
+                anim.setPosAt(
+                    0.60, QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY))
+                anim.setPosAt(
+                    0.70, QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY + (
+                            5 * float(i / 4.0))))
+                anim.setPosAt(
+                    0.80, QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY))
+                anim.setPosAt(
+                    0.90, QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY + (
+                            2 * float(i / 4.0))))
+                anim.setPosAt(
+                    1.00, QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY))
                 movieIn.append(anim)
 
                 # Create out-animation.
                 anim = DemoItemAnimation(item, DemoItemAnimation.ANIM_OUT)
                 anim.hideOnFinished = True
                 anim.setDuration((700 + (30 * i)) * Colors.animSpeedButtons)
-                anim.setStartPos(QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY))
+                anim.setStartPos(
+                    QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY))
                 anim.setPosAt(0.60, QtCore.QPointF(xOffset, 600 - ih - ih))
                 anim.setPosAt(0.65, QtCore.QPointF(xOffset + 20, 600 - ih))
                 anim.setPosAt(1.00, QtCore.QPointF(sw + iw, 600 - ih))
@@ -514,47 +553,88 @@ class MenuManager(QtCore.QObject):
                 # Create shake-animation.
                 anim = DemoItemAnimation(item)
                 anim.setDuration(700 * Colors.animSpeedButtons)
-                anim.setStartPos(QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY))
-                anim.setPosAt(0.55, QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY - i*2.0))
-                anim.setPosAt(0.70, QtCore.QPointF(xOffset - 10, (i * ihp) + yOffset + Colors.contentStartY - i*1.5))
-                anim.setPosAt(0.80, QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY - i*1.0))
-                anim.setPosAt(0.90, QtCore.QPointF(xOffset - 2, (i * ihp) + yOffset + Colors.contentStartY - i*0.5))
-                anim.setPosAt(1.00, QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY))
+                anim.setStartPos(
+                    QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY))
+                anim.setPosAt(
+                    0.55, QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY
+                        - i*2.0))
+                anim.setPosAt(
+                    0.70, QtCore.QPointF(
+                        xOffset - 10, (i * ihp) + yOffset
+                        + Colors.contentStartY - i*1.5))
+                anim.setPosAt(
+                    0.80, QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY
+                        - i*1.0))
+                anim.setPosAt(
+                    0.90, QtCore.QPointF(
+                        xOffset - 2, (i * ihp) + yOffset + Colors.contentStartY
+                        - i*0.5))
+                anim.setPosAt(
+                    1.00, QtCore.QPointF(xOffset, (i * ihp) + yOffset
+                                         + Colors.contentStartY))
                 movieShake.append(anim)
 
                 # Create next-menu top-out-animation.
                 anim = DemoItemAnimation(item, DemoItemAnimation.ANIM_OUT)
                 anim.hideOnFinished = True
                 anim.setDuration((200 + (30 * i)) * Colors.animSpeedButtons)
-                anim.setStartPos(QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY))
-                anim.setPosAt(0.70, QtCore.QPointF(xOffset, yOffset + Colors.contentStartY))
-                anim.setPosAt(1.00, QtCore.QPointF(-iw, yOffset + Colors.contentStartY))
+                anim.setStartPos(
+                    QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY))
+                anim.setPosAt(
+                    0.70, QtCore.QPointF(
+                        xOffset, yOffset + Colors.contentStartY))
+                anim.setPosAt(
+                    1.00, QtCore.QPointF(-iw, yOffset + Colors.contentStartY))
                 movieNextTopOut.append(anim)
 
                 # Create next-menu bottom-out-animation.
                 anim = DemoItemAnimation(item, DemoItemAnimation.ANIM_OUT)
                 anim.hideOnFinished = True
                 anim.setDuration((200 + (30 * i)) * Colors.animSpeedButtons)
-                anim.setStartPos(QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY))
-                anim.setPosAt(0.70, QtCore.QPointF(xOffset, (maxExamples * ihp) + yOffset + Colors.contentStartY))
-                anim.setPosAt(1.00, QtCore.QPointF(-iw, (maxExamples * ihp) + yOffset + Colors.contentStartY))
+                anim.setStartPos(
+                    QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY))
+                anim.setPosAt(
+                    0.70, QtCore.QPointF(
+                        xOffset, (maxExamples * ihp) + yOffset
+                        + Colors.contentStartY))
+                anim.setPosAt(
+                    1.00, QtCore.QPointF(-iw, (maxExamples * ihp) + yOffset
+                                         + Colors.contentStartY))
                 movieNextBottomOut.append(anim)
 
                 # Create next-menu top-in-animation.
                 anim = DemoItemAnimation(item, DemoItemAnimation.ANIM_IN)
                 anim.setDuration((700 - (30 * i)) * Colors.animSpeedButtons)
-                anim.setStartPos(QtCore.QPointF(-iw, yOffset + Colors.contentStartY))
-                anim.setPosAt(0.30, QtCore.QPointF(xOffset, yOffset + Colors.contentStartY))
-                anim.setPosAt(1.00, QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY))
+                anim.setStartPos(
+                    QtCore.QPointF(-iw, yOffset + Colors.contentStartY))
+                anim.setPosAt(
+                    0.30, QtCore.QPointF(
+                        xOffset, yOffset + Colors.contentStartY))
+                anim.setPosAt(
+                    1.00, QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY))
                 movieNextTopIn.append(anim)
 
                 # Create next-menu bottom-in-animation.
                 reverse = maxExamples - i
                 anim = DemoItemAnimation(item, DemoItemAnimation.ANIM_IN)
-                anim.setDuration((1000 - (30 * reverse)) * Colors.animSpeedButtons)
-                anim.setStartPos(QtCore.QPointF(-iw, (maxExamples * ihp) + yOffset + Colors.contentStartY))
-                anim.setPosAt(0.30, QtCore.QPointF(xOffset, (maxExamples * ihp) + yOffset + Colors.contentStartY))
-                anim.setPosAt(1.00, QtCore.QPointF(xOffset, (i * ihp) + yOffset + Colors.contentStartY))
+                anim.setDuration((
+                    1000 - (30 * reverse)) * Colors.animSpeedButtons)
+                anim.setStartPos(
+                    QtCore.QPointF(-iw, (maxExamples * ihp)
+                                   + yOffset + Colors.contentStartY))
+                anim.setPosAt(
+                    0.30, QtCore.QPointF(
+                        xOffset, (maxExamples * ihp) + yOffset
+                        + Colors.contentStartY))
+                anim.setPosAt(
+                    1.00, QtCore.QPointF(
+                        xOffset, (i * ihp) + yOffset + Colors.contentStartY))
                 movieNextBottomIn.append(anim)
 
                 i += 1
@@ -563,13 +643,16 @@ class MenuManager(QtCore.QObject):
                 # We need another menu, so register for 'more' and 'back'
                 # buttons.
                 menuIndex += 1
-                self.info.setdefault(currentMenu, {})['more'] = '%s -menu%d' % (name, menuIndex)
+                self.info.setdefault(currentMenu, {})['more'] = \
+                    '%s -menu%d' % (name, menuIndex)
                 currentMenu = '%s -menu%d' % (name, menuIndex)
-                self.info.setdefault(currentMenu, {})['back'] = '%s -menu%d' % (name, menuIndex - 1)
+                self.info.setdefault(currentMenu, {})['back'] = \
+                    '%s -menu%d' % (name, menuIndex - 1)
 
-    def createLowLeftButton(self, label, type, movieIn, movieOut, movieShake, menuString=""):
+    def createLowLeftButton(self, label, type, movieIn, movieOut, movieShake,
+                            menuString=""):
         button = TextButton(label, TextButton.RIGHT, type, self.window.scene,
-                None, TextButton.PANEL)
+                            None, TextButton.PANEL)
         if menuString:
             button.setMenuString(menuString)
         button.setRecursiveVisible(False)
@@ -581,35 +664,50 @@ class MenuManager(QtCore.QObject):
         # Create in-animation.
         buttonIn = DemoItemAnimation(button, DemoItemAnimation.ANIM_IN)
         buttonIn.setDuration(1800 * Colors.animSpeedButtons)
-        buttonIn.setStartPos(QtCore.QPointF(-iw, Colors.contentStartY + Colors.contentHeight - 35))
-        buttonIn.setPosAt(0.5, QtCore.QPointF(-iw, Colors.contentStartY + Colors.contentHeight - 35))
-        buttonIn.setPosAt(0.7, QtCore.QPointF(xOffset, Colors.contentStartY + Colors.contentHeight - 35))
-        buttonIn.setPosAt(1.0, QtCore.QPointF(xOffset, Colors.contentStartY + Colors.contentHeight - 26))
+        buttonIn.setStartPos(
+            QtCore.QPointF(-iw, Colors.contentStartY + Colors.contentHeight
+                           - 35))
+        buttonIn.setPosAt(
+            0.5, QtCore.QPointF(-iw, Colors.contentStartY
+                                + Colors.contentHeight - 35))
+        buttonIn.setPosAt(
+            0.7, QtCore.QPointF(xOffset, Colors.contentStartY
+                                + Colors.contentHeight - 35))
+        buttonIn.setPosAt(
+            1.0, QtCore.QPointF(xOffset, Colors.contentStartY
+                                + Colors.contentHeight - 26))
         movieIn.append(buttonIn)
 
         # Create out-animation.
         buttonOut = DemoItemAnimation(button, DemoItemAnimation.ANIM_OUT)
         buttonOut.hideOnFinished = True
         buttonOut.setDuration(400 * Colors.animSpeedButtons)
-        buttonOut.setStartPos(QtCore.QPointF(xOffset, Colors.contentStartY + Colors.contentHeight - 26))
-        buttonOut.setPosAt(1.0, QtCore.QPointF(-iw, Colors.contentStartY + Colors.contentHeight - 26))
+        buttonOut.setStartPos(QtCore.QPointF(
+            xOffset, Colors.contentStartY + Colors.contentHeight - 26))
+        buttonOut.setPosAt(
+            1.0, QtCore.QPointF(-iw, Colors.contentStartY
+                                + Colors.contentHeight - 26))
         movieOut.append(buttonOut)
 
         if movieShake is not None:
-            shakeAnim = DemoItemAnimation(button, DemoItemAnimation.ANIM_UNSPECIFIED)
+            shakeAnim = DemoItemAnimation(
+                button, DemoItemAnimation.ANIM_UNSPECIFIED)
             shakeAnim.timeline.setCurveShape(QtCore.QTimeLine.LinearCurve)
             shakeAnim.setDuration(650)
             shakeAnim.setStartPos(buttonIn.posAt(1.0))
             shakeAnim.setPosAt(0.60, buttonIn.posAt(1.0))
-            shakeAnim.setPosAt(0.70, buttonIn.posAt(1.0) + QtCore.QPointF(-3, 0))
-            shakeAnim.setPosAt(0.80, buttonIn.posAt(1.0) + QtCore.QPointF(2, 0))
-            shakeAnim.setPosAt(0.90, buttonIn.posAt(1.0) + QtCore.QPointF(-1, 0))
+            shakeAnim.setPosAt(
+                0.70, buttonIn.posAt(1.0) + QtCore.QPointF(-3, 0))
+            shakeAnim.setPosAt(
+                0.80, buttonIn.posAt(1.0) + QtCore.QPointF(2, 0))
+            shakeAnim.setPosAt(
+                0.90, buttonIn.posAt(1.0) + QtCore.QPointF(-1, 0))
             shakeAnim.setPosAt(1.00, buttonIn.posAt(1.0))
             movieShake.append(shakeAnim)
 
     def createLowRightButton(self, label, type, movieIn, movieOut, movieShake):
         item = TextButton(label, TextButton.RIGHT, type, self.window.scene,
-                None, TextButton.PANEL)
+                          None, TextButton.PANEL)
         item.setRecursiveVisible(False)
         item.setZValue(10)
 
@@ -619,23 +717,37 @@ class MenuManager(QtCore.QObject):
         # Create in-animation.
         anim = DemoItemAnimation(item, DemoItemAnimation.ANIM_IN)
         anim.setDuration(1800 * Colors.animSpeedButtons)
-        anim.setStartPos(QtCore.QPointF(sw, Colors.contentStartY + Colors.contentHeight - 35))
-        anim.setPosAt(0.5, QtCore.QPointF(sw, Colors.contentStartY + Colors.contentHeight - 35))
-        anim.setPosAt(0.7, QtCore.QPointF(xOffset + 535, Colors.contentStartY + Colors.contentHeight - 35))
-        anim.setPosAt(1.0, QtCore.QPointF(xOffset + 535, Colors.contentStartY + Colors.contentHeight - 26))
+        anim.setStartPos(QtCore.QPointF(
+            sw, Colors.contentStartY + Colors.contentHeight - 35))
+        anim.setPosAt(
+            0.5, QtCore.QPointF(
+                sw, Colors.contentStartY + Colors.contentHeight - 35))
+        anim.setPosAt(
+            0.7, QtCore.QPointF(
+                xOffset + 535, Colors.contentStartY + Colors.contentHeight
+                - 35))
+        anim.setPosAt(
+            1.0, QtCore.QPointF(
+                xOffset + 535, Colors.contentStartY + Colors.contentHeight
+                - 26))
         movieIn.append(anim)
 
         # Create out-animation.
         anim = DemoItemAnimation(item, DemoItemAnimation.ANIM_OUT)
         anim.hideOnFinished = True
         anim.setDuration(400 * Colors.animSpeedButtons)
-        anim.setStartPos(QtCore.QPointF(xOffset + 535, Colors.contentStartY + Colors.contentHeight - 26))
-        anim.setPosAt(1.0, QtCore.QPointF(sw, Colors.contentStartY + Colors.contentHeight - 26))
+        anim.setStartPos(
+            QtCore.QPointF(xOffset + 535, Colors.contentStartY
+                           + Colors.contentHeight - 26))
+        anim.setPosAt(
+            1.0, QtCore.QPointF(
+                sw, Colors.contentStartY + Colors.contentHeight - 26))
         movieOut.append(anim)
 
-    def createLowRightLeafButton(self, label, xOffset, type, movieIn, movieOut, movieShake):
+    def createLowRightLeafButton(self, label, xOffset, type, movieIn, movieOut,
+                                 movieShake):
         item = TextButton(label, TextButton.RIGHT, type, self.window.scene,
-                None, TextButton.PANEL)
+                          None, TextButton.PANEL)
         item.setRecursiveVisible(False)
         item.setZValue(10)
 
@@ -645,21 +757,38 @@ class MenuManager(QtCore.QObject):
         # Create in-animation.
         anim = DemoItemAnimation(item, DemoItemAnimation.ANIM_IN)
         anim.setDuration(1050 * Colors.animSpeedButtons)
-        anim.setStartPos(QtCore.QPointF(sw, Colors.contentStartY + Colors.contentHeight - 35))
-        anim.setPosAt(0.10, QtCore.QPointF(sw, Colors.contentStartY + Colors.contentHeight - 35))
-        anim.setPosAt(0.30, QtCore.QPointF(xOffset, Colors.contentStartY + Colors.contentHeight - 35))
-        anim.setPosAt(0.35, QtCore.QPointF(xOffset + 30, Colors.contentStartY + Colors.contentHeight - 35))
-        anim.setPosAt(0.40, QtCore.QPointF(xOffset, Colors.contentStartY + Colors.contentHeight - 35))
-        anim.setPosAt(0.45, QtCore.QPointF(xOffset + 5, Colors.contentStartY + Colors.contentHeight - 35))
-        anim.setPosAt(0.50, QtCore.QPointF(xOffset, Colors.contentStartY + Colors.contentHeight - 35))
-        anim.setPosAt(1.00, QtCore.QPointF(xOffset, Colors.contentStartY + Colors.contentHeight - 26))
+        anim.setStartPos(QtCore.QPointF(
+            sw, Colors.contentStartY + Colors.contentHeight - 35))
+        anim.setPosAt(
+            0.10, QtCore.QPointF(
+                sw, Colors.contentStartY + Colors.contentHeight - 35))
+        anim.setPosAt(
+            0.30, QtCore.QPointF(
+                xOffset, Colors.contentStartY + Colors.contentHeight - 35))
+        anim.setPosAt(
+            0.35, QtCore.QPointF(
+                xOffset + 30, Colors.contentStartY + Colors.contentHeight
+                - 35))
+        anim.setPosAt(
+            0.40, QtCore.QPointF(
+                xOffset, Colors.contentStartY + Colors.contentHeight - 35))
+        anim.setPosAt(
+            0.45, QtCore.QPointF(
+                xOffset + 5, Colors.contentStartY + Colors.contentHeight - 35))
+        anim.setPosAt(
+            0.50, QtCore.QPointF(
+                xOffset, Colors.contentStartY + Colors.contentHeight - 35))
+        anim.setPosAt(
+            1.00, QtCore.QPointF(
+                xOffset, Colors.contentStartY + Colors.contentHeight - 26))
         movieIn.append(anim)
 
         # Create out-animation.
         anim = DemoItemAnimation(item, DemoItemAnimation.ANIM_OUT)
         anim.hideOnFinished = True
         anim.setDuration(300 * Colors.animSpeedButtons)
-        anim.setStartPos(QtCore.QPointF(xOffset, Colors.contentStartY + Colors.contentHeight - 26))
+        anim.setStartPos(QtCore.QPointF(xOffset, Colors.contentStartY
+                         + Colors.contentHeight - 26))
         anim.setPosAt(1.0, QtCore.QPointF(xOffset, sh))
         movieOut.append(anim)
 
@@ -673,11 +802,15 @@ class MenuManager(QtCore.QObject):
         infoIn = DemoItemAnimation(item, DemoItemAnimation.ANIM_IN)
         infoIn.timeline.setCurveShape(QtCore.QTimeLine.LinearCurve)
         infoIn.setDuration(650)
-        infoIn.setStartPos(QtCore.QPointF(self.window.scene.sceneRect().width(), Colors.contentStartY))
+        infoIn.setStartPos(
+            QtCore.QPointF(self.window.scene.sceneRect().width(),
+                           Colors.contentStartY))
         infoIn.setPosAt(0.60, QtCore.QPointF(xOffset, Colors.contentStartY))
-        infoIn.setPosAt(0.70, QtCore.QPointF(xOffset + 20, Colors.contentStartY))
+        infoIn.setPosAt(
+            0.70, QtCore.QPointF(xOffset + 20, Colors.contentStartY))
         infoIn.setPosAt(0.80, QtCore.QPointF(xOffset, Colors.contentStartY))
-        infoIn.setPosAt(0.90, QtCore.QPointF(xOffset + 7, Colors.contentStartY))
+        infoIn.setPosAt(
+            0.90, QtCore.QPointF(xOffset + 7, Colors.contentStartY))
         infoIn.setPosAt(1.00, QtCore.QPointF(xOffset, Colors.contentStartY))
         movie_in.append(infoIn)
 
@@ -706,40 +839,58 @@ class MenuManager(QtCore.QObject):
         qtendpos = 485
         qtPosY = 120
         self.tickerInAnim = DemoItemAnimation(self.ticker,
-                DemoItemAnimation.ANIM_IN)
+                                              DemoItemAnimation.ANIM_IN)
         self.tickerInAnim.setDuration(500)
-        self.tickerInAnim.setStartPos(QtCore.QPointF(self.window.scene.sceneRect().width(), Colors.contentStartY + qtPosY))
-        self.tickerInAnim.setPosAt(0.60, QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
-        self.tickerInAnim.setPosAt(0.70, QtCore.QPointF(qtendpos + 30, Colors.contentStartY + qtPosY))
-        self.tickerInAnim.setPosAt(0.80, QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
-        self.tickerInAnim.setPosAt(0.90, QtCore.QPointF(qtendpos + 5, Colors.contentStartY + qtPosY))
-        self.tickerInAnim.setPosAt(1.00, QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
+        self.tickerInAnim.setStartPos(QtCore.QPointF(
+            self.window.scene.sceneRect().width(),
+            Colors.contentStartY + qtPosY))
+        self.tickerInAnim.setPosAt(
+            0.60, QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
+        self.tickerInAnim.setPosAt(
+            0.70, QtCore.QPointF(qtendpos + 30, Colors.contentStartY + qtPosY))
+        self.tickerInAnim.setPosAt(
+            0.80, QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
+        self.tickerInAnim.setPosAt(
+            0.90, QtCore.QPointF(qtendpos + 5, Colors.contentStartY + qtPosY))
+        self.tickerInAnim.setPosAt(
+            1.00, QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
         movie_in.append(self.tickerInAnim)
 
         # Move ticker out.
         qtOut = DemoItemAnimation(self.ticker, DemoItemAnimation.ANIM_OUT)
         qtOut.hideOnFinished = True
         qtOut.setDuration(500)
-        qtOut.setStartPos(QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
-        qtOut.setPosAt(1.00, QtCore.QPointF(self.window.scene.sceneRect().width() + 700, Colors.contentStartY + qtPosY))
+        qtOut.setStartPos(QtCore.QPointF(qtendpos, Colors.contentStartY
+                          + qtPosY))
+        qtOut.setPosAt(1.00, QtCore.QPointF(
+            self.window.scene.sceneRect().width() + 700, Colors.contentStartY
+            + qtPosY))
         movie_out.append(qtOut)
 
         # Move ticker in on activate.
         qtActivate = DemoItemAnimation(self.ticker)
         qtActivate.setDuration(400)
-        qtActivate.setStartPos(QtCore.QPointF(self.window.scene.sceneRect().width(), Colors.contentStartY + qtPosY))
-        qtActivate.setPosAt(0.60, QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
-        qtActivate.setPosAt(0.70, QtCore.QPointF(qtendpos + 30, Colors.contentStartY + qtPosY))
-        qtActivate.setPosAt(0.80, QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
-        qtActivate.setPosAt(0.90, QtCore.QPointF(qtendpos + 5, Colors.contentStartY + qtPosY))
-        qtActivate.setPosAt(1.00, QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
+        qtActivate.setStartPos(QtCore.QPointF(
+            self.window.scene.sceneRect().width(),
+            Colors.contentStartY + qtPosY))
+        qtActivate.setPosAt(
+            0.60, QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
+        qtActivate.setPosAt(
+            0.70, QtCore.QPointF(qtendpos + 30, Colors.contentStartY + qtPosY))
+        qtActivate.setPosAt(
+            0.80, QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
+        qtActivate.setPosAt(
+            0.90, QtCore.QPointF(qtendpos + 5, Colors.contentStartY + qtPosY))
+        qtActivate.setPosAt(
+            1.00, QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
         movie_activate.append(qtActivate)
 
         # Move ticker out on deactivate.
         qtDeactivate = DemoItemAnimation(self.ticker)
         qtDeactivate.hideOnFinished = True
         qtDeactivate.setDuration(400)
-        qtDeactivate.setStartPos(QtCore.QPointF(qtendpos, Colors.contentStartY + qtPosY))
+        qtDeactivate.setStartPos(QtCore.QPointF(qtendpos, Colors.contentStartY
+                                 + qtPosY))
         qtDeactivate.setPosAt(1.00, QtCore.QPointF(qtendpos, 800))
         movie_deactivate.append(qtDeactivate)
 
@@ -748,20 +899,22 @@ class MenuManager(QtCore.QObject):
         yOffset = 450.0
 
         self.upButton = TextButton("", TextButton.LEFT, MenuManager.UP,
-                self.window.scene, None, TextButton.UP)
+                                   self.window.scene, None, TextButton.UP)
         self.upButton.prepare()
         self.upButton.setPos(xOffset, yOffset)
         self.upButton.setState(TextButton.DISABLED)
 
         self.downButton = TextButton("", TextButton.LEFT, MenuManager.DOWN,
-                self.window.scene, None, TextButton.DOWN)
+                                     self.window.scene, None, TextButton.DOWN)
         self.downButton.prepare()
-        self.downButton.setPos(xOffset + 10 + self.downButton.sceneBoundingRect().width(), yOffset)
+        self.downButton.setPos(
+            xOffset + 10 + self.downButton.sceneBoundingRect().width(),
+            yOffset)
 
         movieShake = self.score.insertMovie('upndown -shake')
 
         shakeAnim = DemoItemAnimation(self.upButton,
-                DemoItemAnimation.ANIM_UNSPECIFIED)
+                                      DemoItemAnimation.ANIM_UNSPECIFIED)
         shakeAnim.timeline.setCurveShape(QtCore.QTimeLine.LinearCurve)
         shakeAnim.setDuration(650)
         shakeAnim.setStartPos(self.upButton.pos())
@@ -773,7 +926,7 @@ class MenuManager(QtCore.QObject):
         movieShake.append(shakeAnim)
 
         shakeAnim = DemoItemAnimation(self.downButton,
-                DemoItemAnimation.ANIM_UNSPECIFIED)
+                                      DemoItemAnimation.ANIM_UNSPECIFIED)
         shakeAnim.timeline.setCurveShape(QtCore.QTimeLine.LinearCurve)
         shakeAnim.setDuration(650)
         shakeAnim.setStartPos(self.downButton.pos())
@@ -789,4 +942,4 @@ class MenuManager(QtCore.QObject):
         backOut = self.score.insertMovie('back -out')
         backShake = self.score.insertMovie('back -shake')
         self.createLowLeftButton("Back", MenuManager.ROOT, backIn, backOut,
-                backShake, Colors.rootMenuName)
+                                 backShake, Colors.rootMenuName)

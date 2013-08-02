@@ -28,7 +28,7 @@ from PySide import QtCore, QtGui
 
 
 class CircleWidget(QtGui.QWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
 
         self.floatBased = False
@@ -67,20 +67,23 @@ class CircleWidget(QtGui.QWidget):
             delta = abs((self.frameNo % 128) - diameter / 2)
             alpha = 255 - (delta * delta) / 4 - diameter
             if alpha > 0:
-                painter.setPen(QtGui.QPen(QtGui.QColor(0, diameter / 2, 127, alpha), 3))
+                painter.setPen(QtGui.QPen(QtGui.QColor(0, diameter / 2, 127,
+                                                       alpha), 3))
 
                 if self.floatBased:
-                    painter.drawEllipse(QtCore.QRectF(-diameter / 2.0, -diameter / 2.0,
+                    painter.drawEllipse(QtCore.QRectF(-diameter / 2.0,
+                                                      -diameter / 2.0,
                                                       diameter, diameter))
                 else:
-                    painter.drawEllipse(QtCore.QRect(-diameter / 2, -diameter / 2,
+                    painter.drawEllipse(QtCore.QRect(-diameter / 2,
+                                                     -diameter / 2,
                                                      diameter, diameter))
 
         painter.end()
 
 
 class Window(QtGui.QWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
 
         self.aliasedLabel = self.createLabel(self.tr("Aliased"))

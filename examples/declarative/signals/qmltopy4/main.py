@@ -38,6 +38,7 @@
 
 from PySide import QtCore, QtGui, QtDeclarative
 
+
 def sayThis(s):
     print s
 
@@ -49,13 +50,13 @@ if __name__ == '__main__':
     view = QtDeclarative.QDeclarativeView()
 
     view.setSource(QtCore.QUrl('view.qml'))
-    
+
     root = view.rootObject()
-    
-    button = root.findChild(QtCore.QObject,"buttonMouseArea")
-    button.clicked.connect(lambda: sayThis("clicked button (signal directly connected)"))
-    
+
+    button = root.findChild(QtCore.QObject, "buttonMouseArea")
+    button.clicked.connect(lambda: sayThis(
+        "clicked button (signal directly connected)"))
+
     view.show()
 
     sys.exit(app.exec_())
-

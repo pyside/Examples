@@ -32,8 +32,9 @@ try:
     from OpenGL.GL import *
 except ImportError:
     app = QtGui.QApplication(sys.argv)
-    QtGui.QMessageBox.critical(None, "OpenGL grabber",
-            "PyOpenGL must be installed to run this example.")
+    QtGui.QMessageBox.critical(
+        None, "OpenGL grabber",
+        "PyOpenGL must be installed to run this example.")
     sys.exit(1)
 
 
@@ -115,11 +116,11 @@ class GLWidget(QtOpenGL.QGLWidget):
 
         self.drawGear(self.gear1, -3.0, -2.0, 0.0, self.gear1Rot / 16.0)
         self.drawGear(self.gear2, +3.1, -2.0, 0.0,
-                -2.0 * (self.gear1Rot / 16.0) - 9.0)
+                      -2.0 * (self.gear1Rot / 16.0) - 9.0)
 
         glRotated(+90.0, 1.0, 0.0, 0.0)
         self.drawGear(self.gear3, -3.1, -1.8, -2.2,
-                +2.0 * (self.gear1Rot / 16.0) - 2.0)
+                      +2.0 * (self.gear1Rot / 16.0) - 2.0)
 
         glPopMatrix()
 
@@ -155,7 +156,7 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def advanceGears(self):
         self.gear1Rot += 2 * 16
-        self.updateGL()    
+        self.updateGL()
 
     def xRotation(self):
         return self.xRot
@@ -166,7 +167,8 @@ class GLWidget(QtOpenGL.QGLWidget):
     def zRotation(self):
         return self.zRot
 
-    def makeGear(self, reflectance, innerRadius, outerRadius, thickness, toothSize, toothCount):
+    def makeGear(self, reflectance, innerRadius, outerRadius, thickness,
+                 toothSize, toothCount):
         list = glGenLists(1)
         glNewList(list, GL_COMPILE)
         glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, reflectance)
@@ -191,21 +193,33 @@ class GLWidget(QtOpenGL.QGLWidget):
 
             for j in range(toothCount+1):
                 angle = 2.0 * math.pi * j / toothCount
-                glVertex3d(r0 * math.cos(angle), r0 * math.sin(angle), sign * z)
-                glVertex3d(r1 * math.cos(angle), r1 * math.sin(angle), sign * z)
-                glVertex3d(r0 * math.cos(angle), r0 * math.sin(angle), sign * z)
-                glVertex3d(r1 * math.cos(angle + 3 * delta), r1 * math.sin(angle + 3 * delta), sign * z)
+                glVertex3d(
+                    r0 * math.cos(angle), r0 * math.sin(angle), sign * z)
+                glVertex3d(
+                    r1 * math.cos(angle), r1 * math.sin(angle), sign * z)
+                glVertex3d(
+                    r0 * math.cos(angle), r0 * math.sin(angle), sign * z)
+                glVertex3d(
+                    r1 * math.cos(angle + 3 * delta),
+                    r1 * math.sin(angle + 3 * delta), sign * z)
 
             glEnd()
 
             glBegin(GL_QUADS)
 
             for j in range(toothCount):
-                angle = 2.0 * math.pi * j / toothCount                
-                glVertex3d(r1 * math.cos(angle), r1 * math.sin(angle), sign * z)
-                glVertex3d(r2 * math.cos(angle + delta), r2 * math.sin(angle + delta), sign * z)
-                glVertex3d(r2 * math.cos(angle + 2 * delta), r2 * math.sin(angle + 2 * delta), sign * z)
-                glVertex3d(r1 * math.cos(angle + 3 * delta), r1 * math.sin(angle + 3 * delta), sign * z)
+                angle = 2.0 * math.pi * j / toothCount
+                glVertex3d(
+                    r1 * math.cos(angle), r1 * math.sin(angle), sign * z)
+                glVertex3d(
+                    r2 * math.cos(angle + delta),
+                    r2 * math.sin(angle + delta), sign * z)
+                glVertex3d(
+                    r2 * math.cos(angle + 2 * delta),
+                    r2 * math.sin(angle + 2 * delta), sign * z)
+                glVertex3d(
+                    r1 * math.cos(angle + 3 * delta),
+                    r1 * math.sin(angle + 3 * delta), sign * z)
 
             glEnd()
 
@@ -224,9 +238,15 @@ class GLWidget(QtOpenGL.QGLWidget):
                 glVertex3d(s1 * math.cos(angle), s1 * math.sin(angle), +z)
                 glVertex3d(s1 * math.cos(angle), s1 * math.sin(angle), -z)
 
-                glNormal3d(s2 * math.sin(angle + delta) - s1 * math.sin(angle), s1 * math.cos(angle) - s2 * math.cos(angle + delta), 0.0)
-                glVertex3d(s2 * math.cos(angle + delta), s2 * math.sin(angle + delta), +z)
-                glVertex3d(s2 * math.cos(angle + delta), s2 * math.sin(angle + delta), -z)
+                glNormal3d(
+                    s2 * math.sin(angle + delta) - s1 * math.sin(angle),
+                    s1 * math.cos(angle) - s2 * math.cos(angle + delta), 0.0)
+                glVertex3d(
+                    s2 * math.cos(angle + delta),
+                    s2 * math.sin(angle + delta), +z)
+                glVertex3d(
+                    s2 * math.cos(angle + delta),
+                    s2 * math.sin(angle + delta), -z)
 
         glVertex3d(r1, 0.0, +z)
         glVertex3d(r1, 0.0, -z)
@@ -246,7 +266,7 @@ class GLWidget(QtOpenGL.QGLWidget):
 
         glEndList()
 
-        return list    
+        return list
 
     def drawGear(self, gear, dx, dy, dz, angle):
         glPushMatrix()
@@ -264,7 +284,7 @@ class GLWidget(QtOpenGL.QGLWidget):
 
 
 class MainWindow(QtGui.QMainWindow):
-    def __init__(self):        
+    def __init__(self):
         super(MainWindow, self).__init__()
 
         centralWidget = QtGui.QWidget()
@@ -276,24 +296,26 @@ class MainWindow(QtGui.QMainWindow):
         self.glWidgetArea = QtGui.QScrollArea()
         self.glWidgetArea.setWidget(self.glWidget)
         self.glWidgetArea.setWidgetResizable(True)
-        self.glWidgetArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.glWidgetArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.glWidgetArea.setSizePolicy(QtGui.QSizePolicy.Ignored,
-                QtGui.QSizePolicy.Ignored)
+        self.glWidgetArea.setHorizontalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff)
+        self.glWidgetArea.setVerticalScrollBarPolicy(
+            QtCore.Qt.ScrollBarAlwaysOff)
+        self.glWidgetArea.setSizePolicy(
+            QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
         self.glWidgetArea.setMinimumSize(50, 50)
 
         self.pixmapLabelArea = QtGui.QScrollArea()
         self.pixmapLabelArea.setWidget(self.pixmapLabel)
-        self.pixmapLabelArea.setSizePolicy(QtGui.QSizePolicy.Ignored,
-                QtGui.QSizePolicy.Ignored)
+        self.pixmapLabelArea.setSizePolicy(
+            QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Ignored)
         self.pixmapLabelArea.setMinimumSize(50, 50)
 
-        xSlider = self.createSlider(self.glWidget.xRotationChanged,
-                self.glWidget.setXRotation)
-        ySlider = self.createSlider(self.glWidget.yRotationChanged,
-                self.glWidget.setYRotation)
-        zSlider = self.createSlider(self.glWidget.zRotationChanged,
-                self.glWidget.setZRotation)
+        xSlider = self.createSlider(
+            self.glWidget.xRotationChanged, self.glWidget.setXRotation)
+        ySlider = self.createSlider(
+            self.glWidget.yRotationChanged, self.glWidget.setYRotation)
+        zSlider = self.createSlider(
+            self.glWidget.zRotationChanged, self.glWidget.setZRotation)
 
         self.createActions()
         self.createMenus()
@@ -328,27 +350,30 @@ class MainWindow(QtGui.QMainWindow):
         self.setPixmap(QtGui.QPixmap())
 
     def about(self):
-        QtGui.QMessageBox.about(self, "About Grabber",
-                "The <b>Grabber</b> example demonstrates two approaches for "
-                "rendering OpenGL into a Qt pixmap.")
+        QtGui.QMessageBox.about(
+            self, "About Grabber", "The <b>Grabber</b> example demonstrates "
+            "two approaches for rendering OpenGL into a Qt pixmap.")
 
     def createActions(self):
-        self.renderIntoPixmapAct = QtGui.QAction("&Render into Pixmap...",
-                self, shortcut="Ctrl+R", triggered=self.renderIntoPixmap)
+        self.renderIntoPixmapAct = QtGui.QAction(
+            "&Render into Pixmap...", self, shortcut="Ctrl+R",
+            triggered=self.renderIntoPixmap)
 
-        self.grabFrameBufferAct = QtGui.QAction("&Grab Frame Buffer", self,
-                shortcut="Ctrl+G", triggered=self.grabFrameBuffer)
+        self.grabFrameBufferAct = QtGui.QAction(
+            "&Grab Frame Buffer", self, shortcut="Ctrl+G",
+            triggered=self.grabFrameBuffer)
 
-        self.clearPixmapAct = QtGui.QAction("&Clear Pixmap", self,
-                shortcut="Ctrl+L", triggered=self.clearPixmap)
+        self.clearPixmapAct = QtGui.QAction(
+            "&Clear Pixmap", self, shortcut="Ctrl+L",
+            triggered=self.clearPixmap)
 
-        self.exitAct = QtGui.QAction("E&xit", self, shortcut="Ctrl+Q",
-                triggered=self.close)
+        self.exitAct = QtGui.QAction(
+            "E&xit", self, shortcut="Ctrl+Q", triggered=self.close)
 
         self.aboutAct = QtGui.QAction("&About", self, triggered=self.about)
 
-        self.aboutQtAct = QtGui.QAction("About &Qt", self,
-                triggered=QtGui.qApp.aboutQt)
+        self.aboutQtAct = QtGui.QAction(
+            "About &Qt", self, triggered=QtGui.qApp.aboutQt)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")
@@ -379,15 +404,16 @@ class MainWindow(QtGui.QMainWindow):
         self.pixmapLabel.setPixmap(pixmap)
         size = pixmap.size()
 
-        if size - QtCore.QSize(1, 0) == self.pixmapLabelArea.maximumViewportSize():
+        if size - QtCore.QSize(1, 0) == \
+                self.pixmapLabelArea.maximumViewportSize():
             size -= QtCore.QSize(1, 0)
 
         self.pixmapLabel.resize(size)
 
     def getSize(self):
-        text, ok = QtGui.QInputDialog.getText(self, "Grabber",
-                "Enter pixmap size:", QtGui.QLineEdit.Normal,
-                "%d x %d" % (self.glWidget.width(), self.glWidget.height()))
+        text, ok = QtGui.QInputDialog.getText(
+            self, "Grabber", "Enter pixmap size:", QtGui.QLineEdit.Normal,
+            "%d x %d" % (self.glWidget.width(), self.glWidget.height()))
 
         if not ok:
             return QtCore.QSize()
@@ -408,4 +434,4 @@ if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
     mainWin = MainWindow()
     mainWin.show()
-    sys.exit(app.exec_())    
+    sys.exit(app.exec_())

@@ -33,7 +33,8 @@ app = QApplication([])
 app.setApplicationName('Phonon Video Player')
 
 #file_path = os.path.join(os.path.dirname(__file__), '320x240.ogv')
-file_path = os.path.join(os.path.dirname(__file__), 'FolgersCoffe_512kb_mp4_026vbr260.ogv')
+file_path = os.path.join(os.path.dirname(__file__),
+                         'FolgersCoffe_512kb_mp4_026vbr260.ogv')
 media_src = Phonon.MediaSource(file_path)
 
 media_obj = Phonon.MediaObject()
@@ -50,4 +51,3 @@ video_widget.show()
 media_obj.play()
 
 app.exec_()
-

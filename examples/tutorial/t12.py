@@ -54,9 +54,11 @@ class LCDRange(QtGui.QWidget):
 
     def setRange(self, minValue, maxValue):
         if minValue < 0 or maxValue > 99 or minValue > maxValue:
-            QtCore.qWarning("LCDRange::setRange(%d, %d)\n"
-                    "\tRange must be 0..99\n"
-                    "\tand minValue must not be greater than maxValue" % (minValue, maxValue))
+            QtCore.qWarning(
+                "LCDRange::setRange(%d, %d)\n"
+                "\tRange must be 0..99\n"
+                "\tand minValue must not be greater than maxValue"
+                % (minValue, maxValue))
             return
 
         self.slider.setRange(minValue, maxValue)
@@ -89,7 +91,7 @@ class CannonField(QtGui.QWidget):
         if angle < 5:
             angle = 5
         if angle > 70:
-            angle = 70;
+            angle = 70
         if self.currentAngle == angle:
             return
         self.currentAngle = angle
@@ -104,7 +106,7 @@ class CannonField(QtGui.QWidget):
             force = 0
         if self.currentForce == force:
             return
-        self.currentForce = force;
+        self.currentForce = force
         self.emit(QtCore.SIGNAL("forceChanged(int)"), self.currentForce)
 
     def shoot(self):
@@ -123,7 +125,8 @@ class CannonField(QtGui.QWidget):
             midnight = QtCore.QTime(0, 0, 0)
             random.seed(midnight.secsTo(QtCore.QTime.currentTime()))
 
-        self.target = QtCore.QPoint(200 + random.randint(0, 190 - 1), 10 + random.randint(0, 255 - 1))
+        self.target = QtCore.QPoint(200 + random.randint(0, 190 - 1),
+                                    10 + random.randint(0, 255 - 1))
         self.update()
 
     def moveShot(self):
@@ -153,7 +156,7 @@ class CannonField(QtGui.QWidget):
         self.paintTarget(painter)
 
     def paintShot(self, painter):
-        painter.setPen(QtCore.Qt.NoPen);
+        painter.setPen(QtCore.Qt.NoPen)
         painter.setBrush(QtCore.Qt.black)
         painter.drawRect(self.shotRect())
 
@@ -195,12 +198,14 @@ class CannonField(QtGui.QWidget):
         y = y0 + vely * time - 0.5 * gravity * time * time
 
         result = QtCore.QRect(0, 0, 6, 6)
-        result.moveCenter(QtCore.QPoint(QtCore.qRound(x), self.height() - 1 - QtCore.qRound(y)))
+        result.moveCenter(QtCore.QPoint(QtCore.qRound(x),
+                                        self.height() - 1 - QtCore.qRound(y)))
         return result
 
     def targetRect(self):
         result = QtCore.QRect(0, 0, 20, 10)
-        result.moveCenter(QtCore.QPoint(self.target.x(), self.height() - 1 - self.target.y()))
+        result.moveCenter(QtCore.QPoint(self.target.x(),
+                                        self.height() - 1 - self.target.y()))
         return result
 
 

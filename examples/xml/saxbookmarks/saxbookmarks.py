@@ -108,11 +108,13 @@ class XbelHandler(QtXml.QXmlDefaultHandler):
 
         style = self.treeWidget.style()
 
-        self.folderIcon.addPixmap(style.standardPixmap(QtGui.QStyle.SP_DirClosedIcon),
-                QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.folderIcon.addPixmap(style.standardPixmap(QtGui.QStyle.SP_DirOpenIcon),
-                QtGui.QIcon.Normal, QtGui.QIcon.On)
-        self.bookmarkIcon.addPixmap(style.standardPixmap(QtGui.QStyle.SP_FileIcon))
+        self.folderIcon.addPixmap(style.standardPixmap(
+            QtGui.QStyle.SP_DirClosedIcon), QtGui.QIcon.Normal,
+            QtGui.QIcon.Off)
+        self.folderIcon.addPixmap(style.standardPixmap(
+            QtGui.QStyle.SP_DirOpenIcon), QtGui.QIcon.Normal, QtGui.QIcon.On)
+        self.bookmarkIcon.addPixmap(style.standardPixmap(
+            QtGui.QStyle.SP_FileIcon))
 
     def startElement(self, namespaceURI, localName, qName, attributes):
         if not self.metXbelTag and qName != 'xbel':
@@ -160,9 +162,11 @@ class XbelHandler(QtXml.QXmlDefaultHandler):
         return True
 
     def fatalError(self, exception):
-        QtGui.QMessageBox.information(self.treeWidget.window(),
-                "SAX Bookmarks",
-                "Parse error at line %d, column %d:\n%s" % (exception.lineNumber(), exception.columnNumber(), exception.message()))
+        QtGui.QMessageBox.information(
+            self.treeWidget.window(), "SAX Bookmarks",
+            "Parse error at line %d, column %d:\n%s"
+            % (exception.lineNumber(), exception.columnNumber(),
+               exception.message()))
         return False
 
     def errorString(self):
@@ -196,9 +200,9 @@ class MainWindow(QtGui.QMainWindow):
         self.resize(480, 320)
 
     def open(self):
-        fileName = QtGui.QFileDialog.getOpenFileName(self,
-                "Open Bookmark File", QtCore.QDir.currentPath(),
-                "XBEL Files (*.xbel *.xml)")[0]
+        fileName = QtGui.QFileDialog.getOpenFileName(
+            self, "Open Bookmark File", QtCore.QDir.currentPath(),
+            "XBEL Files (*.xbel *.xml)")[0]
 
         if not fileName:
             return
@@ -212,8 +216,9 @@ class MainWindow(QtGui.QMainWindow):
 
         file = QtCore.QFile(fileName)
         if not file.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
-            QtGui.QMessageBox.warning(self, "SAX Bookmarks",
-                    "Cannot read file %s:\n%s." % (fileName, file.errorString()))
+            QtGui.QMessageBox.warning(
+                self, "SAX Bookmarks", "Cannot read file %s:\n%s."
+                % (fileName, file.errorString()))
             return
 
         xmlInputSource = QtXml.QXmlInputSource(file)
@@ -221,17 +226,18 @@ class MainWindow(QtGui.QMainWindow):
             self.statusBar().showMessage("File loaded", 2000)
 
     def saveAs(self):
-        fileName = QtGui.QFileDialog.getSaveFileName(self,
-                "Save Bookmark File", QtCore.QDir.currentPath(),
-                "XBEL Files (*.xbel *.xml)")[0]
+        fileName = QtGui.QFileDialog.getSaveFileName(
+            self, "Save Bookmark File", QtCore.QDir.currentPath(),
+            "XBEL Files (*.xbel *.xml)")[0]
 
         if not fileName:
             return
 
         file = QtCore.QFile(fileName)
         if not file.open(QtCore.QFile.WriteOnly | QtCore.QFile.Text):
-            QtGui.QMessageBox.warning(self, "SAX Bookmarks",
-                    "Cannot write file %s:\n%s." % (fileName, file.errorString()))
+            QtGui.QMessageBox.warning(
+                self, "SAX Bookmarks", "Cannot write file %s:\n%s."
+                % (fileName, file.errorString()))
             return
 
         generator = XbelGenerator(self.treeWidget)
@@ -239,25 +245,25 @@ class MainWindow(QtGui.QMainWindow):
             self.statusBar().showMessage("File saved", 2000)
 
     def about(self):
-         QtGui.QMessageBox.about(self, "About SAX Bookmarks",
-                "The <b>SAX Bookmarks</b> example demonstrates how to use "
-                "Qt's SAX classes to read XML documents and how to generate "
-                "XML by hand.")
+        QtGui.QMessageBox.about(
+            self, "About SAX Bookmarks", "The <b>SAX Bookmarks</b> example "
+            "demonstrates how to use Qt's SAX classes to read XML documents "
+            "and how to generate XML by hand.")
 
     def createActions(self):
         self.openAct = QtGui.QAction("&Open...", self, shortcut="Ctrl+O",
-                triggered=self.open)
+                                     triggered=self.open)
 
         self.saveAsAct = QtGui.QAction("&Save As...", self, shortcut="Ctrl+S",
-                triggered=self.saveAs)
+                                       triggered=self.saveAs)
 
         self.exitAct = QtGui.QAction("E&xit", self, shortcut="Ctrl+Q",
-                triggered=self.close)
+                                     triggered=self.close)
 
         self.aboutAct = QtGui.QAction("&About", self, triggered=self.about)
 
         self.aboutQtAct = QtGui.QAction("About &Qt", self,
-                triggered=QtGui.qApp.aboutQt)
+                                        triggered=QtGui.qApp.aboutQt)
 
     def createMenus(self):
         self.fileMenu = self.menuBar().addMenu("&File")

@@ -42,7 +42,7 @@ class TreeItem(object):
         return len(self.childItems)
 
     def childNumber(self):
-        if self.parentItem != None:
+        if self.parentItem is not None:
             return self.parentItem.childItems.index(self)
         return 0
 
@@ -133,7 +133,8 @@ class TreeModel(QtCore.QAbstractItemModel):
         if not index.isValid():
             return 0
 
-        return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        return QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | \
+            QtCore.Qt.ItemIsSelectable
 
     def getItem(self, index):
         if index.isValid():
@@ -144,7 +145,8 @@ class TreeModel(QtCore.QAbstractItemModel):
         return self.rootItem
 
     def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
-        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
+        if orientation == QtCore.Qt.Horizontal \
+                and role == QtCore.Qt.DisplayRole:
             return self.rootItem.data(section)
 
         return None
@@ -171,7 +173,7 @@ class TreeModel(QtCore.QAbstractItemModel):
         parentItem = self.getItem(parent)
         self.beginInsertRows(parent, position, position + rows - 1)
         success = parentItem.insertChildren(position, rows,
-                self.rootItem.columnCount())
+                                            self.rootItem.columnCount())
         self.endInsertRows()
 
         return success
@@ -224,7 +226,8 @@ class TreeModel(QtCore.QAbstractItemModel):
 
         return result
 
-    def setHeaderData(self, section, orientation, value, role=QtCore.Qt.EditRole):
+    def setHeaderData(self, section, orientation, value,
+                      role=QtCore.Qt.EditRole):
         if role != QtCore.Qt.EditRole or orientation != QtCore.Qt.Horizontal:
             return False
 
@@ -258,7 +261,8 @@ class TreeModel(QtCore.QAbstractItemModel):
                     # parent unless the current parent has no children.
 
                     if parents[-1].childCount() > 0:
-                        parents.append(parents[-1].child(parents[-1].childCount() - 1))
+                        parents.append(parents[-1].child(
+                            parents[-1].childCount() - 1))
                         indentations.append(position)
 
                 else:
@@ -269,9 +273,10 @@ class TreeModel(QtCore.QAbstractItemModel):
                 # Append a new item to the current parent's list of children.
                 parent = parents[-1]
                 parent.insertChildren(parent.childCount(), 1,
-                        self.rootItem.columnCount())
+                                      self.rootItem.columnCount())
                 for column in range(len(columnData)):
-                    parent.child(parent.childCount() -1).setData(column, columnData[column])
+                    parent.child(parent.childCount() - 1).setData(
+                        column, columnData[column])
 
             number += 1
 
@@ -320,13 +325,13 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         for column in range(model.columnCount(index)):
             child = model.index(0, column, index)
             model.setData(child, "[No data]",
-                    QtCore.Qt.EditRole)
+                          QtCore.Qt.EditRole)
             if not model.headerData(column, QtCore.Qt.Horizontal).isValid():
                 model.setHeaderData(column, QtCore.Qt.Horizontal,
-                        "[No header]", QtCore.Qt.EditRole)
+                                    "[No header]", QtCore.Qt.EditRole)
 
-        self.view.selectionModel().setCurrentIndex(model.index(0, 0, index),
-                QtGui.QItemSelectionModel.ClearAndSelect)
+        self.view.selectionModel().setCurrentIndex(
+            model.index(0, 0, index), QtGui.QItemSelectionModel.ClearAndSelect)
         self.updateActions()
 
     def insertColumn(self, parent=QtCore.QModelIndex()):
@@ -337,7 +342,7 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         changed = model.insertColumn(column + 1, parent)
         if changed:
             model.setHeaderData(column + 1, QtCore.Qt.Horizontal,
-                    "[No header]", QtCore.Qt.EditRole)
+                                "[No header]", QtCore.Qt.EditRole)
 
         self.updateActions()
 
@@ -385,14 +390,17 @@ class MainWindow(QtGui.QMainWindow, Ui_MainWindow):
         self.insertColumnAction.setEnabled(hasCurrent)
 
         if hasCurrent:
-            self.view.closePersistentEditor(self.view.selectionModel().currentIndex())
+            self.view.closePersistentEditor(
+                self.view.selectionModel().currentIndex())
 
             row = self.view.selectionModel().currentIndex().row()
             column = self.view.selectionModel().currentIndex().column()
             if self.view.selectionModel().currentIndex().parent().isValid():
-                self.statusBar().showMessage("Position: (%d,%d)" % (row, column))
+                self.statusBar().showMessage("Position: (%d,%d)"
+                                             % (row, column))
             else:
-                self.statusBar().showMessage("Position: (%d,%d) in top level" % (row, column))
+                self.statusBar().showMessage("Position: (%d,%d) in top level"
+                                             % (row, column))
 
 
 if __name__ == '__main__':

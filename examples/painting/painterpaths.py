@@ -73,8 +73,9 @@ class RenderArea(QtGui.QWidget):
         painter.rotate(-self.rotationAngle)
         painter.translate(-50.0, -50.0)
 
-        painter.setPen(QtGui.QPen(self.penColor, self.penWidth,
-                QtCore.Qt.SolidLine, QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
+        painter.setPen(QtGui.QPen(
+            self.penColor, self.penWidth, QtCore.Qt.SolidLine,
+            QtCore.Qt.RoundCap, QtCore.Qt.RoundJoin))
         gradient = QtGui.QLinearGradient(0, 0, 0, 100)
         gradient.setColorAt(0.0, self.fillColor1)
         gradient.setColorAt(1.0, self.fillColor2)
@@ -145,14 +146,14 @@ class Window(QtGui.QWidget):
         starPath.moveTo(90, 50)
         for i in range(1, 5):
             starPath.lineTo(50 + 40 * cos(0.8 * i * pi),
-                    50 + 40 * sin(0.8 * i * pi))
+                            50 + 40 * sin(0.8 * i * pi))
         starPath.closeSubpath()
 
         self.renderAreas = [RenderArea(rectPath), RenderArea(roundRectPath),
-                RenderArea(ellipsePath), RenderArea(piePath),
-                RenderArea(polygonPath), RenderArea(groupPath),
-                RenderArea(textPath), RenderArea(bezierPath),
-                RenderArea(starPath)]
+                            RenderArea(ellipsePath), RenderArea(piePath),
+                            RenderArea(polygonPath), RenderArea(groupPath),
+                            RenderArea(textPath), RenderArea(bezierPath),
+                            RenderArea(starPath)]
         assert len(self.renderAreas) == 9
 
         self.fillRuleComboBox = QtGui.QComboBox()
@@ -165,19 +166,19 @@ class Window(QtGui.QWidget):
         self.fillColor1ComboBox = QtGui.QComboBox()
         self.populateWithColors(self.fillColor1ComboBox)
         self.fillColor1ComboBox.setCurrentIndex(
-                self.fillColor1ComboBox.findText("mediumslateblue"))
+            self.fillColor1ComboBox.findText("mediumslateblue"))
 
         self.fillColor2ComboBox = QtGui.QComboBox()
         self.populateWithColors(self.fillColor2ComboBox)
         self.fillColor2ComboBox.setCurrentIndex(
-                self.fillColor2ComboBox.findText("cornsilk"))
+            self.fillColor2ComboBox.findText("cornsilk"))
 
         fillGradientLabel = QtGui.QLabel("&Fill Gradient:")
         fillGradientLabel.setBuddy(self.fillColor1ComboBox)
 
         fillToLabel = QtGui.QLabel("to")
         fillToLabel.setSizePolicy(QtGui.QSizePolicy.Fixed,
-                QtGui.QSizePolicy.Fixed)
+                                  QtGui.QSizePolicy.Fixed)
 
         self.penWidthSpinBox = QtGui.QSpinBox()
         self.penWidthSpinBox.setRange(0, 20)
@@ -188,7 +189,7 @@ class Window(QtGui.QWidget):
         self.penColorComboBox = QtGui.QComboBox()
         self.populateWithColors(self.penColorComboBox)
         self.penColorComboBox.setCurrentIndex(
-                self.penColorComboBox.findText('darkslateblue'))
+            self.penColorComboBox.findText('darkslateblue'))
 
         penColorLabel = QtGui.QLabel("Pen &Color:")
         penColorLabel.setBuddy(self.penColorComboBox)
@@ -207,8 +208,10 @@ class Window(QtGui.QWidget):
         self.penColorComboBox.activated.connect(self.penColorChanged)
 
         for i in range(Window.NumRenderAreas):
-            self.penWidthSpinBox.valueChanged[int].connect(self.renderAreas[i].setPenWidth)
-            self.rotationAngleSpinBox.valueChanged[int].connect(self.renderAreas[i].setRotationAngle)
+            self.penWidthSpinBox.valueChanged[int].connect(
+                self.renderAreas[i].setPenWidth)
+            self.rotationAngleSpinBox.valueChanged[int].connect(
+                self.renderAreas[i].setRotationAngle)
 
         topLayout = QtGui.QGridLayout()
         for i in range(Window.NumRenderAreas):

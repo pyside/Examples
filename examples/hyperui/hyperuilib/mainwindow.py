@@ -53,12 +53,16 @@ class MainWindow(QGraphicsWidget):
         self._overlay.setRect(0, 0, width, height)
         self._overlay.hide()
 
-        self._mainView = PageView();
+        self._mainView = PageView()
         self._mainView.add(MenuView())
-        self._preview = DraggablePreview(self._mainView, QSize(width, height), self)
-        self.connect(self._preview, SIGNAL("draggableStarted()"), SLOT("onDragModeIn()"))
-        self.connect(self._preview, SIGNAL("minimizeStarted()"), SLOT("onDragModeOut()"))
-        self.connect(self._preview, SIGNAL("maximizeFinished()"), SLOT("onMaximizeFinished()"))
+        self._preview = DraggablePreview(self._mainView, QSize(width, height),
+                                         self)
+        self.connect(self._preview, SIGNAL("draggableStarted()"),
+                     SLOT("onDragModeIn()"))
+        self.connect(self._preview, SIGNAL("minimizeStarted()"),
+                     SLOT("onDragModeOut()"))
+        self.connect(self._preview, SIGNAL("maximizeFinished()"),
+                     SLOT("onMaximizeFinished()"))
 
         phoneLabel = QGraphicsSimpleTextItem(self.tr("T-Mobile"), self)
         self_hourLabel = QGraphicsSimpleTextItem(self)
@@ -71,12 +75,15 @@ class MainWindow(QGraphicsWidget):
 
         self._hourLabel = QGraphicsSimpleTextItem(self)
         self._hourLabel.setFont(labelFont)
-        self._hourLabel.setBrush(QColor(Resource.stringValue("default/font-color")))
+        self._hourLabel.setBrush(QColor(Resource.stringValue(
+            "default/font-color")))
 
         p = Resource.pixmap("topbar_battery.png")
-        iconBattery = QGraphicsPixmapItem(Resource.pixmap("topbar_battery.png"), self)
+        iconBattery = QGraphicsPixmapItem(Resource.pixmap(
+            "topbar_battery.png"), self)
         icon3G = QGraphicsPixmapItem(Resource.pixmap("topbar_3g.png"), self)
-        iconNetwork = QGraphicsPixmapItem(Resource.pixmap("topbar_network.png"), self)
+        iconNetwork = QGraphicsPixmapItem(Resource.pixmap(
+            "topbar_network.png"), self)
 
         self._hourLabel.setPos(Resource.value("topbar/hour-label-pos"))
         phoneLabel.setPos(Resource.value("topbar/label-pos"))
@@ -125,14 +132,14 @@ class MainWindow(QGraphicsWidget):
                                    QDateTime(cd, QTime(18, 53, 0)), color1,
                                    self.tr("Development Meeting"))
         self._clockWidget.addEvent(QDateTime(cd, QTime(18, 40, 0)),
-                                    QDateTime(cd, QTime(19, 20, 0)), color3,
-                                    self.tr("Project Presentation"))
+                                   QDateTime(cd, QTime(19, 20, 0)), color3,
+                                   self.tr("Project Presentation"))
         self._clockWidget.addEvent(QDateTime(cd, QTime(19, 24, 0)),
-                                    QDateTime(cd, QTime(20, 20, 0)), color3,
-                                    self.tr("Project Presentation"))
+                                   QDateTime(cd, QTime(20, 20, 0)), color3,
+                                   self.tr("Project Presentation"))
         self._clockWidget.addEvent(QDateTime(cd, QTime(19, 55, 0)),
-                                    QDateTime(cd, QTime(20, 45, 0)), color2,
-                                    self.tr("Dinner with Managers"))
+                                   QDateTime(cd, QTime(20, 45, 0)), color2,
+                                   self.tr("Dinner with Managers"))
         self._clockWidget.addEvent(QDateTime(cd, QTime(21, 25, 0)),
                                    QDateTime(cd, QTime(22, 20, 0)), color2,
                                    self.tr("Dinner with Managers"))

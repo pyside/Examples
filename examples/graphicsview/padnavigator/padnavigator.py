@@ -26,19 +26,22 @@ class Panel(QtGui.QGraphicsView):
         self.setCacheMode(QtGui.QGraphicsView.CacheBackground)
         self.setViewportUpdateMode(QtGui.QGraphicsView.FullViewportUpdate)
         self.setRenderHints(QtGui.QPainter.Antialiasing |
-                QtGui.QPainter.SmoothPixmapTransform |
-                QtGui.QPainter.TextAntialiasing)
+                            QtGui.QPainter.SmoothPixmapTransform |
+                            QtGui.QPainter.TextAntialiasing)
 
-        self.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap('./images/blue_angle_swirl.jpg')))
+        self.setBackgroundBrush(
+            QtGui.QBrush(QtGui.QPixmap('./images/blue_angle_swirl.jpg')))
 
         if QtOpenGL.QGLFormat.hasOpenGL():
-            self.setViewport(QtOpenGL.QGLWidget(QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers)))
+            self.setViewport(QtOpenGL.QGLWidget(
+                QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers)))
 
         self.setMinimumSize(50, 50)
 
         self.selectionTimeLine = QtCore.QTimeLine(150, self)
         self.flipTimeLine = QtCore.QTimeLine(500, self)
-        bounds = QtCore.QRectF((-width / 2.0) * 150, (-height / 2.0) * 150, width * 150, height * 150)
+        bounds = QtCore.QRectF((-width / 2.0) * 150, (-height / 2.0) * 150,
+                               width * 150, height * 150)
 
         self.scene = QtGui.QGraphicsScene(bounds, self)
         self.setScene(self.scene)
@@ -49,14 +52,16 @@ class Panel(QtGui.QGraphicsView):
         embed = QtGui.QWidget()
 
         self.ui = Ui_BackSide()
-        self.ui.setupUi(embed) 
+        self.ui.setupUi(embed)
         self.ui.hostName.setFocus()
 
         self.backItem = RoundRectItem(bounds, embed.palette().window(), embed)
-        self.backItem.setTransform(QtGui.QTransform().rotate(180, QtCore.Qt.YAxis))
+        self.backItem.setTransform(QtGui.QTransform().rotate(180,
+                                   QtCore.Qt.YAxis))
         self.backItem.setParentItem(self.baseItem)
 
-        self.selectionItem = RoundRectItem(QtCore.QRectF(-60, -60, 120, 120), QtCore.Qt.gray)
+        self.selectionItem = RoundRectItem(QtCore.QRectF(-60, -60, 120, 120),
+                                           QtCore.Qt.gray)
         self.selectionItem.setParentItem(self.baseItem)
         self.selectionItem.setZValue(-1)
         self.selectionItem.setPos(self.posForLocation(0, 0))
@@ -68,7 +73,8 @@ class Panel(QtGui.QGraphicsView):
         for y in range(height):
             self.grid.append([])
             for x in range(width):
-                item = RoundRectItem(QtCore.QRectF(-54, -54, 108, 108), QtGui.QColor(214, 240, 110, 128))
+                item = RoundRectItem(QtCore.QRectF(-54, -54, 108, 108),
+                                     QtGui.QColor(214, 240, 110, 128))
                 item.setPos(self.posForLocation(x, y))
 
                 item.setParentItem(self.baseItem)
@@ -76,24 +82,32 @@ class Panel(QtGui.QGraphicsView):
                 self.grid[y].append(item)
 
                 rand = QtCore.qrand() % 9
-                if rand == 0 :
-                    item.setPixmap(QtGui.QPixmap(':/images/kontact_contacts.png'))
+                if rand == 0:
+                    item.setPixmap(QtGui.QPixmap(
+                        ':/images/kontact_contacts.png'))
                 elif rand == 1:
-                    item.setPixmap(QtGui.QPixmap(':/images/kontact_journal.png'))
+                    item.setPixmap(QtGui.QPixmap(
+                        ':/images/kontact_journal.png'))
                 elif rand == 2:
-                    item.setPixmap(QtGui.QPixmap(':/images/kontact_notes.png'))
+                    item.setPixmap(QtGui.QPixmap(
+                        ':/images/kontact_notes.png'))
                 elif rand == 3:
-                    item.setPixmap(QtGui.QPixmap(':/images/kopeteavailable.png'))
+                    item.setPixmap(QtGui.QPixmap(
+                        ':/images/kopeteavailable.png'))
                 elif rand == 4:
-                    item.setPixmap(QtGui.QPixmap(':/images/metacontact_online.png'))
+                    item.setPixmap(QtGui.QPixmap(
+                        ':/images/metacontact_online.png'))
                 elif rand == 5:
                     item.setPixmap(QtGui.QPixmap(':/images/minitools.png'))
                 elif rand == 6:
-                    item.setPixmap(QtGui.QPixmap(':/images/kontact_journal.png'))
+                    item.setPixmap(QtGui.QPixmap(
+                        ':/images/kontact_journal.png'))
                 elif rand == 7:
-                    item.setPixmap(QtGui.QPixmap(':/images/kontact_contacts.png'))
+                    item.setPixmap(QtGui.QPixmap(
+                        ':/images/kontact_contacts.png'))
                 elif rand == 8:
-                    item.setPixmap(QtGui.QPixmap(':/images/kopeteavailable.png'))
+                    item.setPixmap(QtGui.QPixmap(
+                        ':/images/kopeteavailable.png'))
                 else:
                     pass
 
@@ -108,7 +122,7 @@ class Panel(QtGui.QGraphicsView):
         self.splash = SplashItem()
         self.splash.setZValue(5)
         self.splash.setPos(-self.splash.rect().width()/2,
-                self.scene.sceneRect().top())
+                           self.scene.sceneRect().top())
         self.scene.addItem(self.splash)
 
         self.splash.grabKeyboard()
@@ -118,12 +132,17 @@ class Panel(QtGui.QGraphicsView):
         self.setWindowTitle("Pad Navigator Example")
 
     def keyPressEvent(self, event):
-        if self.splash.isVisible() or event.key() == QtCore.Qt.Key_Return or self.flipped :
+        if self.splash.isVisible() or event.key() == QtCore.Qt.Key_Return \
+                or self.flipped:
             super(Panel, self).keyPressEvent(event)
             return
 
-        self.selectedX = (self.selectedX + self.width + (event.key() == QtCore.Qt.Key_Right) - (event.key() == QtCore.Qt.Key_Left)) % self.width
-        self.selectedY = (self.selectedY + self.height + (event.key() == QtCore.Qt.Key_Down) - (event.key() == QtCore.Qt.Key_Up)) % self.height
+        self.selectedX = (self.selectedX + self.width +
+                         (event.key() == QtCore.Qt.Key_Right) -
+                         (event.key() == QtCore.Qt.Key_Left)) % self.width
+        self.selectedY = (self.selectedY + self.height +
+                         (event.key() == QtCore.Qt.Key_Down) -
+                         (event.key() == QtCore.Qt.Key_Up)) % self.height
         self.grid[self.selectedY][self.selectedX].setFocus()
 
         self.selectionTimeLine.stop()
@@ -136,11 +155,12 @@ class Panel(QtGui.QGraphicsView):
         self.fitInView(self.scene.sceneRect(), QtCore.Qt.KeepAspectRatio)
 
     def updateSelectionStep(self, val):
-        self.newPos = QtCore.QPointF(self.startPos.x() + (self.endPos - self.startPos).x() * val,
-                    self.startPos.y() + (self.endPos - self.startPos).y() * val)
+        self.newPos = QtCore.QPointF(
+            self.startPos.x() + (self.endPos - self.startPos).x() * val,
+            self.startPos.y() + (self.endPos - self.startPos).y() * val)
         self.selectionItem.setPos(self.newPos)
 
-        transform= QtGui.QTransform()
+        transform = QtGui.QTransform()
         self.yrot = self.newPos.x() / 6.0
         self.xrot = self.newPos.y() / 6.0
         transform.rotate(self.newPos.x() / 6.0, QtCore.Qt.YAxis)
@@ -177,7 +197,9 @@ class Panel(QtGui.QGraphicsView):
             self.flipped = False
 
     def posForLocation(self, x, y):
-        return QtCore.QPointF(x*150, y*150) - QtCore.QPointF((self.width - 1) * 75, (self.height - 1) * 75)
+        return QtCore.QPointF(
+            x * 150, y * 150) - QtCore.QPointF((self.width - 1) * 75,
+                                               (self.height - 1) * 75)
 
 
 class Activated(QtCore.QObject):
@@ -208,7 +230,8 @@ class RoundRectItem(QtGui.QGraphicsRectItem):
             self.proxyWidget = QtGui.QGraphicsProxyWidget(self)
             self.proxyWidget.setFocusPolicy(QtCore.Qt.StrongFocus)
             self.proxyWidget.setWidget(embeddedWidget)
-            self.proxyWidget.setGeometry(self.boundingRect().adjusted(25, 25, -25, -25))
+            self.proxyWidget.setGeometry(
+                self.boundingRect().adjusted(25, 25, -25, -25))
 
     def paint(self, painter, qstyleoptiongraphicsitem, qwidget):
         x = painter.worldTransform()
@@ -225,7 +248,8 @@ class RoundRectItem(QtGui.QGraphicsRectItem):
             self.proxyWidget.setFocus()
 
         if (self.proxyWidget and self.proxyWidget.pos() != QtCore.QPoint()):
-            self.proxyWidget.setGeometry(self.boundingRect().adjusted(25, 25, -25, -25))
+            self.proxyWidget.setGeometry(
+                self.boundingRect().adjusted(25, 25, -25, -25))
 
         painter.setOpacity(self.opacity())
         painter.setPen(QtCore.Qt.NoPen)
@@ -233,7 +257,8 @@ class RoundRectItem(QtGui.QGraphicsRectItem):
         painter.drawRoundRect(self.rect().translated(2, 2))
 
         if not self.proxyWidget:
-            gradient= QtGui.QLinearGradient (self.rect().topLeft(), self.rect().bottomRight())
+            gradient = QtGui.QLinearGradient(self.rect().topLeft(),
+                                             self.rect().bottomRight())
             col = self.brush.color()
             gradient.setColorAt(0, col)
             gradient.setColorAt(1, col.darker(int(200 + self.lastVal * 50)))
@@ -245,12 +270,14 @@ class RoundRectItem(QtGui.QGraphicsRectItem):
         painter.drawRoundRect(self.rect())
         if not self.pix.isNull():
             painter.scale(1.95, 1.95)
-            painter.drawPixmap(-self.pix.width() / 2, -self.pix.height() / 2, self.pix)
+            painter.drawPixmap(-self.pix.width() / 2, -self.pix.height() / 2,
+                               self.pix)
 
     def boundingRect(self):
         penW = 0.5
         shadowW = 2.0
-        return self.rect().adjusted(-penW, -penW, penW + shadowW, penW + shadowW)
+        return self.rect().adjusted(
+            -penW, -penW, penW + shadowW, penW + shadowW)
 
     def setPixmap(self, pixmap):
         self.pix = pixmap
@@ -272,7 +299,8 @@ class RoundRectItem(QtGui.QGraphicsRectItem):
 
     def keyPressEvent(self, event):
         if event.isAutoRepeat() or event.key() != QtCore.Qt.Key_Return \
-                or (self.timeLine.state() == QtCore.QTimeLine.Running and self.timeLine.direction() == QtCore.QTimeLine.Forward):
+                or (self.timeLine.state() == QtCore.QTimeLine.Running
+                    and self.timeLine.direction() == QtCore.QTimeLine.Forward):
             super(RoundRectItem, self).keyPressEvent(event)
             return
 
@@ -293,7 +321,8 @@ class RoundRectItem(QtGui.QGraphicsRectItem):
     def updateValue(self, value):
         self.lastVal = value
         if not self.proxyWidget:
-            self.setTransform(QtGui.QTransform().scale(1 - value / 10.0, 1 - value / 10.0))
+            self.setTransform(QtGui.QTransform().scale(
+                1 - value / 10.0, 1 - value / 10.0))
 
 
 class SplashItem(QtGui.QGraphicsWidget):
@@ -306,9 +335,9 @@ class SplashItem(QtGui.QGraphicsWidget):
         self.timeLine.setCurveShape(QtCore.QTimeLine.EaseInCurve)
         self.timeLine.valueChanged.connect(self.setValue)
 
-        self.text = "Welcome to the Pad Navigator Example. You can use the " \
-                "keyboard arrows to navigate the icons, and press enter to " \
-                "activate an item. Please " "press any key to continue."
+        self.text = "Welcome to the Pad Navigator Example. You can use the "
+        "keyboard arrows to navigate the icons, and press enter to activate "
+        "an item. Please " "press any key to continue."
         self.resize(400, 175)
 
     def paint(self, painter, qstyleoptiongraphicsitem, qwidget):
@@ -319,7 +348,8 @@ class SplashItem(QtGui.QGraphicsWidget):
         painter.drawRoundRect(3, -100 + 3, 400 - 6, 250 - 6)
 
         textRect = self.rect().adjusted(10, 10, -10, -10)
-        flags = int(QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft) | QtCore.Qt.TextWordWrap
+        flags = int(
+            QtCore.Qt.AlignTop | QtCore.Qt.AlignLeft) | QtCore.Qt.TextWordWrap
 
         font = QtGui.QFont()
         font.setPixelSize(18)
@@ -333,7 +363,8 @@ class SplashItem(QtGui.QGraphicsWidget):
 
     def setValue(self, value):
         self.opacity = 1 - value
-        self.setPos(self.x(), self.scene().sceneRect().top() - self.rect().height() * value)
+        self.setPos(self.x(), self.scene().sceneRect().top() -
+                    self.rect().height() * value)
         if value == 1:
             self.hide()
 

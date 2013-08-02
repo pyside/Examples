@@ -31,7 +31,7 @@ class Lighting(QtGui.QGraphicsView):
         self.m_scene.setSceneRect(-300, -200, 600, 460)
 
         linearGrad = QtGui.QLinearGradient(QtCore.QPointF(-100, -100),
-                QtCore.QPointF(100, 100))
+                                           QtCore.QPointF(100, 100))
         linearGrad.setColorAt(0, QtGui.QColor(255, 255, 255))
         linearGrad.setColorAt(1, QtGui.QColor(192, 192, 255))
         self.setBackgroundBrush(linearGrad)

@@ -39,9 +39,10 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtDeclarative import *
 
+
 class PieChart (QDeclarativeItem):
 
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QDeclarativeItem.__init__(self, parent)
         # need to disable this flag to draw inside a QDeclarativeItem
         self.setFlag(QGraphicsItem.ItemHasNoContents, False)
@@ -49,9 +50,9 @@ class PieChart (QDeclarativeItem):
 
     def paint(self, painter, options, widget):
         pen = QPen(self.color, 2)
-        painter.setPen(pen);
-        painter.setRenderHints(QPainter.Antialiasing, True);
-        painter.drawPie(self.boundingRect(), 90 * 16, 290 * 16);
+        painter.setPen(pen)
+        painter.setRenderHints(QPainter.Antialiasing, True)
+        painter.drawPie(self.boundingRect(), 90 * 16, 290 * 16)
 
     def getColor(self):
         return self._color
@@ -71,7 +72,7 @@ class PieChart (QDeclarativeItem):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
-    qmlRegisterType(PieChart, 'Charts', 1, 0, 'PieChart');
+    qmlRegisterType(PieChart, 'Charts', 1, 0, 'PieChart')
 
     view = QDeclarativeView()
     view.setSource(QUrl.fromLocalFile('app.qml'))

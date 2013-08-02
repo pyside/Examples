@@ -38,13 +38,14 @@
 **
 *****************************************************************************
 ** February 2011
-** - addressbook example ported to PySide by Arun Srinivasan 
+** - addressbook example ported to PySide by Arun Srinivasan
 **   <rulfzid@gmail.com>
 **************************************************************************"""
 
 from PySide.QtCore import Qt
-from PySide.QtGui import (QDialog, QLabel, QTextEdit, QLineEdit, 
+from PySide.QtGui import (QDialog, QLabel, QTextEdit, QLineEdit,
                           QDialogButtonBox, QGridLayout, QVBoxLayout)
+
 
 class AddDialogWidget(QDialog):
     """ A dialog to add a new address to the addressbook. """
@@ -54,8 +55,8 @@ class AddDialogWidget(QDialog):
 
         nameLabel = QLabel("Name")
         addressLabel = QLabel("Address")
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | 
-                                      QDialogButtonBox.Cancel)
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok |
+                                     QDialogButtonBox.Cancel)
 
         self.nameText = QLineEdit()
         self.addressText = QTextEdit()
@@ -78,8 +79,8 @@ class AddDialogWidget(QDialog):
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
 
-    # These properties make using this dialog a little cleaner. It's much 
-    # nicer to type "addDialog.address" to retrieve the address as compared 
+    # These properties make using this dialog a little cleaner. It's much
+    # nicer to type "addDialog.address" to retrieve the address as compared
     # to "addDialog.addressText.toPlainText()"
     @property
     def name(self):
@@ -93,7 +94,7 @@ class AddDialogWidget(QDialog):
 if __name__ == "__main__":
     import sys
     from PySide.QtGui import QApplication
-    
+
     app = QApplication(sys.argv)
 
     dialog = AddDialog()

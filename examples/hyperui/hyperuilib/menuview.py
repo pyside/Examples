@@ -36,14 +36,13 @@ class MenuView(View):
 
     def FPOS(self, i, j):
         p = QPointF(self._leftMargin + self._vSpacing * i,
-                       self._topMargin + self._hSpacing * j)
+                    self._topMargin + self._hSpacing * j)
         return p
 
     def FNPOS(self, i, j):
         p = QPointF(self._vSpacing * -(i + 3),
-                       self._topMargin + self._hSpacing * (j + 2))
+                    self._topMargin + self._hSpacing * (j + 2))
         return p
-
 
     def __init__(self, parent=None):
         View.__init__(self, parent)
@@ -61,22 +60,34 @@ class MenuView(View):
         self._mainIconFPos = Resource.value("menu-view/main-icon-out-pos")
 
         # initialize interface
-        self._btnTwitter = self.addIcon(Resource.pixmap("menu_bt_twitter.png"), self.FPOS(0, 0))
-        self._btnEmail = self.addIcon(Resource.pixmap("menu_bt_email.png"), self.FPOS(0, 2))
-        self._btnSettings = self.addIcon(Resource.pixmap("menu_bt_settings.png"), self.FPOS(1, 1))
-        self._btnMusic = self.addIcon(Resource.pixmap("menu_bt_music.png"), self.FPOS(2, 0))
+        self._btnTwitter = self.addIcon(Resource.pixmap("menu_bt_twitter.png"),
+                                        self.FPOS(0, 0))
+        self._btnEmail = self.addIcon(Resource.pixmap("menu_bt_email.png"),
+                                      self.FPOS(0, 2))
+        self._btnSettings = self.addIcon(Resource.pixmap(
+            "menu_bt_settings.png"), self.FPOS(1, 1))
+        self._btnMusic = self.addIcon(Resource.pixmap("menu_bt_music.png"),
+                                      self.FPOS(2, 0))
 
-        self._btnNavigation = self.addIcon(Resource.pixmap("menu_bt_navigation.png"), self.FPOS(0, 4))
-        self._btnChat = self.addIcon(Resource.pixmap("menu_bt_chat.png"), self.FPOS(1, 3))
-        self._btnGames = self.addIcon(Resource.pixmap("menu_bt_games.png"), self.FPOS(2, 2))
-        self._btnWeb = self.addIcon(Resource.pixmap("menu_bt_web.png"), self.FPOS(3, 1))
+        self._btnNavigation = self.addIcon(Resource.pixmap(
+            "menu_bt_navigation.png"), self.FPOS(0, 4))
+        self._btnChat = self.addIcon(Resource.pixmap("menu_bt_chat.png"),
+                                     self.FPOS(1, 3))
+        self._btnGames = self.addIcon(Resource.pixmap("menu_bt_games.png"),
+                                      self.FPOS(2, 2))
+        self._btnWeb = self.addIcon(Resource.pixmap("menu_bt_web.png"),
+                                    self.FPOS(3, 1))
 
-        self._btnFolder = self.addIcon(Resource.pixmap("menu_bt_folder.png"), self.FPOS(1, 5))
-        self._btnCalendar = self.addIcon(Resource.pixmap("menu_bt_calendar.png"), self.FPOS(2, 4))
-        self._btnCamera = self.addIcon(Resource.pixmap("menu_bt_camera.png"), self.FPOS(3, 3))
+        self._btnFolder = self.addIcon(Resource.pixmap("menu_bt_folder.png"),
+                                       self.FPOS(1, 5))
+        self._btnCalendar = self.addIcon(Resource.pixmap(
+            "menu_bt_calendar.png"), self.FPOS(2, 4))
+        self._btnCamera = self.addIcon(Resource.pixmap("menu_bt_camera.png"),
+                                       self.FPOS(3, 3))
 
         self._btnPhone = self.addIcon(Resource.pixmap("menu_bt_phone.png"),
-                                      self._mainIconIPos, SLOT("onPhoneClicked()"))
+                                      self._mainIconIPos,
+                                      SLOT("onPhoneClicked()"))
 
         self.createStateMachine()
 
@@ -126,10 +137,14 @@ class MenuView(View):
         state2.assignProperty(self._btnCamera, "pos", self.FPOS(3, 3))
         state2.assignProperty(self._btnPhone, "pos", self._mainIconIPos)
 
-        transition1 = state1.addTransition(self, SIGNAL("transitionInStarted()"), state2)
+        transition1 = state1.addTransition(self,
+                                           SIGNAL("transitionInStarted()"),
+                                           state2)
         transition1.addAnimation(self.createInOutAnimation(False))
 
-        transition2 = state2.addTransition(self, SIGNAL("transitionOutStarted()"), state1)
+        transition2 = state2.addTransition(self,
+                                           SIGNAL("transitionOutStarted()"),
+                                           state1)
         transition2.addAnimation(self.createInOutAnimation(True))
 
         self._machine.addState(state1)
@@ -146,36 +161,62 @@ class MenuView(View):
         if not out:
             ec = QEasingCurve.OutQuart
 
-            result.addAnimation(propertyAnimation(self._btnWeb, "pos", t, ec))
-            result.addAnimation(propertyAnimation(self._btnMusic, "pos", t + d, ec))
-            result.addAnimation(propertyAnimation(self._btnCamera, "pos", t + 2 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnGames, "pos", t + 3 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnSettings, "pos", t + 4 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnTwitter, "pos", t + 5 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnCalendar, "pos", t + 6 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnChat, "pos", t + 7 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnEmail, "pos", t + 8 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnFolder, "pos", t + 9 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnNavigation, "pos", t + 10 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnPhone, "pos", t + 11 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnWeb,
+                                                  "pos", t, ec))
+            result.addAnimation(propertyAnimation(self._btnMusic,
+                                                  "pos", t + d, ec))
+            result.addAnimation(propertyAnimation(self._btnCamera,
+                                                  "pos", t + 2 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnGames,
+                                                  "pos", t + 3 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnSettings,
+                                                  "pos", t + 4 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnTwitter,
+                                                  "pos", t + 5 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnCalendar,
+                                                  "pos", t + 6 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnChat,
+                                                  "pos", t + 7 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnEmail,
+                                                  "pos", t + 8 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnFolder,
+                                                  "pos", t + 9 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnNavigation,
+                                                  "pos", t + 10 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnPhone,
+                                                  "pos", t + 11 * d, ec))
 
-            QObject.connect(result, SIGNAL("finished()"), self, SIGNAL("transitionInFinished()"))
+            QObject.connect(result, SIGNAL("finished()"), self,
+                            SIGNAL("transitionInFinished()"))
         else:
             ec = QEasingCurve.InQuart
 
-            result.addAnimation(propertyAnimation(self._btnPhone, "pos", t, ec))
-            result.addAnimation(propertyAnimation(self._btnFolder, "pos", t + d, ec))
-            result.addAnimation(propertyAnimation(self._btnNavigation, "pos", t + 2 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnCalendar, "pos", t + 3 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnChat, "pos", t + 4 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnEmail, "pos", t + 5 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnCamera, "pos", t + 6 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnGames, "pos", t + 7 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnSettings, "pos", t + 8 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnTwitter, "pos", t + 9 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnWeb, "pos", t + 10 * d, ec))
-            result.addAnimation(propertyAnimation(self._btnMusic, "pos", t + 11 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnPhone,
+                                                  "pos", t, ec))
+            result.addAnimation(propertyAnimation(self._btnFolder,
+                                                  "pos", t + d, ec))
+            result.addAnimation(propertyAnimation(self._btnNavigation,
+                                                  "pos", t + 2 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnCalendar,
+                                                  "pos", t + 3 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnChat,
+                                                  "pos", t + 4 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnEmail,
+                                                  "pos", t + 5 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnCamera,
+                                                  "pos", t + 6 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnGames,
+                                                  "pos", t + 7 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnSettings,
+                                                  "pos", t + 8 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnTwitter,
+                                                  "pos", t + 9 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnWeb,
+                                                  "pos", t + 10 * d, ec))
+            result.addAnimation(propertyAnimation(self._btnMusic,
+                                                  "pos", t + 11 * d, ec))
 
-            QObject.connect(result, SIGNAL("finished()"), self, SIGNAL("transitionOutFinished()"))
+            QObject.connect(result, SIGNAL("finished()"), self,
+                            SIGNAL("transitionOutFinished()"))
 
         return result

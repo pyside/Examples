@@ -30,14 +30,15 @@ def createConnection():
     db = QtSql.QSqlDatabase.addDatabase("QSQLITE")
     db.setDatabaseName(":memory:")
     if not db.open():
-        QtGui.QMessageBox.critical(None, QtGui.qApp.tr("Cannot open database"),
-                QtGui.qApp.tr("Unable to establish a database connection.\n"
-                              "This example needs SQLite support. Please read "
-                              "the Qt SQL driver documentation for information "
-                              "how to build it.\n\nClick Cancel to exit."),
-                QtGui.QMessageBox.Cancel, QtGui.QMessageBox.NoButton)
+        QtGui.QMessageBox.critical(
+            None, QtGui.qApp.tr("Cannot open database"),
+            QtGui.qApp.tr("Unable to establish a database connection.\n"
+                          "This example needs SQLite support. Please read "
+                          "the Qt SQL driver documentation for information "
+                          "how to build it.\n\nClick Cancel to exit."),
+            QtGui.QMessageBox.Cancel, QtGui.QMessageBox.NoButton)
         return False
-    
+
     query = QtSql.QSqlQuery()
     query.exec_("create table person(id int primary key, "
                 "firstname varchar(20), lastname varchar(20))")

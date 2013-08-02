@@ -27,6 +27,7 @@
 from PySide.QtGui import *
 from PySide.QtCore import *
 
+
 class Label(QGraphicsWidget):
     def __init__(self, parent=None):
         QGraphicsWidget.__init__(self, parent)
@@ -38,7 +39,7 @@ class Label(QGraphicsWidget):
         self.setFont(QFont("Nokia Sans"))
 
     def text(self):
-        return self._text;
+        return self._text
 
     def setText(self, value):
         if self._text != value:
@@ -59,11 +60,11 @@ class Label(QGraphicsWidget):
     def setElideMode(self, mode):
         if self._elideMode != mode:
             self._elideMode = mode
-            self.update();
+            self.update()
 
     def setAlignment(self, alignment):
         if self._alignment != alignment:
-            self._alignment = alignment;
+            self._alignment = alignment
             self.update()
 
     def paint(self, painter, option, widget):
@@ -73,8 +74,10 @@ class Label(QGraphicsWidget):
         textRect = self.boundingRect().toRect()
 
         metrics = QFontMetrics(self.font())
-        elidedText = metrics.elidedText(self._text, self._elideMode, textRect.width())
+        elidedText = metrics.elidedText(self._text, self._elideMode,
+                                        textRect.width())
 
         painter.setFont(self.font())
         painter.setPen(self._fontColor)
-        painter.drawText(textRect, Qt.TextSingleLine | self._alignment, elidedText)
+        painter.drawText(textRect, Qt.TextSingleLine | self._alignment,
+                         elidedText)

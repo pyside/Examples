@@ -16,7 +16,8 @@ class Pixmap(QtCore.QObject):
         super(Pixmap, self).__init__()
 
         self.pixmap_item = QtGui.QGraphicsPixmapItem(pix)
-        self.pixmap_item.setCacheMode(QtGui.QGraphicsItem.DeviceCoordinateCache)
+        self.pixmap_item.setCacheMode(
+            QtGui.QGraphicsItem.DeviceCoordinateCache)
 
     def set_pos(self, pos):
         self.pixmap_item.setPos(pos)
@@ -86,7 +87,7 @@ class Button(QtGui.QGraphicsWidget):
 
         painter.drawEllipse(r.adjusted(5, 5, -5, -5))
         painter.drawPixmap(-self._pix.width() / 2, -self._pix.height() / 2,
-                self._pix)
+                           self._pix)
 
     def mousePressEvent(self, ev):
         self.pressed.emit()
@@ -118,7 +119,7 @@ if __name__ == '__main__':
     for i in range(64):
         item = Pixmap(kineticPix)
         item.pixmap_item.setOffset(-kineticPix.width() / 2,
-                -kineticPix.height() / 2)
+                                   -kineticPix.height() / 2)
         item.pixmap_item.setZValue(i)
         items.append(item)
         scene.addItem(item.pixmap_item)
@@ -129,7 +130,8 @@ if __name__ == '__main__':
     figure8Button = Button(QtGui.QPixmap(':/images/figure8.png'), buttonParent)
     randomButton = Button(QtGui.QPixmap(':/images/random.png'), buttonParent)
     tiledButton = Button(QtGui.QPixmap(':/images/tile.png'), buttonParent)
-    centeredButton = Button(QtGui.QPixmap(':/images/centered.png'), buttonParent)
+    centeredButton = Button(QtGui.QPixmap(':/images/centered.png'),
+                            buttonParent)
 
     ellipseButton.setPos(-100, -100)
     figure8Button.setPos(100, -100)
@@ -153,24 +155,26 @@ if __name__ == '__main__':
     # Values.
     for i, item in enumerate(items):
         # Ellipse.
-        ellipseState.assignProperty(item, 'pos',
-                QtCore.QPointF(math.cos((i / 63.0) * 6.28) * 250,
-                        math.sin((i / 63.0) * 6.28) * 250))
+        ellipseState.assignProperty(
+            item, 'pos', QtCore.QPointF(math.cos((i / 63.0) * 6.28) * 250,
+                                        math.sin((i / 63.0) * 6.28) * 250))
 
         # Figure 8.
-        figure8State.assignProperty(item, 'pos',
-                QtCore.QPointF(math.sin((i / 63.0) * 6.28) * 250,
-                        math.sin(((i * 2)/63.0) * 6.28) * 250))
+        figure8State.assignProperty(
+            item, 'pos', QtCore.QPointF(math.sin((i / 63.0) * 6.28) * 250,
+                                        math.sin(((i * 2)/63.0) * 6.28) * 250))
 
         # Random.
-        randomState.assignProperty(item, 'pos',
-                QtCore.QPointF(-250 + QtCore.qrand() % 500,
-                        -250 + QtCore.qrand() % 500))
+        randomState.assignProperty(
+            item, 'pos',  QtCore.QPointF(-250 + QtCore.qrand() % 500,
+                                         -250 + QtCore.qrand() % 500))
 
         # Tiled.
-        tiledState.assignProperty(item, 'pos',
-                QtCore.QPointF(((i % 8) - 4) * kineticPix.width() + kineticPix.width() / 2,
-                        ((i // 8) - 4) * kineticPix.height() + kineticPix.height() / 2))
+        tiledState.assignProperty(
+            item, 'pos',
+            QtCore.QPointF(((i % 8) - 4) * kineticPix.width() +
+                           kineticPix.width() / 2, ((i // 8) - 4) *
+                           kineticPix.height() + kineticPix.height() / 2))
 
         # Centered.
         centeredState.assignProperty(item, 'pos', QtCore.QPointF())
@@ -182,7 +186,7 @@ if __name__ == '__main__':
     view.setBackgroundBrush(QtGui.QBrush(bgPix))
     view.setCacheMode(QtGui.QGraphicsView.CacheBackground)
     view.setRenderHints(
-            QtGui.QPainter.Antialiasing | QtGui.QPainter.SmoothPixmapTransform)
+        QtGui.QPainter.Antialiasing | QtGui.QPainter.SmoothPixmapTransform)
     view.show()
 
     states = QtCore.QStateMachine()

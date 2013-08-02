@@ -82,7 +82,7 @@ class DomModel(QtCore.QAbstractItemModel):
 
         if index.column() == 0:
             return node.nodeName()
-        
+
         elif index.column() == 1:
             for i in range(0, attributeMap.count()):
                 attribute = attributeMap.item(i)
@@ -107,7 +107,8 @@ class DomModel(QtCore.QAbstractItemModel):
         return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
 
     def headerData(self, section, orientation, role):
-        if orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole:
+        if orientation == QtCore.Qt.Horizontal \
+                and role == QtCore.Qt.DisplayRole:
             if section == 0:
                 return "Name"
 
@@ -175,9 +176,10 @@ class MainWindow(QtGui.QMainWindow):
         self.setWindowTitle("Simple DOM Model")
 
     def openFile(self):
-        filePath,_ = QtGui.QFileDialog.getOpenFileName(self, "Open File",
-                self.xmlPath, "XML files (*.xml);;HTML files (*.html);;"
-                "SVG files (*.svg);;User Interface files (*.ui)")
+        filePath, _ = QtGui.QFileDialog.getOpenFileName(
+            self, "Open File", self.xmlPath,
+            "XML files (*.xml);;HTML files (*.html);;"
+            "SVG files (*.svg);;User Interface files (*.ui)")
 
         if filePath:
             f = QtCore.QFile(filePath)

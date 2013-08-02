@@ -52,7 +52,7 @@ class Guide(object):
 
     def move(self, item, dest, moveSpeed):
         walkLine = QtCore.QLineF(item.getGuidedPos(), dest)
-        if moveSpeed >= 0 and walkLine.length() > moveSpeed:
+        if 0 <= moveSpeed < walkLine.length():
             # The item is too far away from it's destination point so we move
             # it towards it instead.
             dx = walkLine.dx()

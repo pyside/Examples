@@ -43,8 +43,6 @@ class MyWidget(QtGui.QWidget):
                 grid.addWidget(LCDRange(), row, column)
 
 
-
-
 app = QtGui.QApplication(sys.argv)
 widget = MyWidget()
 widget.show()

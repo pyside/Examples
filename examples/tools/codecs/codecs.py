@@ -42,8 +42,9 @@ class MainWindow(QtGui.QMainWindow):
         if fileName:
             inFile = QtCore.QFile(fileName)
             if not inFile.open(QtCore.QFile.ReadOnly):
-                QtGui.QMessageBox.warning(self, "Codecs",
-                        "Cannot read file %s:\n%s" % (fileName, inFile.errorString()))
+                QtGui.QMessageBox.warning(
+                    self, "Codecs", "Cannot read file %s:\n%s"
+                    % (fileName, inFile.errorString()))
                 return
 
             data = inFile.readAll()
@@ -56,9 +57,10 @@ class MainWindow(QtGui.QMainWindow):
         fileName = QtGui.QFileDialog.getSaveFileName(self)
         if fileName:
             outFile = QtCore.QFile(fileName)
-            if not outFile.open(QtCore.QFile.WriteOnly|QtCore.QFile.Text):
-                QtGui.QMessageBox.warning(self, "Codecs",
-                        "Cannot write file %s:\n%s" % (fileName, outFile.errorString()))
+            if not outFile.open(QtCore.QFile.WriteOnly | QtCore.QFile.Text):
+                QtGui.QMessageBox.warning(
+                    self, "Codecs", "Cannot write file %s:\n%s"
+                    % (fileName, outFile.errorString()))
                 return
 
             action = self.sender()
@@ -69,9 +71,9 @@ class MainWindow(QtGui.QMainWindow):
             out << self.textEdit.toPlainText()
 
     def about(self):
-        QtGui.QMessageBox.about(self, "About Codecs",
-                "The <b>Codecs</b> example demonstrates how to read and "
-                "write files using various encodings.")
+        QtGui.QMessageBox.about(
+            self, "About Codecs", "The <b>Codecs</b> example demonstrates how "
+            "to read and write files using various encodings.")
 
     def aboutToShowSaveAsMenu(self):
         currentText = self.textEdit.toPlainText()
@@ -109,7 +111,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def createActions(self):
         self.openAct = QtGui.QAction("&Open...", self, shortcut="Ctrl+O",
-                triggered=self.open)
+                                     triggered=self.open)
 
         for codec in self.codecs:
             name = codec_name(codec)
@@ -119,12 +121,12 @@ class MainWindow(QtGui.QMainWindow):
             self.saveAsActs.append(action)
 
         self.exitAct = QtGui.QAction("E&xit", self, shortcut="Ctrl+Q",
-                triggered=self.close)
+                                     triggered=self.close)
 
         self.aboutAct = QtGui.QAction("&About", self, triggered=self.about)
 
         self.aboutQtAct = QtGui.QAction("About &Qt", self,
-                triggered=QtGui.qApp.aboutQt)
+                                        triggered=QtGui.qApp.aboutQt)
 
     def createMenus(self):
         self.saveAsMenu = QtGui.QMenu("&Save As", self)
@@ -160,7 +162,8 @@ class PreviewForm(QtGui.QDialog):
         self.textEdit.setLineWrapMode(QtGui.QTextEdit.NoWrap)
         self.textEdit.setReadOnly(True)
 
-        buttonBox = QtGui.QDialogButtonBox(QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
+        buttonBox = QtGui.QDialogButtonBox(
+            QtGui.QDialogButtonBox.Ok | QtGui.QDialogButtonBox.Cancel)
 
         self.encodingComboBox.activated.connect(self.updateTextEdit)
         buttonBox.accepted.connect(self.accept)
@@ -189,7 +192,8 @@ class PreviewForm(QtGui.QDialog):
         return self.decodedStr
 
     def updateTextEdit(self):
-        mib = self.encodingComboBox.itemData(self.encodingComboBox.currentIndex())
+        mib = self.encodingComboBox.itemData(
+            self.encodingComboBox.currentIndex())
         codec = QtCore.QTextCodec.codecForMib(mib)
 
         data = QtCore.QTextStream(self.encodedData)

@@ -29,6 +29,7 @@ from PySide import QtCore, QtGui
 
 NoTransformation, Translate, Rotate, Scale = range(4)
 
+
 class RenderArea(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -144,9 +145,11 @@ class Window(QtGui.QWidget):
             self.operationComboBoxes[i].addItem(self.tr("No transformation"))
             self.operationComboBoxes[i].addItem(self.tr("Rotate by 60\xB0"))
             self.operationComboBoxes[i].addItem(self.tr("Scale to 75%"))
-            self.operationComboBoxes[i].addItem(self.tr("Translate by (50, 50)"))
+            self.operationComboBoxes[i].addItem(
+                self.tr("Translate by (50, 50)"))
 
-            self.connect(self.operationComboBoxes[i], QtCore.SIGNAL("activated(int)"),
+            self.connect(self.operationComboBoxes[i],
+                         QtCore.SIGNAL("activated(int)"),
                          self.operationChanged)
 
             layout.addWidget(self.transformedRenderAreas[i], 0, i + 1)
@@ -204,7 +207,8 @@ class Window(QtGui.QWidget):
         font = QtGui.QFont()
         font.setPixelSize(50)
         fontBoundingRect = QtGui.QFontMetrics(font).boundingRect(self.tr("Qt"))
-        text.addText(-QtCore.QPointF(fontBoundingRect.center()), font, self.tr("Qt"))
+        text.addText(-QtCore.QPointF(fontBoundingRect.center()), font,
+                     self.tr("Qt"))
 
         self.shapes = (clock, house, text, truck)
 

@@ -167,8 +167,8 @@ class MainWindow(QtGui.QMainWindow):
         self.resize(640, 480)
 
     def chooseImage(self):
-        fileName,_ = QtGui.QFileDialog.getOpenFileName(self, "Choose an Image",
-                self.currentPath, '*')
+        fileName, _ = QtGui.QFileDialog.getOpenFileName(
+            self, "Choose an Image", self.currentPath, '*')
 
         if fileName:
             self.openImage(fileName)
@@ -187,11 +187,12 @@ class MainWindow(QtGui.QMainWindow):
             self.updateView()
 
     def printImage(self):
-        if self.model.rowCount(QtCore.QModelIndex()) * self.model.columnCount(QtCore.QModelIndex()) > 90000:
-            answer = QtGui.QMessageBox.question(self, "Large Image Size",
-                    "The printed image may be very large. Are you sure that "
-                    "you want to print it?",
-                    QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        if self.model.rowCount(QtCore.QModelIndex()) * self.model.columnCount(
+                QtCore.QModelIndex()) > 90000:
+            answer = QtGui.QMessageBox.question(
+                self, "Large Image Size", "The printed image may be very "
+                "large. Are you sure that you want to print it?",
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
             if answer == QtGui.QMessageBox.No:
                 return
 
@@ -220,13 +221,13 @@ class MainWindow(QtGui.QMainWindow):
         painter.translate(printer.pageRect().x()+printer.pageRect().width()/2,
                           printer.pageRect().y()+printer.pageRect().height()/2)
         painter.scale(scale, scale)
-        painter.translate(-sourceWidt/2, -sourceHeight/2)
+        painter.translate(-sourceWidth/2, -sourceHeight/2)
 
         option = QtGui.QStyleOptionViewItem()
         parent = QtCore.QModelIndex()
 
         progress = QtGui.QProgressDialog("Printing...", "Cancel", 0, rows,
-                self)
+                                         self)
         y = ItemSize / 2.0
 
         for row in range(rows):
@@ -240,7 +241,8 @@ class MainWindow(QtGui.QMainWindow):
             for col in range(columns):
                 option.rect = QtCore.QRect(x, y, ItemSize, ItemSize)
                 self.view.itemDelegate.paint(painter, option,
-                        self.model.index(row, column, parent))
+                                             self.model.index(row, column,
+                                                              parent))
                 x = x + ItemSize
 
             y = y + ItemSize
@@ -251,15 +253,16 @@ class MainWindow(QtGui.QMainWindow):
         painter.end()
 
         if progress.wasCanceled():
-            QtGui.QMessageBox.information(self, "Printing canceled",
-                    "The printing process was canceled.",
-                    QtGui.QMessageBox.Cancel)
+            QtGui.QMessageBox.information(
+                self, "Printing canceled",
+                "The printing process was canceled.", QtGui.QMessageBox.Cancel)
 
     def showAboutBox(self):
-        QtGui.QMessageBox.about(self, "About the Pixelator example",
-                "This example demonstrates how a standard view and a custom\n"
-                "delegate can be used to produce a specialized "
-                "representation\nof data in a simple custom model.")
+        QtGui.QMessageBox.about(
+            self, "About the Pixelator example", "This example demonstrates "
+            "how a standard view and a custom\ndelegate can be used to "
+            "produce a specialized representation\nof data in a simple custom "
+            "model.")
 
     def updateView(self):
         self.view.resizeColumnsToContents()

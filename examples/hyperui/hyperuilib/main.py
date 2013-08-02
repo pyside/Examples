@@ -72,8 +72,8 @@ def main():
     if USE_MAEMO:
         view.showFullScreen()
     else:
-        view.setFixedSize(width, height);
-        view.show();
+        view.setFixedSize(width, height)
+        view.show()
 
     return app.exec_()
 

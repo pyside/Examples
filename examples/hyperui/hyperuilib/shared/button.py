@@ -27,6 +27,7 @@
 from PySide.QtCore import *
 from PySide.QtGui import *
 
+
 class ButtonPrivate(object):
     def __init__(self, qptr):
 
@@ -81,7 +82,7 @@ class Button(QGraphicsWidget):
     def mousePressEvent(self, e):
         if e.button() == Qt.LeftButton:
             self._d._isPressed = True
-            self.update();
+            self.update()
             self.emit(SIGNAL("pressed()"))
 
     def mouseReleaseEvent(self, e):
@@ -120,4 +121,5 @@ class Button(QGraphicsWidget):
 
             painter.setFont(self.font())
             painter.setPen(Qt.white)
-            painter.drawText(textRect, Qt.TextSingleLine | Qt.AlignCenter, elidedText)
+            painter.drawText(textRect, Qt.TextSingleLine | Qt.AlignCenter,
+                             elidedText)

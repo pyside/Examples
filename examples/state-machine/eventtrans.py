@@ -4,6 +4,7 @@
 from PySide.QtGui import *
 from PySide.QtCore import *
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()

@@ -38,9 +38,9 @@ class RenderArea(QtGui.QWidget):
     ])
 
     Line, Points, Polyline, Polygon, Rect, RoundRect, Ellipse, Arc, \
-    Chord, Pie, Path, Text, Pixmap = range(13)
+        Chord, Pie, Path, Text, Pixmap = range(13)
 
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
 
         self.shape = RenderArea.Polygon
@@ -130,7 +130,8 @@ class RenderArea(QtGui.QWidget):
                 elif self.shape == RenderArea.Path:
                     painter.drawPath(path)
                 elif self.shape == RenderArea.Text:
-                    painter.drawText(rect, QtCore.Qt.AlignCenter, self.tr("Qt by\nTrolltech"))
+                    painter.drawText(rect, QtCore.Qt.AlignCenter, self.tr(
+                        "Qt by\nTrolltech"))
                 elif self.shape == RenderArea.Pixmap:
                     painter.drawPixmap(10, 10, self.pixmap)
 
@@ -141,15 +142,17 @@ class RenderArea(QtGui.QWidget):
 
 IdRole = QtCore.Qt.UserRole
 
+
 class Window(QtGui.QWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
 
         self.renderArea = RenderArea()
 
         self.shapeComboBox = QtGui.QComboBox()
         self.shapeComboBox.addItem(self.tr("Rectangle"), RenderArea.Rect)
-        self.shapeComboBox.addItem(self.tr("Round Rectangle"), RenderArea.RoundRect)
+        self.shapeComboBox.addItem(self.tr("Round Rectangle"),
+                                   RenderArea.RoundRect)
         self.shapeComboBox.addItem(self.tr("Ellipse"), RenderArea.Ellipse)
         self.shapeComboBox.addItem(self.tr("Pie"), RenderArea.Pie)
         self.shapeComboBox.addItem(self.tr("Chord"), RenderArea.Chord)
@@ -175,8 +178,10 @@ class Window(QtGui.QWidget):
         self.penStyleComboBox.addItem(self.tr("Solid"), QtCore.Qt.SolidLine)
         self.penStyleComboBox.addItem(self.tr("Dash"), QtCore.Qt.DashLine)
         self.penStyleComboBox.addItem(self.tr("Dot"), QtCore.Qt.DotLine)
-        self.penStyleComboBox.addItem(self.tr("Dash Dot"), QtCore.Qt.DashDotLine)
-        self.penStyleComboBox.addItem(self.tr("Dash Dot Dot"), QtCore.Qt.DashDotDotLine)
+        self.penStyleComboBox.addItem(self.tr("Dash Dot"),
+                                      QtCore.Qt.DashDotLine)
+        self.penStyleComboBox.addItem(self.tr("Dash Dot Dot"),
+                                      QtCore.Qt.DashDotDotLine)
         self.penStyleComboBox.addItem(self.tr("None"), QtCore.Qt.NoPen)
 
         self.penStyleLabel = QtGui.QLabel(self.tr("&Pen Style:"))
@@ -200,33 +205,50 @@ class Window(QtGui.QWidget):
 
         self.brushStyleComboBox = QtGui.QComboBox()
         self.brushStyleComboBox.addItem(self.tr("Linear Gradient"),
-                QtCore.Qt.LinearGradientPattern)
+                                        QtCore.Qt.LinearGradientPattern)
         self.brushStyleComboBox.addItem(self.tr("Radial Gradient"),
-                QtCore.Qt.RadialGradientPattern)
+                                        QtCore.Qt.RadialGradientPattern)
         self.brushStyleComboBox.addItem(self.tr("Conical Gradient"),
-                QtCore.Qt.ConicalGradientPattern)
-        self.brushStyleComboBox.addItem(self.tr("Texture"), QtCore.Qt.TexturePattern)
-        self.brushStyleComboBox.addItem(self.tr("Solid"), QtCore.Qt.SolidPattern)
-        self.brushStyleComboBox.addItem(self.tr("Horizontal"), QtCore.Qt.HorPattern)
-        self.brushStyleComboBox.addItem(self.tr("Vertical"), QtCore.Qt.VerPattern)
-        self.brushStyleComboBox.addItem(self.tr("Cross"), QtCore.Qt.CrossPattern)
-        self.brushStyleComboBox.addItem(self.tr("Backward Diagonal"), QtCore.Qt.BDiagPattern)
-        self.brushStyleComboBox.addItem(self.tr("Forward Diagonal"), QtCore.Qt.FDiagPattern)
-        self.brushStyleComboBox.addItem(self.tr("Diagonal Cross"), QtCore.Qt.DiagCrossPattern)
-        self.brushStyleComboBox.addItem(self.tr("Dense 1"), QtCore.Qt.Dense1Pattern)
-        self.brushStyleComboBox.addItem(self.tr("Dense 2"), QtCore.Qt.Dense2Pattern)
-        self.brushStyleComboBox.addItem(self.tr("Dense 3"), QtCore.Qt.Dense3Pattern)
-        self.brushStyleComboBox.addItem(self.tr("Dense 4"), QtCore.Qt.Dense4Pattern)
-        self.brushStyleComboBox.addItem(self.tr("Dense 5"), QtCore.Qt.Dense5Pattern)
-        self.brushStyleComboBox.addItem(self.tr("Dense 6"), QtCore.Qt.Dense6Pattern)
-        self.brushStyleComboBox.addItem(self.tr("Dense 7"), QtCore.Qt.Dense7Pattern)
-        self.brushStyleComboBox.addItem(self.tr("None"), QtCore.Qt.NoBrush)
+                                        QtCore.Qt.ConicalGradientPattern)
+        self.brushStyleComboBox.addItem(self.tr("Texture"),
+                                        QtCore.Qt.TexturePattern)
+        self.brushStyleComboBox.addItem(self.tr("Solid"),
+                                        QtCore.Qt.SolidPattern)
+        self.brushStyleComboBox.addItem(self.tr("Horizontal"),
+                                        QtCore.Qt.HorPattern)
+        self.brushStyleComboBox.addItem(self.tr("Vertical"),
+                                        QtCore.Qt.VerPattern)
+        self.brushStyleComboBox.addItem(self.tr("Cross"),
+                                        QtCore.Qt.CrossPattern)
+        self.brushStyleComboBox.addItem(self.tr("Backward Diagonal"),
+                                        QtCore.Qt.BDiagPattern)
+        self.brushStyleComboBox.addItem(self.tr("Forward Diagonal"),
+                                        QtCore.Qt.FDiagPattern)
+        self.brushStyleComboBox.addItem(self.tr("Diagonal Cross"),
+                                        QtCore.Qt.DiagCrossPattern)
+        self.brushStyleComboBox.addItem(self.tr("Dense 1"),
+                                        QtCore.Qt.Dense1Pattern)
+        self.brushStyleComboBox.addItem(self.tr("Dense 2"),
+                                        QtCore.Qt.Dense2Pattern)
+        self.brushStyleComboBox.addItem(self.tr("Dense 3"),
+                                        QtCore.Qt.Dense3Pattern)
+        self.brushStyleComboBox.addItem(self.tr("Dense 4"),
+                                        QtCore.Qt.Dense4Pattern)
+        self.brushStyleComboBox.addItem(self.tr("Dense 5"),
+                                        QtCore.Qt.Dense5Pattern)
+        self.brushStyleComboBox.addItem(self.tr("Dense 6"),
+                                        QtCore.Qt.Dense6Pattern)
+        self.brushStyleComboBox.addItem(self.tr("Dense 7"),
+                                        QtCore.Qt.Dense7Pattern)
+        self.brushStyleComboBox.addItem(self.tr("None"),
+                                        QtCore.Qt.NoBrush)
 
         self.brushStyleLabel = QtGui.QLabel(self.tr("&Brush Style:"))
         self.brushStyleLabel.setBuddy(self.brushStyleComboBox)
 
         self.antialiasingCheckBox = QtGui.QCheckBox(self.tr("&Antialiasing"))
-        self.transformationsCheckBox = QtGui.QCheckBox(self.tr("&Transformations"))
+        self.transformationsCheckBox = QtGui.QCheckBox(self.tr(
+            "&Transformations"))
 
         self.connect(self.shapeComboBox, QtCore.SIGNAL("activated(int)"),
                      self.shapeChanged)
@@ -242,7 +264,8 @@ class Window(QtGui.QWidget):
                      self.brushChanged)
         self.connect(self.antialiasingCheckBox, QtCore.SIGNAL("toggled(bool)"),
                      self.renderArea.setAntialiased)
-        self.connect(self.transformationsCheckBox, QtCore.SIGNAL("toggled(bool)"),
+        self.connect(self.transformationsCheckBox,
+                     QtCore.SIGNAL("toggled(bool)"),
                      self.renderArea.setTransformed)
 
         checkBoxLayout = QtGui.QHBoxLayout()
@@ -288,7 +311,8 @@ class Window(QtGui.QWidget):
         join = QtCore.Qt.PenJoinStyle(int(self.penJoinComboBox.itemData(
             self.penJoinComboBox.currentIndex(), IdRole)))
 
-        self.renderArea.setPen(QtGui.QPen(QtCore.Qt.blue, width, style, cap, join))
+        self.renderArea.setPen(QtGui.QPen(QtCore.Qt.blue, width, style, cap,
+                                          join))
 
     def brushChanged(self):
         style = QtCore.Qt.BrushStyle(int(self.brushStyleComboBox.itemData(
@@ -313,7 +337,8 @@ class Window(QtGui.QWidget):
             conicalGradient.setColorAt(1.0, QtCore.Qt.black)
             self.renderArea.setBrush(QtGui.QBrush(conicalGradient))
         elif style == QtCore.Qt.TexturePattern:
-            self.renderArea.setBrush(QtGui.QBrush(QtGui.QPixmap(":/images/brick.png")))
+            self.renderArea.setBrush(QtGui.QBrush(QtGui.QPixmap(
+                ":/images/brick.png")))
         else:
             self.renderArea.setBrush(QtGui.QBrush(QtCore.Qt.green, style))
 

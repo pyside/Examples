@@ -28,6 +28,7 @@ from PySide.QtCore import QSettings
 from PySide.QtGui import QPixmap
 from hyperuilib.resource.hyperui_rc import *
 
+
 class Resource(object):
     _instance_ = None
 
@@ -44,7 +45,7 @@ class Resource(object):
 
     @staticmethod
     def setIniFile(fileName):
-        d = Resource.instance();
+        d = Resource.instance()
         if d._settings:
             d._settings = None
 
@@ -58,8 +59,6 @@ class Resource(object):
         if p.isNull():
             print "Pixmap not found: ", f
         return p
-
-
 
     @staticmethod
     def setPixmapPrefix(prefix):

@@ -92,7 +92,7 @@ class ContactResource(object):
         return ContactResource.instance().data(index, 1)
 
     @staticmethod
-    def photo(index, type = SmallPhoto):
+    def photo(index, type=SmallPhoto):
         int_type = 3
         if type == ContactResource.SmallPhoto:
             int_type = 2

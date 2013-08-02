@@ -9,8 +9,8 @@ def createIntroPage():
     page = QtGui.QWizardPage()
     page.setTitle("Introduction")
 
-    label = QtGui.QLabel("This wizard will help you register your copy of "
-            "Super Product Two.")
+    label = QtGui.QLabel(
+        "This wizard will help you register your copy of Super Product Two.")
     label.setWordWrap(True)
 
     layout = QtGui.QVBoxLayout()
@@ -45,7 +45,8 @@ def createConclusionPage():
     page = QtGui.QWizardPage()
     page.setTitle("Conclusion")
 
-    label = QtGui.QLabel("You are now successfully registered. Have a nice day!")
+    label = QtGui.QLabel(
+        "You are now successfully registered. Have a nice day!")
     label.setWordWrap(True)
 
     layout = QtGui.QVBoxLayout()

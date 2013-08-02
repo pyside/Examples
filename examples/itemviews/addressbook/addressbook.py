@@ -38,7 +38,7 @@
 **
 *****************************************************************************
 ** February 2011
-** - addressbook example ported to PySide by Arun Srinivasan 
+** - addressbook example ported to PySide by Arun Srinivasan
 **   <rulfzid@gmail.com>
 **************************************************************************"""
 
@@ -69,11 +69,14 @@ class MainWindow(QMainWindow):
         exitAction = self.createAction("E&xit", fileMenu, self.close)
 
         # Populate the Tools menu
-        addAction = self.createAction("&Add Entry...", toolMenu, self.addressWidget.addEntry)
-        self.editAction = self.createAction("&Edit Entry...", toolMenu, self.addressWidget.editEntry)
+        addAction = self.createAction("&Add Entry...", toolMenu,
+                                      self.addressWidget.addEntry)
+        self.editAction = self.createAction("&Edit Entry...", toolMenu,
+                                            self.addressWidget.editEntry)
         toolMenu.addSeparator()
-        self.removeAction = self.createAction("&Remove Entry", toolMenu, self.addressWidget.removeEntry)
-        
+        self.removeAction = self.createAction("&Remove Entry", toolMenu,
+                                              self.addressWidget.removeEntry)
+
         # Disable the edit and remove menu items initally, as there are
         # no items yet.
         self.editAction.setEnabled(False)
@@ -83,20 +86,20 @@ class MainWindow(QMainWindow):
         self.addressWidget.selectionChanged.connect(self.updateActions)
 
     def createAction(self, text, menu, slot):
-        """ Helper function to save typing when populating menus 
-            with action. 
+        """ Helper function to save typing when populating menus
+            with action.
         """
         action = QAction(text, self)
         menu.addAction(action)
         action.triggered.connect(slot)
         return action
 
-    # Quick  gotcha: 
-    # 
-    # QFiledialog.getOpenFilename and QFileDialog.get.SaveFileName don't 
+    # Quick  gotcha:
+    #
+    # QFiledialog.getOpenFilename and QFileDialog.get.SaveFileName don't
     # behave in PySide as they do in QT, where they return a QString
     # containing the filename.
-    # 
+    #
     # In PySide (and, I believe, PyQT), these functions return a tuple:
     # (filename, filter)
     #

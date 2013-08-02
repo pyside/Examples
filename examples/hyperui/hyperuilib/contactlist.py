@@ -40,7 +40,8 @@ class LetterScroll(PixmapWidget):
         self._lastChar = ''
         self._list = list
 
-        self._marker = QGraphicsPixmapItem(Resource.pixmap("list_abcmarker.png"), self)
+        self._marker = QGraphicsPixmapItem(Resource.pixmap(
+            "list_abcmarker.png"), self)
         self._marker.setX(-self._marker.boundingRect().width())
         self._marker.hide()
 
@@ -93,7 +94,7 @@ class LetterScroll(PixmapWidget):
 
 
 class ContactLabel(QGraphicsWidget):
-    def __init__(self, text, parent = None):
+    def __init__(self, text, parent=None):
         QGraphicsWidget.__init__(self, parent)
 
         self._text = text
@@ -108,10 +109,11 @@ class ContactLabel(QGraphicsWidget):
     def paint(self, painter, option, widget):
         size = self.size()
         painter.setPen(QColor(self._color))
-        painter.setFont(self.font());
-        painter.drawText(int(size.width() * 0.03),
-                         int(size.height() * 0.80), self._text)
-        painter.drawPixmap(0, int(size.height() - self._divisor.height()), self._divisor)
+        painter.setFont(self.font())
+        painter.drawText(
+            int(size.width() * 0.03), int(size.height() * 0.80), self._text)
+        painter.drawPixmap(0, int(size.height() - self._divisor.height()),
+                           self._divisor)
 
 
 class ContactPhoto(QGraphicsWidget):
@@ -120,14 +122,15 @@ class ContactPhoto(QGraphicsWidget):
 
         self._index = index
         self._list = list
-        self._color = QColor(Resource.stringValue("contact-list/thumb-bg-color"))
+        self._color = QColor(Resource.stringValue(
+            "contact-list/thumb-bg-color"))
         self._label = Label()
 
         photoPath = ContactResource.photo(index)
         self._photo = PixmapWidget(Resource.pixmap(photoPath))
 
         font = QFont(Resource.stringValue("default/font-family"))
-        font.setBold(True);
+        font.setBold(True)
         font.setPixelSize(Resource.intValue("contact-list/thumb-font-size"))
 
         self._label.setFont(font)
@@ -152,6 +155,7 @@ class ContactPhoto(QGraphicsWidget):
     def mouseReleaseEvent(self, e):
         self.emit(SIGNAL("contactClicked(int)"), self._index)
 
+
 class ContactListItem(QGraphicsWidget):
     def __init__(self, index, list):
         QGraphicsWidget.__init__(self, list)
@@ -159,11 +163,14 @@ class ContactListItem(QGraphicsWidget):
         self._index = index
         self._list = list
         self._divisor = Resource.pixmap("list_divisor.png")
-        self._nameFontSize = Resource.intValue("contact-list/list-item-name-font-size")
-        self._phoneFontSize = Resource.intValue("contact-list/list-item-phone-font-size")
+        self._nameFontSize = Resource.intValue(
+            "contact-list/list-item-name-font-size")
+        self._phoneFontSize = Resource.intValue(
+            "contact-list/list-item-phone-font-size")
         self._font = QFont(Resource.stringValue("default/font-family"))
 
-        self.setMinimumHeight(Resource.intValue("contact-list/list-item-height"))
+        self.setMinimumHeight(Resource.intValue(
+            "contact-list/list-item-height"))
         self._text = ContactResource.name(index)
         self._phone = ContactResource.phone(index)
 
@@ -182,9 +189,9 @@ class ContactListItem(QGraphicsWidget):
 
         painter.setPen(Qt.white)
 
-        self._font.setBold(True);
-        self._font.setPixelSize(self._nameFontSize);
-        painter.setFont(self._font);
+        self._font.setBold(True)
+        self._font.setPixelSize(self._nameFontSize)
+        painter.setFont(self._font)
         painter.drawText(int(w * 0.12), int(h * 0.40), self._text)
 
         self._font.setBold(False)
@@ -195,7 +202,9 @@ class ContactListItem(QGraphicsWidget):
         if not self._icon.isNull():
             painter.drawPixmap(0, int(h * 0.15), self._icon)
 
-        painter.drawPixmap(0, int(self.boundingRect().height() - self._divisor.height()), self._divisor);
+        painter.drawPixmap(
+            0, int(self.boundingRect().height() - self._divisor.height()),
+            self._divisor)
 
     def mousePressEvent(self, e):
         pass
@@ -214,7 +223,8 @@ class ContactList(QGraphicsWidget):
         contents = QGraphicsWidget(self)
 
         scroll = LetterScroll(self)
-        self.connect(scroll, SIGNAL("letterPressed(QString)"), self.letterPressed)
+        self.connect(scroll, SIGNAL("letterPressed(QString)"),
+                     self.letterPressed)
 
         contentsLayout = QGraphicsLinearLayout(Qt.Vertical)
         contentsLayout.setSpacing(0)
@@ -238,7 +248,7 @@ class ContactList(QGraphicsWidget):
                 k += 1
                 topLayout.addItem(ContactPhoto(i, self))
 
-        contentsLayout.addItem(topLayout);
+        contentsLayout.addItem(topLayout)
 
         lastChar = ''
         for i in range(totalContacts):
@@ -259,15 +269,16 @@ class ContactList(QGraphicsWidget):
 
         contents.setLayout(contentsLayout)
 
-        self._scrollArea = ScrollArea();
+        self._scrollArea = ScrollArea()
         self._scrollArea.setWidget(contents)
 
         scroll.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
-        self._scrollArea.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self._scrollArea.setSizePolicy(QSizePolicy.Expanding,
+                                       QSizePolicy.Expanding)
 
         layout = QGraphicsLinearLayout(Qt.Horizontal)
-        layout.setSpacing(0);
-        layout.setContentsMargins(0, 0, 0, 0);
+        layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
 
         layout.addItem(self._scrollArea)
         layout.addItem(scroll)
@@ -278,7 +289,7 @@ class ContactList(QGraphicsWidget):
 
     def letterPressed(self, c):
         if str(c) in self._labels:
-            self._scrollArea.stopKinetic();
+            self._scrollArea.stopKinetic()
             # XXX: check first letter
             offset = 0
             if c != 'A':

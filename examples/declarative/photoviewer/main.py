@@ -34,11 +34,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
 
-from PySide.QtCore import QObject, QUrl, QAbstractListModel, QModelIndex, QThread, QTimer
+from PySide.QtCore import QObject, QUrl, QAbstractListModel, QModelIndex, \
+    QThread, QTimer
 from PySide.QtCore import Property, Signal, Qt
-from PySide import  QtGui, QtDeclarative
+from PySide import QtGui, QtDeclarative
 
-import gdata.photos, gdata.photos.service
+import gdata.photos
+import gdata.photos.service
+
 
 class Photo(QObject):
     def __init__(self, gPhoto, parent=None):
@@ -67,6 +70,7 @@ class Photo(QObject):
     url = Property(QUrl, getUrl, notify=onUrlChanged)
     imageUrl = Property(QUrl, getImageUrl, notify=onUrlChanged)
 
+
 class PhotoLoad(QThread):
     def __init__(self, model, parent=None):
         super(PhotoLoad, self).__init__(parent)
@@ -74,7 +78,8 @@ class PhotoLoad(QThread):
 
     def run(self):
         self._model._photos = []
-        photos = self._model._album._service.GetFeed(self._model._album._data.GetPhotosUri()).entry
+        photos = self._model._album._service.GetFeed(
+            self._model._album._data.GetPhotosUri()).entry
         size = 0
         temp = []
         for p in photos:
@@ -119,7 +124,8 @@ class PhotoListModel(QAbstractListModel):
         self._cache += itens
 
     def loadCache(self):
-        self.beginInsertRows(QModelIndex(), len(self._photos), len(self._photos) + len(self._cache))
+        self.beginInsertRows(QModelIndex(), len(self._photos),
+                             len(self._photos) + len(self._cache))
         self._photos += self._cache
         self.endInsertRows()
         self._cache = []
@@ -145,6 +151,7 @@ class PhotoListModel(QAbstractListModel):
         else:
             return None
 
+
 class Album(QObject):
     def __init__(self, gService, gAlbum, parent=None):
         super(Album, self).__init__(parent)
@@ -167,6 +174,7 @@ class Album(QObject):
     tag = Property(str, getName)
     status = Property(int, getStatus)
     images = Property(QAbstractListModel, getPhotos)
+
 
 class AlbumListModel(QAbstractListModel):
     TAG_ROLE = Qt.UserRole + 1
@@ -212,6 +220,7 @@ class AlbumListModel(QAbstractListModel):
         else:
             return None
 
+
 class Picasa(object):
     def __init__(self, login, password):
         self._data = gdata.photos.service.PhotosService()
@@ -228,13 +237,15 @@ if __name__ == '__main__':
     QtGui.QApplication.setGraphicsSystem("raster")
     app = QtGui.QApplication(sys.argv)
 
-    username, ok = QtGui.QInputDialog.getText(None, "Username", "Username:", QtGui.QLineEdit.Normal)
+    username, ok = QtGui.QInputDialog.getText(None, "Username", "Username:",
+                                              QtGui.QLineEdit.Normal)
 
     if not ok:
         print "Must provide a username"
         sys.exit(1)
 
-    password, ok = QtGui.QInputDialog.getText(None, "Password", "Password:", QtGui.QLineEdit.Password)
+    password, ok = QtGui.QInputDialog.getText(None, "Password", "Password:",
+                                              QtGui.QLineEdit.Password)
 
     if not ok:
         print "Must provide a password"

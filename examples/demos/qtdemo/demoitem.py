@@ -71,7 +71,8 @@ class DemoItem(QtGui.QGraphicsItem):
 
     def guideAdvance(self, distance):
         self.guideFrame += distance
-        while self.guideFrame > self.currGuide.startLength + self.currGuide.length():
+        while self.guideFrame > \
+                self.currGuide.startLength + self.currGuide.length():
             self.currGuide = self.currGuide.nextGuide
             if self.currGuide == self.currGuide.firstGuide:
                 self.guideFrame -= self.currGuide.lengthAll()
@@ -90,16 +91,20 @@ class DemoItem(QtGui.QGraphicsItem):
         fenceBottom = sceneFence.y() + sceneFence.height()
 
         if self.scenePos().x() < sceneFence.x():
-            self.moveBy(self.mapFromScene(QtCore.QPointF(sceneFence.x(), 0)).x(), 0)
+            self.moveBy(self.mapFromScene(
+                QtCore.QPointF(sceneFence.x(), 0)).x(), 0)
 
         if self.scenePos().x() > fenceRight - itemWidth:
-            self.moveBy(self.mapFromScene(QtCore.QPointF(fenceRight - itemWidth, 0)).x(), 0)
+            self.moveBy(self.mapFromScene(
+                QtCore.QPointF(fenceRight - itemWidth, 0)).x(), 0)
 
         if self.scenePos().y() < sceneFence.y():
-            self.moveBy(0, self.mapFromScene(QtCore.QPointF(0, sceneFence.y())).y())
+            self.moveBy(0, self.mapFromScene(
+                QtCore.QPointF(0, sceneFence.y())).y())
 
         if self.scenePos().y() > fenceBottom - itemHeight:
-            self.moveBy(0, self.mapFromScene(QtCore.QPointF(0, fenceBottom - itemHeight)).y())
+            self.moveBy(0, self.mapFromScene(
+                QtCore.QPointF(0, fenceBottom - itemHeight)).y())
 
     def setGuidedPos(self, pos):
         # Make sure we have a copy.
@@ -133,7 +138,10 @@ class DemoItem(QtGui.QGraphicsItem):
             self.sharedImage.refCount += 1
 
     def validateImage(self):
-        if (self.sharedImage.matrix != DemoItem.matrix and not Colors.noRescale) or (self.sharedImage.image is None and self.sharedImage.pixmap is None):
+        if (self.sharedImage.matrix != DemoItem.matrix
+                and not Colors.noRescale) or (
+                    self.sharedImage.image is None
+                    and self.sharedImage.pixmap is None):
             # (Re)create image according to new matrix.
             self.sharedImage.image = None
             self.sharedImage.pixmap = None
@@ -153,7 +161,9 @@ class DemoItem(QtGui.QGraphicsItem):
                     painter.fillRect(image.rect(), QtGui.QColor(255, 0, 0, 50))
                     painter.end()
 
-                self.sharedImage.unscaledBoundingRect = self.sharedImage.matrix.inverted()[0].mapRect(QtCore.QRectF(image.rect()))
+                self.sharedImage.unscaledBoundingRect = \
+                    self.sharedImage.matrix.inverted()[0].mapRect(
+                        QtCore.QRectF(image.rect()))
 
                 if Colors.usePixmaps:
                     if image.isNull():
@@ -179,7 +189,8 @@ class DemoItem(QtGui.QGraphicsItem):
 
     def paint(self, painter, option=None, widget=None):
         if self.validateImage():
-            wasSmoothPixmapTransform = painter.testRenderHint(QtGui.QPainter.SmoothPixmapTransform)
+            wasSmoothPixmapTransform = painter.testRenderHint(
+                QtGui.QPainter.SmoothPixmapTransform)
             painter.setRenderHint(QtGui.QPainter.SmoothPixmapTransform)
 
             if Colors.noRescale:
@@ -200,15 +211,15 @@ class DemoItem(QtGui.QGraphicsItem):
                     y = QtCore.qRound(y)
 
                 if self.sharedImage.image is not None:
-                    painter.drawImage(QtCore.QPointF(x, y),
-                            self.sharedImage.image)
+                    painter.drawImage(
+                        QtCore.QPointF(x, y), self.sharedImage.image)
                 else:
-                    painter.drawPixmap(QtCore.QPointF(x, y),
-                            self.sharedImage.pixmap)
+                    painter.drawPixmap(
+                        QtCore.QPointF(x, y), self.sharedImage.pixmap)
 
             if not wasSmoothPixmapTransform:
-                painter.setRenderHint(QtGui.QPainter.SmoothPixmapTransform,
-                        False)
+                painter.setRenderHint(
+                    QtGui.QPainter.SmoothPixmapTransform, False)
 
     def createImage(self, matrix):
         return None

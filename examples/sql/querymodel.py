@@ -101,6 +101,7 @@ def initializeModel(model):
 offset = 0
 views = []
 
+
 def createView(title, model):
     global offset, views
 

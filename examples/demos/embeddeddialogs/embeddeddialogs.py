@@ -22,7 +22,8 @@ class CustomProxy(QtGui.QGraphicsProxyWidget):
         self.timeLine.stateChanged.connect(self.stateChanged)
 
     def boundingRect(self):
-        return QtGui.QGraphicsProxyWidget.boundingRect(self).adjusted(0, 0, 10, 10)
+        return QtGui.QGraphicsProxyWidget.boundingRect(self).adjusted(0, 0, 10,
+                                                                      10)
 
     def paintWindowFrame(self, painter, option, widget):
         color = QtGui.QColor(0, 0, 0, 64)
@@ -33,7 +34,7 @@ class CustomProxy(QtGui.QGraphicsProxyWidget):
         intersectsRight = right.intersects(option.exposedRect)
         intersectsBottom = bottom.intersects(option.exposedRect)
         if intersectsRight and intersectsBottom:
-            path=QtGui.QPainterPath()
+            path = QtGui.QPainterPath()
             path.addRect(right)
             path.addRect(bottom)
             painter.setPen(QtCore.Qt.NoPen)
@@ -56,11 +57,14 @@ class CustomProxy(QtGui.QGraphicsProxyWidget):
     def hoverLeaveEvent(self, event):
         super(CustomProxy, self).hoverLeaveEvent(event)
 
-        if not self.popupShown and (self.timeLine.direction() != QtCore.QTimeLine.Backward or self.timeLine.currentValue() != 0):
+        if not self.popupShown and (
+            self.timeLine.direction() != QtCore.QTimeLine.Backward
+                or self.timeLine.currentValue() != 0):
             self.zoomOut()
 
     def sceneEventFilter(self, watched, event):
-        if watched.isWindow() and (event.type() == QtCore.QEvent.UngrabMouse or event.type() == QtCore.QEvent.GrabMouse):
+        if watched.isWindow() and (event.type() == QtCore.QEvent.UngrabMouse
+                                   or event.type() == QtCore.QEvent.GrabMouse):
             self.popupShown = watched.isVisible()
             if not self.popupShown and not self.isUnderMouse():
                 self.zoomOut()
@@ -68,7 +72,8 @@ class CustomProxy(QtGui.QGraphicsProxyWidget):
         return super(CustomProxy, self).sceneEventFilter(watched, event)
 
     def itemChange(self, change, value):
-        if change == self.ItemChildAddedChange or change == self.ItemChildRemovedChange :
+        if change == self.ItemChildAddedChange or change == \
+                self.ItemChildRemovedChange:
             # how to translate this line to python?
             # QGraphicsItem *item = qVariantValue<QGraphicsItem *>(value);
             item = value
@@ -83,14 +88,14 @@ class CustomProxy(QtGui.QGraphicsProxyWidget):
         return super(CustomProxy, self).itemChange(change, value)
 
     def updateStep(self, step):
-        r=self.boundingRect()
-        self.setTransform( QtGui.QTransform() \
-                            .translate(r.width() / 2, r.height() / 2)\
-                            .rotate(step * 30, QtCore.Qt.XAxis)\
-                            .rotate(step * 10, QtCore.Qt.YAxis)\
-                            .rotate(step * 5, QtCore.Qt.ZAxis)\
-                            .scale(1 + 1.5 * step, 1 + 1.5 * step)\
-                            .translate(-r.width() / 2, -r.height() / 2))
+        r = self.boundingRect()
+        self.setTransform(QtGui.QTransform()
+                          .translate(r.width() / 2, r.height() / 2)
+                          .rotate(step * 30, QtCore.Qt.XAxis)
+                          .rotate(step * 10, QtCore.Qt.YAxis)
+                          .rotate(step * 5, QtCore.Qt.ZAxis)
+                          .scale(1 + 1.5 * step, 1 + 1.5 * step)
+                          .translate(-r.width() / 2, -r.height() / 2))
 
     def stateChanged(self, state):
         if state == QtCore.QTimeLine.Running:
@@ -119,12 +124,13 @@ class EmbeddedDialog(QtGui.QDialog):
 
         self.ui = Ui_embeddedDialog()
         self.ui.setupUi(self)
-        self.ui.layoutDirection.setCurrentIndex(self.layoutDirection() != QtCore.Qt.LeftToRight)
+        self.ui.layoutDirection.setCurrentIndex(
+            self.layoutDirection() != QtCore.Qt.LeftToRight)
 
         for styleName in QtGui.QStyleFactory.keys():
             self.ui.style.addItem(styleName)
             if self.style().objectName().lower() == styleName.lower():
-                self.ui.style.setCurrentIndex(self.ui.style.count() -1)
+                self.ui.style.setCurrentIndex(self.ui.style.count() - 1)
 
         self.ui.layoutDirection.activated.connect(self.layoutDirectionChanged)
         self.ui.spacing.valueChanged.connect(self.spacingChanged)
@@ -150,9 +156,9 @@ class EmbeddedDialog(QtGui.QDialog):
         for child in widget.children():
             if isinstance(child, QtGui.QWidget):
                 self.setStyleHelper(child, style)
-    
+
     def styleChanged(self, styleName):
-        style=QtGui.QStyleFactory.create(styleName)
+        style = QtGui.QStyleFactory.create(styleName)
         if style:
             self.setStyleHelper(self, style)
 
@@ -173,7 +179,7 @@ if __name__ == '__main__':
 
             rect = proxy.boundingRect()
 
-            proxy.setPos( x * rect.width()*1.05, y*rect.height()*1.05 )
+            proxy.setPos(x * rect.width()*1.05, y*rect.height()*1.05)
             proxy.setCacheMode(QtGui.QGraphicsItem.DeviceCoordinateCache)
             scene.addItem(proxy)
 
@@ -181,8 +187,10 @@ if __name__ == '__main__':
 
     view = QtGui.QGraphicsView(scene)
     view.scale(0.5, 0.5)
-    view.setRenderHints(view.renderHints() | QtGui.QPainter.Antialiasing  | QtGui.QPainter.SmoothPixmapTransform)
-    view.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap(':/No-Ones-Laughing-3.jpg')))
+    view.setRenderHints(view.renderHints() | QtGui.QPainter.Antialiasing |
+                        QtGui.QPainter.SmoothPixmapTransform)
+    view.setBackgroundBrush(QtGui.QBrush(QtGui.QPixmap(
+        ':/No-Ones-Laughing-3.jpg')))
     view.setCacheMode(QtGui.QGraphicsView.CacheBackground)
     view.setViewportUpdateMode(QtGui.QGraphicsView.BoundingRectViewportUpdate)
     view.show()

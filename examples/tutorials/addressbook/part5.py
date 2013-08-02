@@ -133,34 +133,41 @@ class AddressBook(QtGui.QWidget):
         address = self.addressText.toPlainText()
 
         if name == "" or address == "":
-            QtGui.QMessageBox.information(self, "Empty Field",
-                    "Please enter a name and address.")
+            QtGui.QMessageBox.information(
+                self, "Empty Field", "Please enter a name and address.")
             return
 
         if self.currentMode == self.AddingMode:
             if name not in self.contacts:
                 self.contacts[name] = address
-                QtGui.QMessageBox.information(self, "Add Successful",
-                        "\"%s\" has been added to your address book." % name)
+                QtGui.QMessageBox.information(
+                    self, "Add Successful",
+                    "\"%s\" has been added to your address book." % name)
             else:
-                QtGui.QMessageBox.information(self, "Add Unsuccessful",
-                        "Sorry, \"%s\" is already in your address book." % name)
+                QtGui.QMessageBox.information(
+                    self, "Add Unsuccessful",
+                    "Sorry, \"%s\" is already in your address book." % name)
                 return
 
         elif self.currentMode == self.EditingMode:
             if self.oldName != name:
                 if name not in self.contacts:
-                    QtGui.QMessageBox.information(self, "Edit Successful",
-                            "\"%s\" has been edited in your address book." % self.oldName)
+                    QtGui.QMessageBox.information(
+                        self, "Edit Successful",
+                        "\"%s\" has been edited in your address book."
+                        % self.oldName)
                     del self.contacts[self.oldName]
                     self.contacts[name] = address
                 else:
-                    QtGui.QMessageBox.information(self, "Edit Unsuccessful",
-                            "Sorry, \"%s\" is already in your address book." % name)
+                    QtGui.QMessageBox.information(
+                        self, "Edit Unsuccessful",
+                        "Sorry, \"%s\" is already in your address book."
+                        % name)
                     return
             elif self.oldAddress != address:
-                QtGui.QMessageBox.information(self, "Edit Successful",
-                        "\"%s\" has been edited in your address book." % name)
+                QtGui.QMessageBox.information(
+                    self, "Edit Successful",
+                    "\"%s\" has been edited in your address book." % name)
                 self.contacts[name] = address
 
         self.updateInterface(self.NavigationMode)
@@ -175,16 +182,18 @@ class AddressBook(QtGui.QWidget):
         address = self.addressText.toPlainText()
 
         if name in self.contacts:
-            button = QtGui.QMessageBox.question(self, "Confirm Remove",
-                    "Are you sure you want to remove \"%s\"?" % name,
-                    QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+            button = QtGui.QMessageBox.question(
+                self, "Confirm Remove",
+                "Are you sure you want to remove \"%s\"?" % name,
+                QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
 
             if button == QtGui.QMessageBox.Yes:
                 self.previous()
                 del self.contacts[name]
 
-                QtGui.QMessageBox.information(self, "Remove Successful",
-                        "\"%s\" has been removed from your address book." % name)
+                QtGui.QMessageBox.information(
+                    self, "Remove Successful",
+                    "\"%s\" has been removed from your address book." % name)
 
         self.updateInterface(self.NavigationMode)
 
@@ -237,8 +246,9 @@ class AddressBook(QtGui.QWidget):
                 self.nameLine.setText(contactName)
                 self.addressText.setText(self.contacts[contactName])
             else:
-                QtGui.QMessageBox.information(self, "Contact Not Found",
-                        "Sorry, \"%s\" is not in your address book." % contactName)
+                QtGui.QMessageBox.information(
+                    self, "Contact Not Found",
+                    "Sorry, \"%s\" is not in your address book." % contactName)
                 return
 
         self.updateInterface(self.NavigationMode)
@@ -275,7 +285,7 @@ class AddressBook(QtGui.QWidget):
             self.removeButton.setEnabled(number >= 1)
             self.findButton.setEnabled(number > 2)
             self.nextButton.setEnabled(number > 1)
-            self.previousButton.setEnabled(number >1 )
+            self.previousButton.setEnabled(number > 1)
 
             self.submitButton.hide()
             self.cancelButton.hide()
@@ -306,8 +316,8 @@ class FindDialog(QtGui.QDialog):
         text = self.lineEdit.text()
 
         if not text:
-            QtGui.QMessageBox.information(self, "Empty Field",
-                    "Please enter a name.")
+            QtGui.QMessageBox.information(
+                self, "Empty Field", "Please enter a name.")
             return
         else:
             self.findText = text

@@ -70,7 +70,8 @@ class DragWidget(QtGui.QFrame):
     def dropEvent(self, event):
         if event.mimeData().hasFormat('application/x-dnditemdata'):
             itemData = event.mimeData().data('application/x-dnditemdata')
-            dataStream = QtCore.QDataStream(itemData, QtCore.QIODevice.ReadOnly)
+            dataStream = QtCore.QDataStream(itemData,
+                                            QtCore.QIODevice.ReadOnly)
 
             pixmap = QtGui.QPixmap()
             offset = QtCore.QPoint()
@@ -117,7 +118,8 @@ class DragWidget(QtGui.QFrame):
 
         child.setPixmap(tempPixmap)
 
-        if drag.exec_(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction, QtCore.Qt.CopyAction) == QtCore.Qt.MoveAction:
+        if drag.exec_(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction,
+                      QtCore.Qt.CopyAction) == QtCore.Qt.MoveAction:
             child.close()
         else:
             child.show()

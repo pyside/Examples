@@ -46,25 +46,29 @@ class MainWindow(QtGui.QMainWindow):
 
         self.menuBar().addMenu(rendererMenu)
 
-        self.connect(self.openAction, QtCore.SIGNAL("triggered()"), self.openFile)
-        self.connect(self.quitAction, QtCore.SIGNAL("triggered()"), QtGui.qApp, QtCore.SLOT("quit()"))
-        self.connect(rendererGroup, QtCore.SIGNAL("triggered(QAction *)"), self.setRenderer)
+        self.connect(self.openAction, QtCore.SIGNAL("triggered()"),
+                     self.openFile)
+        self.connect(self.quitAction, QtCore.SIGNAL("triggered()"), QtGui.qApp,
+                     QtCore.SLOT("quit()"))
+        self.connect(rendererGroup, QtCore.SIGNAL("triggered(QAction *)"),
+                     self.setRenderer)
 
         self.setCentralWidget(self.area)
         self.setWindowTitle(self.tr("SVG Viewer"))
 
     def openFile(self, path=""):
-        if path=="":
-            fileName = QtGui.QFileDialog.getOpenFileName(self, self.tr("Open SVG File"),
-                                                         self.currentPath, "*.svg")[0]
+        if path == "":
+            fileName = QtGui.QFileDialog.getOpenFileName(
+                self, self.tr("Open SVG File"), self.currentPath, "*.svg")[0]
         else:
             fileName = path
 
-        if fileName!="":
+        if fileName != "":
             self.area.openFile(fileName)
             if not fileName.startswith(":/"):
                 self.currentPath = fileName
-                self.setWindowTitle(self.tr("%s - SVGViewer") % self.currentPath)
+                self.setWindowTitle(self.tr("%s - SVGViewer")
+                                    % self.currentPath)
 
     def setRenderer(self, action):
         if action == self.nativeAction:
@@ -112,7 +116,8 @@ class SvgWindow(QtGui.QScrollArea):
 
     def mousePressEvent(self, event):
         self.mousePressPos = QtCore.QPoint(event.pos())
-        self.scrollBarValuesOnMousePress.setX(self.horizontalScrollBar().value())
+        self.scrollBarValuesOnMousePress.setX(
+            self.horizontalScrollBar().value())
         self.scrollBarValuesOnMousePress.setY(self.verticalScrollBar().value())
         event.accept()
 
@@ -121,8 +126,12 @@ class SvgWindow(QtGui.QScrollArea):
             event.ignore()
             return
 
-        self.horizontalScrollBar().setValue(self.scrollBarValuesOnMousePress.x() - event.pos().x() + self.mousePressPos.x())
-        self.verticalScrollBar().setValue(self.scrollBarValuesOnMousePress.y() - event.pos().y() + self.mousePressPos.y())
+        self.horizontalScrollBar().setValue(
+            self.scrollBarValuesOnMousePress.x() - event.pos().x() +
+            self.mousePressPos.x())
+        self.verticalScrollBar().setValue(
+            self.scrollBarValuesOnMousePress.y() - event.pos().y() +
+            self.mousePressPos.y())
         self.horizontalScrollBar().update()
         self.verticalScrollBar().update()
         event.accept()
@@ -134,7 +143,8 @@ class SvgWindow(QtGui.QScrollArea):
 
 class SvgGLView(QtOpenGL.QGLWidget):
     def __init__(self, path, parent):
-        QtOpenGL.QGLWidget.__init__(self, QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers))
+        QtOpenGL.QGLWidget.__init__(
+            self, QtOpenGL.QGLFormat(QtOpenGL.QGL.SampleBuffers))
 
         self.doc = QtSvg.QSvgRenderer(path, self)
         self.connect(self.doc, QtCore.SIGNAL("repaintNeeded()"),
@@ -172,11 +182,13 @@ class SvgRasterView(QtGui.QWidget):
         self.m_dirty = False
 
         self.doc = QtSvg.QSvgRenderer(path, self)
-        self.connect(self.doc, QtCore.SIGNAL("repaintNeeded()"), self.poluteImage)
+        self.connect(self.doc, QtCore.SIGNAL("repaintNeeded()"),
+                     self.poluteImage)
 
     def paintEvent(self, e):
         if self.buffer.size() != self.size() or self.m_dirty:
-            self.buffer = QtGui.QImage(self.size(), QtGui.QImage.Format_ARGB32_Premultiplied)
+            self.buffer = QtGui.QImage(
+                self.size(), QtGui.QImage.Format_ARGB32_Premultiplied)
             p = QtGui.QPainter(self.buffer)
             p.setViewport(0, 0, self.width(), self.height())
             p.eraseRect(0, 0, self.width(), self.height())

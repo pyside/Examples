@@ -44,7 +44,7 @@ class MainWindow(QtGui.QMainWindow):
         yearEdit = QtGui.QDateTimeEdit()
         yearEdit.setDisplayFormat('yyyy')
         yearEdit.setDateRange(QtCore.QDate(1753, 1, 1),
-                QtCore.QDate(8000, 1, 1))
+                              QtCore.QDate(8000, 1, 1))
 
         monthCombo.setCurrentIndex(self.selectedDate.month() - 1)
         yearEdit.setDate(self.selectedDate)
@@ -83,20 +83,27 @@ class MainWindow(QtGui.QMainWindow):
         cursor.beginEditBlock()
 
         date = QtCore.QDate(self.selectedDate.year(),
-                self.selectedDate.month(), 1)
+                            self.selectedDate.month(), 1)
 
         tableFormat = QtGui.QTextTableFormat()
         tableFormat.setAlignment(QtCore.Qt.AlignHCenter)
         tableFormat.setBackground(QtGui.QColor('#e0e0e0'))
         tableFormat.setCellPadding(2)
         tableFormat.setCellSpacing(4)
-        constraints = [QtGui.QTextLength(QtGui.QTextLength.PercentageLength, 14),
-                       QtGui.QTextLength(QtGui.QTextLength.PercentageLength, 14),
-                       QtGui.QTextLength(QtGui.QTextLength.PercentageLength, 14),
-                       QtGui.QTextLength(QtGui.QTextLength.PercentageLength, 14),
-                       QtGui.QTextLength(QtGui.QTextLength.PercentageLength, 14),
-                       QtGui.QTextLength(QtGui.QTextLength.PercentageLength, 14),
-                       QtGui.QTextLength(QtGui.QTextLength.PercentageLength, 14)]
+        constraints = [QtGui.QTextLength(QtGui.QTextLength.PercentageLength,
+                                         14),
+                       QtGui.QTextLength(QtGui.QTextLength.PercentageLength,
+                                         14),
+                       QtGui.QTextLength(QtGui.QTextLength.PercentageLength,
+                                         14),
+                       QtGui.QTextLength(QtGui.QTextLength.PercentageLength,
+                                         14),
+                       QtGui.QTextLength(QtGui.QTextLength.PercentageLength,
+                                         14),
+                       QtGui.QTextLength(QtGui.QTextLength.PercentageLength,
+                                         14),
+                       QtGui.QTextLength(QtGui.QTextLength.PercentageLength,
+                                         14)]
 
         tableFormat.setColumnWidthConstraints(constraints)
 
@@ -120,7 +127,7 @@ class MainWindow(QtGui.QMainWindow):
             cell = table.cellAt(0, weekDay-1)
             cellCursor = cell.firstCursorPosition()
             cellCursor.insertText(QtCore.QDate.longDayName(weekDay),
-                    boldFormat)
+                                  boldFormat)
 
         table.insertRows(table.rows(), 1)
 
@@ -141,7 +148,9 @@ class MainWindow(QtGui.QMainWindow):
 
         cursor.endEditBlock()
 
-        self.setWindowTitle("Calendar for %s %d" % (QtCore.QDate.longMonthName(self.selectedDate.month()), self.selectedDate.year()))
+        self.setWindowTitle(
+            "Calendar for %s %d" % (QtCore.QDate.longMonthName(
+                self.selectedDate.month()), self.selectedDate.year()))
 
     def setfontSize(self, size):
         self.fontSize = size
@@ -149,12 +158,12 @@ class MainWindow(QtGui.QMainWindow):
 
     def setMonth(self, month):
         self.selectedDate = QtCore.QDate(self.selectedDate.year(), month + 1,
-                self.selectedDate.day())
+                                         self.selectedDate.day())
         self.insertCalendar()
 
     def setYear(self, date):
-        self.selectedDate = QtCore.QDate(date.year(),
-                self.selectedDate.month(), self.selectedDate.day())
+        self.selectedDate = QtCore.QDate(
+            date.year(), self.selectedDate.month(), self.selectedDate.day())
         self.insertCalendar()
 
 

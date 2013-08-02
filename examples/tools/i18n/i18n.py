@@ -35,7 +35,7 @@ class LanguageChooser(QtGui.QDialog):
         QtGui.QDialog.__init__(self, parent, QtCore.Qt.WindowStaysOnTopHint)
 
         self.qmFileForCheckBoxMap = {}
-        self.mainWindowForCheckBoxMap = {} 
+        self.mainWindowForCheckBoxMap = {}
 
         groupBox = QtGui.QGroupBox("Languages")
 
@@ -46,7 +46,8 @@ class LanguageChooser(QtGui.QDialog):
         for i in range(len(qmFiles)):
             checkBox = QtGui.QCheckBox(self.languageName(qmFiles[i]))
             self.qmFileForCheckBoxMap[checkBox] = qmFiles[i]
-            self.connect(checkBox, QtCore.SIGNAL("toggled(bool)"), self.checkBoxToggled)
+            self.connect(checkBox, QtCore.SIGNAL("toggled(bool)"),
+                         self.checkBoxToggled)
             groupBoxLayout.addWidget(checkBox, i / 2, i % 2)
 
         groupBox.setLayout(groupBoxLayout)
@@ -58,7 +59,8 @@ class LanguageChooser(QtGui.QDialog):
 
         self.connect(showAllButton, QtCore.SIGNAL("clicked()"), self.showAll)
         self.connect(hideAllButton, QtCore.SIGNAL("clicked()"), self.hideAll)
-        self.connect(closeButton, QtCore.SIGNAL("clicked()"), self, QtCore.SLOT("close()"))
+        self.connect(closeButton, QtCore.SIGNAL("clicked()"), self,
+                     QtCore.SLOT("close()"))
 
         buttonLayout = QtGui.QHBoxLayout()
         buttonLayout.addStretch(1)
@@ -109,7 +111,8 @@ class LanguageChooser(QtGui.QDialog):
             # the main window when the program terminates.  We ensure this by
             # making the main window a child of this one.
             window = MainWindow(self)
-            window.setPalette(QtGui.QPalette(self.colorForLanguage(checkBox.text())))
+            window.setPalette(QtGui.QPalette(self.colorForLanguage(
+                checkBox.text())))
 
             window.installEventFilter(self)
             self.mainWindowForCheckBoxMap[checkBox] = window
@@ -126,14 +129,15 @@ class LanguageChooser(QtGui.QDialog):
 
     def findQmFiles(self):
         trans_dir = QtCore.QDir("./translations")
-        fileNames = trans_dir.entryList(["*.qm"], QtCore.QDir.Files, QtCore.QDir.Name)
+        fileNames = trans_dir.entryList(["*.qm"], QtCore.QDir.Files,
+                                        QtCore.QDir.Name)
 
         fileNames = [trans_dir.filePath(p) for p in fileNames]
 
         return fileNames
 
     def languageName(self, qmFile):
-        translator = QtCore.QTranslator() 
+        translator = QtCore.QTranslator()
         translator.load(qmFile)
 
         return translator.translate("MainWindow", "English")
@@ -170,7 +174,8 @@ class MainWindow(QtGui.QMainWindow):
         self.centralWidget.setLayout(mainLayout)
 
         exitAction = QtGui.QAction(self.tr("E&xit"), self)
-        self.connect(exitAction, QtCore.SIGNAL("triggered()"), QtGui.qApp, QtCore.SLOT("quit()"))
+        self.connect(exitAction, QtCore.SIGNAL("triggered()"), QtGui.qApp,
+                     QtCore.SLOT("quit()"))
 
         fileMenu = self.menuBar().addMenu(self.tr("&File"))
         fileMenu.setPalette(QtGui.QPalette(QtCore.Qt.red))
@@ -196,7 +201,7 @@ class MainWindow(QtGui.QMainWindow):
         self.groupBox.setLayout(self.groupBoxLayout)
 
 
-if __name__ == "__main__":    
+if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     chooser = LanguageChooser()
     chooser.show()

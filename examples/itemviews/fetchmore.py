@@ -45,7 +45,7 @@ class FileListModel(QtCore.QAbstractListModel):
         itemsToFetch = min(100, remainder)
 
         self.beginInsertRows(QtCore.QModelIndex(), self.fileCount,
-                self.fileCount + itemsToFetch)
+                             self.fileCount + itemsToFetch)
 
         self.fileCount += itemsToFetch
 
@@ -66,7 +66,8 @@ class Window(QtGui.QWidget):
         super(Window, self).__init__(parent)
 
         model = FileListModel(self)
-        model.setDirPath(QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.PrefixPath))
+        model.setDirPath(QtCore.QLibraryInfo.location(
+            QtCore.QLibraryInfo.PrefixPath))
 
         label = QtGui.QLabel("Directory")
         lineEdit = QtGui.QLineEdit()
@@ -76,7 +77,8 @@ class Window(QtGui.QWidget):
         view.setModel(model)
 
         self.logViewer = QtGui.QTextBrowser()
-        self.logViewer.setSizePolicy(QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred))
+        self.logViewer.setSizePolicy(QtGui.QSizePolicy(
+            QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred))
 
         lineEdit.textChanged.connect(model.setDirPath)
         lineEdit.textChanged.connect(self.logViewer.clear)

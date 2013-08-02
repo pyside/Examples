@@ -38,16 +38,20 @@ class PostRotateXY(TickerPostEffect):
     def transform(self, item, pos):
         parent = item.parentItem()
         center = parent.boundingRect().center()
-        pos.setX(center.x() + (pos.x() - center.x()) * math.cos(self.currRotX + pos.x() * self.curvx))
-        pos.setY(center.y() + (pos.y() - center.y()) * math.cos(self.currRotY + pos.y() * self.curvy))
+        pos.setX(center.x() + (pos.x() - center.x())
+                 * math.cos(self.currRotX + pos.x() * self.curvx))
+        pos.setY(center.y() + (pos.y() - center.y())
+                 * math.cos(self.currRotY + pos.y() * self.curvy))
 
 
 class PostRotateXYTwist(PostRotateXY):
     def transform(self, item, pos):
         parent = item.parentItem()
         center = parent.boundingRect().center()
-        pos.setX(center.x() + (pos.x() - center.x()) * math.cos(self.currRotX + pos.y() * self.curvx))
-        pos.setY(center.y() + (pos.y() - center.y()) * math.cos(self.currRotY + pos.x() * self.curvy))
+        pos.setX(center.x() + (pos.x() - center.x())
+                 * math.cos(self.currRotX + pos.y() * self.curvx))
+        pos.setY(center.y() + (pos.y() - center.y())
+                 * math.cos(self.currRotY + pos.x() * self.curvy))
 
 
 class TickerEffect(object):
@@ -138,7 +142,7 @@ class EffectRaindrops(TickerEffect):
 
         for letter in self.letters:
             letter.setGuidedPos(QtCore.QPointF(random.randint(-100, 100),
-                    random.randint(-200, 1100)))
+                                               random.randint(-200, 1100)))
 
 
 class EffectLine(TickerEffect):
@@ -203,18 +207,21 @@ class ItemCircleAnimation(DemoItem):
         GuideLine(QtCore.QPointF(x + 265, y + 246), self.qtGuide1)
         GuideLine(QtCore.QPointF(x + 158, y + 134), self.qtGuide1)
         GuideLine(QtCore.QPointF(x + 184, y + 109), self.qtGuide1)
-        GuideLine(QtCore.QPointF(x + 160, y +  82), self.qtGuide1)
-        GuideLine(QtCore.QPointF(x +  77, y + 163), self.qtGuide1)
+        GuideLine(QtCore.QPointF(x + 160, y + 82), self.qtGuide1)
+        GuideLine(QtCore.QPointF(x + 77, y + 163), self.qtGuide1)
         GuideLine(QtCore.QPointF(x + 100, y + 190), self.qtGuide1)
         GuideLine(QtCore.QPointF(x + 132, y + 159), self.qtGuide1)
         GuideLine(QtCore.QPointF(x + 188, y + 211), self.qtGuide1)
-        GuideCircle(QtCore.QRectF(x + 30, y + 30, 200, 200), -30, 336, GuideCircle.CW, self.qtGuide1)
+        GuideCircle(QtCore.QRectF(x + 30, y + 30, 200, 200), -30, 336,
+                    GuideCircle.CW, self.qtGuide1)
         GuideLine(QtCore.QPointF(x + 238, y + 201), self.qtGuide1)
 
         y = 30
-        self.qtGuide2 = GuideCircle(QtCore.QRectF(x + 30, y + 30, 200, 200), 135, 270, GuideCircle.CCW)
+        self.qtGuide2 = GuideCircle(QtCore.QRectF(x + 30, y + 30, 200, 200),
+                                    135, 270, GuideCircle.CCW)
         GuideLine(QtCore.QPointF(x + 222, y + 38), self.qtGuide2)
-        GuideCircle(QtCore.QRectF(x, y, 260, 260), 135, 270, GuideCircle.CW, self.qtGuide2)
+        GuideCircle(QtCore.QRectF(x, y, 260, 260), 135, 270, GuideCircle.CW,
+                    self.qtGuide2)
         GuideLine(QtCore.QPointF(x + 59, y + 59), self.qtGuide2)
 
         x = 115
@@ -262,7 +269,8 @@ class ItemCircleAnimation(DemoItem):
             self.effect.setPostEffect(PostRotateXYTwist(0.01, 0.0, 0.003, 0.0))
         elif self.showCount == 3:
             self.effect = EffectRaindrops(self.letterList)
-            self.effect.setPostEffect(PostRotateXYTwist(0.01, 0.005, 0.003, 0.003))
+            self.effect.setPostEffect(PostRotateXYTwist(0.01, 0.005, 0.003,
+                                                        0.003))
         elif self.showCount == 4:
             self.effect = EffectScan(self.letterList)
             self.effect.normalMoveSpeed = 0
@@ -314,7 +322,7 @@ class ItemCircleAnimation(DemoItem):
         self.qtGuide3.setScale(self.scale, self.scale)
 
     def mousePressEvent(self, event):
-        self.mouseMoveLastPosition = event.scenePos();
+        self.mouseMoveLastPosition = event.scenePos()
 
         if event.button() == QtCore.Qt.LeftButton:
             self.setCursor(QtCore.Qt.ClosedHandCursor)
@@ -327,7 +335,9 @@ class ItemCircleAnimation(DemoItem):
 
     def mouseMoveEvent(self, event):
         newPosition = event.scenePos()
-        self.setPosUsingSheepDog(self.pos() + newPosition - self.mouseMoveLastPosition, QtCore.QRectF(-260, -280, 1350, 1160))
+        self.setPosUsingSheepDog(self.pos() + newPosition
+                                 - self.mouseMoveLastPosition,
+                                 QtCore.QRectF(-260, -280, 1350, 1160))
         self.mouseMoveLastPosition = newPosition
 
     def wheelEvent(self, event):

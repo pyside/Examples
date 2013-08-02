@@ -10,10 +10,11 @@ try:
     from OpenGL import GL
 except ImportError:
     app = QtGui.QApplication(sys.argv)
-    QtGui.QMessageBox.critical(None, "OpenGL hellogl",
-                            "PyOpenGL must be installed to run this example.",
-                            QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
-                            QtGui.QMessageBox.NoButton)
+    QtGui.QMessageBox.critical(
+        None, "OpenGL hellogl",
+        "PyOpenGL must be installed to run this example.",
+        QtGui.QMessageBox.Ok | QtGui.QMessageBox.Default,
+        QtGui.QMessageBox.NoButton)
     sys.exit(1)
 
 
@@ -23,12 +24,12 @@ class Window(QtGui.QWidget):
 
         self.glWidget = GLWidget()
 
-        self.xSlider = self.createSlider(QtCore.SIGNAL("xRotationChanged(int)"),
-                                         self.glWidget.setXRotation)
-        self.ySlider = self.createSlider(QtCore.SIGNAL("yRotationChanged(int)"),
-                                         self.glWidget.setYRotation)
-        self.zSlider = self.createSlider(QtCore.SIGNAL("zRotationChanged(int)"),
-                                         self.glWidget.setZRotation)
+        self.xSlider = self.createSlider(
+            QtCore.SIGNAL("xRotationChanged(int)"), self.glWidget.setXRotation)
+        self.ySlider = self.createSlider(
+            QtCore.SIGNAL("yRotationChanged(int)"), self.glWidget.setYRotation)
+        self.zSlider = self.createSlider(
+            QtCore.SIGNAL("zRotationChanged(int)"), self.glWidget.setZRotation)
 
         mainLayout = QtGui.QHBoxLayout()
         mainLayout.addWidget(self.glWidget)
@@ -52,8 +53,10 @@ class Window(QtGui.QWidget):
         slider.setTickInterval(15 * 16)
         slider.setTickPosition(QtGui.QSlider.TicksRight)
 
-        self.glWidget.connect(slider, QtCore.SIGNAL("valueChanged(int)"), setterSlot)
-        self.connect(self.glWidget, changedSignal, slider, QtCore.SLOT("setValue(int)"))
+        self.glWidget.connect(
+            slider, QtCore.SIGNAL("valueChanged(int)"), setterSlot)
+        self.connect(
+            self.glWidget, changedSignal, slider, QtCore.SLOT("setValue(int)"))
 
         return slider
 

@@ -32,7 +32,7 @@ class Screenshot(QtGui.QWidget):
 
         self.screenshotLabel = QtGui.QLabel()
         self.screenshotLabel.setSizePolicy(QtGui.QSizePolicy.Expanding,
-                QtGui.QSizePolicy.Expanding)
+                                           QtGui.QSizePolicy.Expanding)
         self.screenshotLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.screenshotLabel.setMinimumSize(240, 160)
 
@@ -53,9 +53,12 @@ class Screenshot(QtGui.QWidget):
 
     def resizeEvent(self, event):
         scaledSize = self.originalPixmap.size()
-        scaledSize.scale(self.screenshotLabel.size(), QtCore.Qt.KeepAspectRatio)
-        if not self.screenshotLabel.pixmap() or scaledSize != self.screenshotLabel.pixmap().size():
-            self.updateScreenshotLabel()
+        scaledSize.scale(self.screenshotLabel.size(),
+                         QtCore.Qt.KeepAspectRatio)
+        if not \
+            self.screenshotLabel.pixmap() or scaledSize != \
+                self.screenshotLabel.pixmap().size():
+                    self.updateScreenshotLabel()
 
     def newScreenshot(self):
         if self.hideThisWindowCheckBox.isChecked():
@@ -63,15 +66,16 @@ class Screenshot(QtGui.QWidget):
         self.newScreenshotButton.setDisabled(True)
 
         QtCore.QTimer.singleShot(self.delaySpinBox.value() * 1000,
-                self.shootScreen)
+                                 self.shootScreen)
 
     def saveScreenshot(self):
         format = 'png'
         initialPath = QtCore.QDir.currentPath() + "/untitled." + format
 
-        fileName,_ = QtGui.QFileDialog.getSaveFileName(self, "Save As",
-                initialPath,
-                "%s Files (*.%s);;All Files (*)" % (format.upper(), format))
+        fileName, _ = \
+            QtGui.QFileDialog.getSaveFileName(self, "Save As", initialPath,
+                                              "%s Files (*.%s);;All Files (*)"
+                                              % (format.upper(), format))
         if fileName:
             self.originalPixmap.save(fileName, format)
 
@@ -81,7 +85,8 @@ class Screenshot(QtGui.QWidget):
 
         # Garbage collect any existing image first.
         self.originalPixmap = None
-        self.originalPixmap = QtGui.QPixmap.grabWindow(QtGui.QApplication.desktop().winId())
+        self.originalPixmap = \
+            QtGui.QPixmap.grabWindow(QtGui.QApplication.desktop().winId())
         self.updateScreenshotLabel()
 
         self.newScreenshotButton.setDisabled(False)
@@ -109,15 +114,16 @@ class Screenshot(QtGui.QWidget):
         optionsGroupBoxLayout = QtGui.QGridLayout()
         optionsGroupBoxLayout.addWidget(self.delaySpinBoxLabel, 0, 0)
         optionsGroupBoxLayout.addWidget(self.delaySpinBox, 0, 1)
-        optionsGroupBoxLayout.addWidget(self.hideThisWindowCheckBox, 1, 0, 1, 2)
+        optionsGroupBoxLayout.addWidget(self.hideThisWindowCheckBox, 1, 0, 1,
+                                        2)
         self.optionsGroupBox.setLayout(optionsGroupBoxLayout)
 
     def createButtonsLayout(self):
         self.newScreenshotButton = self.createButton("New Screenshot",
-                self.newScreenshot)
+                                                     self.newScreenshot)
 
         self.saveScreenshotButton = self.createButton("Save Screenshot",
-                self.saveScreenshot)
+                                                      self.saveScreenshot)
 
         self.quitScreenshotButton = self.createButton("Quit", self.close)
 
@@ -134,8 +140,8 @@ class Screenshot(QtGui.QWidget):
 
     def updateScreenshotLabel(self):
         self.screenshotLabel.setPixmap(self.originalPixmap.scaled(
-                self.screenshotLabel.size(), QtCore.Qt.KeepAspectRatio,
-                QtCore.Qt.SmoothTransformation))
+            self.screenshotLabel.size(), QtCore.Qt.KeepAspectRatio,
+            QtCore.Qt.SmoothTransformation))
 
 
 if __name__ == '__main__':
