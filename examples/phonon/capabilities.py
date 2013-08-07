@@ -38,7 +38,7 @@ except ImportError:
 
 class Window(QtGui.QWidget):
     def __init__(self):
-        super(QtGui.QWidget, self).__init__()
+        super(Window, self).__init__()
 
         self.setupUi()
         self.updateWidgets()
