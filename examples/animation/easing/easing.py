@@ -194,17 +194,17 @@ class Window(QtGui.QWidget):
 
     def periodChanged(self, value):
         curve = self.m_anim.easingCurve()
-        curve.setPeriod(QtCore.QLocale().toFloat(value)[0])
+        curve.setPeriod(value)
         self.m_anim.setEasingCurve(curve)
 
     def amplitudeChanged(self, value):
         curve = self.m_anim.easingCurve()
-        curve.setAmplitude(QtCore.QLocale().toFloat(value)[0])
+        curve.setAmplitude(value)
         self.m_anim.setEasingCurve(curve)
 
     def overshootChanged(self, value):
         curve = self.m_anim.easingCurve()
-        curve.setOvershoot(QtCore.QLocale().toFloat(value)[0])
+        curve.setOvershoot(value)
         self.m_anim.setEasingCurve(curve)
 
 
