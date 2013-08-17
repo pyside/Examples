@@ -126,7 +126,7 @@ class GLWidget(QtOpenGL.QGLWidget):
 
     def resizeGL(self, width, height):
         side = min(width, height)
-        GL.glViewport((width - side) / 2, (height - side) / 2, side, side)
+        GL.glViewport(int((width - side) / 2),int((height - side) / 2), side, side)
 
         GL.glMatrixMode(GL.GL_PROJECTION)
         GL.glLoadIdentity()
