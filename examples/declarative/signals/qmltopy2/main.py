@@ -47,7 +47,7 @@ class RotateValue(QtCore.QObject):
     # defined in the decorator
     @QtCore.Slot(result=int)
     def val(self):
-	self.r = self.r + 10
+        self.r = self.r + 10
         return self.r
 
 if __name__ == '__main__':

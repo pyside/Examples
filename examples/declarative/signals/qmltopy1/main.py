@@ -54,7 +54,7 @@ class Console(QtCore.QObject):
         As a temporary solution, use separate functions with one slot per
         function.
         """
-	print s
+        print s
 
     @QtCore.Slot(str)
     def outputStr(self, s):
