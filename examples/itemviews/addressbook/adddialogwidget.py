@@ -100,5 +100,5 @@ if __name__ == "__main__":
     if (dialog.exec_()):
         name = dialog.name
         address = dialog.address
-        print "Name:", name
-        print "Address:", address
+        print("Name:" + name)
+        print("Address:" + address)

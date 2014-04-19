@@ -39,7 +39,7 @@
 from PySide import QtCore, QtGui, QtDeclarative
 
 def sayThis(s):
-    print s
+    print(s)
 
 if __name__ == '__main__':
     import sys

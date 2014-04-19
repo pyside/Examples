@@ -56,7 +56,7 @@ class Resource(object):
         f = d._pixmapPrefix + path
         p = QPixmap(f)
         if p.isNull():
-            print "Pixmap not found: ", f
+            print("Pixmap not found: " + f)
         return p
 
 
@@ -78,7 +78,7 @@ class Resource(object):
         if d._settings.contains(key):
             return d._settings.value(key, value)
         else:
-            print "Resource: key '%s' not found" % key
+            print("Resource: key '%s' not found" % key)
 
     @staticmethod
     def intValue(key, value=0):

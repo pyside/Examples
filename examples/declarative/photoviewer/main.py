@@ -231,13 +231,13 @@ if __name__ == '__main__':
     username, ok = QtGui.QInputDialog.getText(None, "Username", "Username:", QtGui.QLineEdit.Normal)
 
     if not ok:
-        print "Must provide a username"
+        print("Must provide a username")
         sys.exit(1)
 
     password, ok = QtGui.QInputDialog.getText(None, "Password", "Password:", QtGui.QLineEdit.Password)
 
     if not ok:
-        print "Must provide a password"
+        print("Must provide a password")
         sys.exit(1)
 
     data = Picasa(username, password)

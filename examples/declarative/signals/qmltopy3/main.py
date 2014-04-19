@@ -42,10 +42,10 @@ class Console(QtCore.QObject):
 
     @QtCore.Slot('double')
     def output(self,s):
-        print s
+        print(s)
 
 def sayThis(s):
-    print s
+    print(s)
 
 if __name__ == '__main__':
     import sys

@@ -69,7 +69,7 @@ class MoviePlayer(QtGui.QWidget):
             self.openFile(fileName)
 
     def openFile(self, fileName):
-        print "fileName:", fileName
+        print("fileName:" + fileName)
         self.currentMovieDirectory = QtCore.QFileInfo(fileName).path()
 
         self.movie.stop()

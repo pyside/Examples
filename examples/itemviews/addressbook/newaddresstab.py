@@ -82,8 +82,8 @@ class NewAddressTab(QWidget):
 if __name__ == "__main__":
 
     def printAddress(name, address):
-        print "Name:", name
-        print "Address:", address
+        print("Name:" + name)
+        print("Address:" + address)
 
     import sys
     from PySide.QtGui import QApplication
