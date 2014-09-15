@@ -204,7 +204,7 @@ class AddressWidget(QTabWidget):
 
             # This prevents an application crash (see: http://www.qtcentre.org/threads/58874-QListView-SelectionModel-selectionChanged-Crash)
             viewselectionmodel = tableView.selectionModel()
-            viewselectionmodel.selectionChanged.connect(self.selectionChanged)
+            tableView.selectionModel().selectionChanged.connect(self.selectionChanged)
 
             self.addTab(tableView, group)
 
