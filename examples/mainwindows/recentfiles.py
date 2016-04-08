@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 
 ############################################################################
-# 
+#
 #  Copyright (C) 2004-2005 Trolltech AS. All rights reserved.
-# 
+#
 #  This file is part of the example classes of the Qt Toolkit.
-# 
+#
 #  This file may be used under the terms of the GNU General Public
 #  License version 2.0 as published by the Free Software Foundation
 #  and appearing in the file LICENSE.GPL included in the packaging of
 #  self file.  Please review the following information to ensure GNU
 #  General Public Licensing requirements will be met:
 #  http://www.trolltech.com/products/qt/opensource.html
-# 
+#
 #  If you are unsure which license is appropriate for your use, please
 #  review the following information:
 #  http://www.trolltech.com/products/qt/licensing.html or contact the
 #  sales department at sales@trolltech.com.
-# 
+#
 #  This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 #  WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-# 
+#
 ############################################################################
 
 # This is only needed for Python v2 but is harmless for Python v3.
@@ -174,8 +174,7 @@ class MainWindow(QtGui.QMainWindow):
         else:
             self.setWindowTitle("Recent Files")
 
-        settings = QtCore.QSettings('Trolltech', 'Recent Files Example')
-        files = list(settings.value('recentFileList', []))
+        files = self.load_settings()
 
         try:
             files.remove(fileName)
@@ -185,16 +184,14 @@ class MainWindow(QtGui.QMainWindow):
         files.insert(0, fileName)
         del files[MainWindow.MaxRecentFiles:]
 
-        settings.setValue('recentFileList', files)
+        self.save_settings(files)
 
         for widget in QtGui.QApplication.topLevelWidgets():
             if isinstance(widget, MainWindow):
                 widget.updateRecentFileActions()
 
     def updateRecentFileActions(self):
-        settings = QtCore.QSettings('Trolltech', 'Recent Files Example')
-        files = settings.value('recentFileList')
-
+        files = self.load_settings()
         files_no = 0
         if files:
             files_no = len(files)
@@ -214,6 +211,28 @@ class MainWindow(QtGui.QMainWindow):
 
     def strippedName(self, fullFileName):
         return QtCore.QFileInfo(fullFileName).fileName()
+
+    def save_settings(self, recent_file_list):
+        settings = QtCore.QSettings('Trolltech', 'Recent Files Example')
+        settings.beginWriteArray('recentFileList')
+
+        for idx, value in enumerate(recent_file_list):
+            settings.setArrayIndex(idx)
+            settings.setValue('recent_file', value)
+
+        settings.endArray()
+
+    def load_settings(self):
+        recent_files_list = []
+        settings = QtCore.QSettings('Trolltech', 'Recent Files Example')
+        size = settings.beginReadArray('recentFileList')
+
+        for idx in xrange(size):
+            settings.setArrayIndex(idx)
+            recent_files_list.append(settings.value('recent_file'))
+
+        settings.endArray()
+        return recent_files_list
 
 
 if __name__ == '__main__':
