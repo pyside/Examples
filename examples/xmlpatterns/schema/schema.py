@@ -21,7 +21,7 @@ except NameError:
     # Python v3.
 
     def encode_utf8(ba):
-        return str(ba, encoding='utf8')
+        return str(ba)
 
     def decode_utf8(qs):
         return QtCore.QByteArray(bytes(qs, encoding='utf8'))
