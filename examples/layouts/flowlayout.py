@@ -24,8 +24,7 @@ class FlowLayout(QtGui.QLayout):
     def __init__(self, parent=None, margin=0, spacing=-1):
         super(FlowLayout, self).__init__(parent)
 
-        if parent is not None:
-            self.setMargin(margin)
+        self.setContentsMargins(margin, margin, margin, margin)
 
         self.setSpacing(spacing)
 
@@ -77,12 +76,13 @@ class FlowLayout(QtGui.QLayout):
         for item in self.itemList:
             size = size.expandedTo(item.minimumSize())
 
-        size += QtCore.QSize(2 * self.contentsMargins().top(), 2 * self.contentsMargins().top())
+        size += QtCore.QSize(self.contentsMargins().top() + self.contentsMargins().bottom(),
+                             self.contentsMargins().left() + self.contentsMargins().right())
         return size
 
     def doLayout(self, rect, testOnly):
-        x = rect.x()
-        y = rect.y()
+        x = rect.x() + self.contentsMargins().left()
+        y = rect.y() + self.contentsMargins().top()
         lineHeight = 0
 
         for item in self.itemList:
@@ -90,8 +90,8 @@ class FlowLayout(QtGui.QLayout):
             spaceX = self.spacing() + wid.style().layoutSpacing(QtGui.QSizePolicy.PushButton, QtGui.QSizePolicy.PushButton, QtCore.Qt.Horizontal)
             spaceY = self.spacing() + wid.style().layoutSpacing(QtGui.QSizePolicy.PushButton, QtGui.QSizePolicy.PushButton, QtCore.Qt.Vertical)
             nextX = x + item.sizeHint().width() + spaceX
-            if nextX - spaceX > rect.right() and lineHeight > 0:
-                x = rect.x()
+            if nextX - spaceX > rect.right() - self.contentsMargins().right() and lineHeight > 0:
+                x = rect.x() + self.contentsMargins().left()
                 y = y + lineHeight + spaceY
                 nextX = x + item.sizeHint().width() + spaceX
                 lineHeight = 0
@@ -102,13 +102,11 @@ class FlowLayout(QtGui.QLayout):
             x = nextX
             lineHeight = max(lineHeight, item.sizeHint().height())
 
-        return y + lineHeight - rect.y()
+        return y + lineHeight - rect.y() + self.contentsMargins().bottom()
 
 
 if __name__ == '__main__':
-
     import sys
-
     app = QtGui.QApplication(sys.argv)
     mainWin = Window()
     mainWin.show()
