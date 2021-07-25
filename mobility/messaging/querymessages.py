@@ -17,7 +17,7 @@ sortOrder = QMessageSortOrder.byReceptionTimeStamp(Qt.DescendingOrder)
 # Acquire a handle to the message manager
 manager = QMessageManager()
 
-# Find the matching message IDs, limiting our results to a managable number
+# Find the matching message IDs, limiting our results to a manageable number
 matchingIds = manager.queryMessages(filter, sortOrder, 100)
 
 n = 0

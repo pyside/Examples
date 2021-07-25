@@ -111,7 +111,7 @@ class Window(QtGui.QWidget):
         brush = QtGui.QBrush(gradient)
 
         # The original C++ code uses undocumented calls to get the names of the
-        # different curve types.  We do the Python equivalant (but without
+        # different curve types.  We do the Python equivalent (but without
         # cheating)
         curve_types = [(n, c) for n, c in QtCore.QEasingCurve.__dict__.items()
                         if isinstance(c, QtCore.QEasingCurve.Type) \
